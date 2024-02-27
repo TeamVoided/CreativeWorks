@@ -1,0 +1,23 @@
+projectTitle = "TemplateMod"
+modId = "template"
+githubRepo = "Teamvoided/TeamVoidedTemplateMod"
+discordServerInviteId = "KZ5Q364hEg"
+authors = [ "brokenfuse", "theendercore" ]
+majorMinecraftVersion = "1.20"
+minecraftVersion = "1.20.4"
+fabricLoaderVersion = "0.15.6"
+fabricApiVersion = "0.94.1+1.20.4"
+fabricLangKotlinVersion = "1.10.17+kotlin.1.9.22"
+license = "MIT"
+modules = [ ]
+
+[mappings]
+    # You have 6 mapping types
+    # MOJANG: The official Mojang mappings
+    # YARN: Yarn mappings
+    # PARCHMENT: Parchment mappings
+    # QUILT: Quilt mappings
+    # MOJPARCH: Parchment layered on top of the official Mojang mappings
+    # MOJYARN: Yarn layered on top of the official Mojang mappings
+    type = "QUILT"
+    version = "1.20.4+build.3"
