@@ -1,6 +1,6 @@
-projectTitle = "TemplateMod"
-modId = "template"
-githubRepo = "Teamvoided/TeamVoidedTemplateMod"
+projectTitle = "CreativeWorks"
+modId = "creative_works"
+githubRepo = "Teamvoided/CreativeWorks"
 discordServerInviteId = "KZ5Q364hEg"
 authors = [ "brokenfuse", "theendercore" ]
 majorMinecraftVersion = "1.20"

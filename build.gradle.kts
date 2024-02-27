@@ -10,7 +10,7 @@ plugins {
 group = project.properties["maven_group"]!!
 version = project.properties["mod_version"]!!
 base.archivesName.set(project.properties["archives_base_name"] as String)
-description = "TeamVoided Template"
+description = "CreativeWorks"
 val modid: String by project
 
 repositories {
@@ -19,13 +19,13 @@ repositories {
 
 modSettings {
     modId(modid)
-    modName("Team Voided Template")
+    modName("CreativeWorks")
 
-    entrypoint("main", "org.teamvoided.template.Template::commonInit")
-    entrypoint("client", "org.teamvoided.template.Template::clientInit")
-    entrypoint("fabric-datagen", "org.teamvoided.template.TemplateData")
-    mixinFile("template.mixins.json")
-//    accessWidener("template.accesswidener")
+    entrypoint("main", "org.teamvoided.creative_works.CreativeWorks::commonInit")
+    entrypoint("client", "org.teamvoided.creative_works.CreativeWorks::clientInit")
+//    entrypoint("fabric-datagen", "org.teamvoided.creative_works.CreativeWorksData")
+    mixinFile("creative_works.mixins.json")
+    accessWidener("creative_works.accesswidener")
 }
 
 //val player_data: String by project
@@ -35,6 +35,7 @@ dependencies {
 
 loom {
     runs {
+        /*
         create("DataGen") {
             client()
             ideConfigGenerated(true)
@@ -43,6 +44,7 @@ loom {
             vmArg("-Dfabric-api.datagen.modid=${modid}")
             runDir("build/datagen")
         }
+         */
 
         create("TestWorld") {
             client()
