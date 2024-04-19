@@ -5,6 +5,7 @@ import net.minecraft.item.Items
 import net.minecraft.util.Identifier
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.teamvoided.creative_works.util.DebugInfo
 
 @Suppress("unused")
 object CreativeWorks {
@@ -20,6 +21,8 @@ object CreativeWorks {
     fun clientInit() {
         log.info("Hello from Client")
         ClientWorld.MARKER_PARTICLE_ITEMS = setOf(Items.STRUCTURE_VOID) + ClientWorld.MARKER_PARTICLE_ITEMS
+
+        DebugInfo.init()
     }
 
     fun id(path: String) = Identifier(MODID, path)
