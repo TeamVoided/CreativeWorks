@@ -4,7 +4,7 @@
   "package": "org.teamvoided.creative_works.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "TestMix"
+    "RegistryEntryOrTagArgumentMixin"
   ],
   "client": [
     "GameRendererMixin"
