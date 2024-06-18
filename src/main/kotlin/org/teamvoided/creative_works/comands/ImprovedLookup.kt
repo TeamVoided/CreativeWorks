@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.util
+package org.teamvoided.creative_works.comands
 
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions

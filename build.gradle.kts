@@ -1,5 +1,6 @@
 @file:Suppress("PropertyName", "VariableNaming")
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -13,11 +14,8 @@ plugins {
 
 group = property("maven_group")!!
 version = property("mod_version")!!
-base.archivesName.set(property("archives_base_name") as String)
-description = property("description") as String
+base.archivesName.set(modSettings.modId())
 
-val modid: String by project
-val mod_name: String by project
 val modrinth_id: String? by project
 val curse_id: String? by project
 
@@ -28,14 +26,12 @@ repositories {
 }
 
 modSettings {
-    modId(modid)
-    modName(mod_name)
 
     entrypoint("main", "org.teamvoided.creative_works.CreativeWorks::commonInit")
     entrypoint("client", "org.teamvoided.creative_works.CreativeWorks::clientInit")
 //    entrypoint("fabric-datagen", "org.teamvoided.creative_works.CreativeWorksData")
-    mixinFile("$modid.mixins.json")
-    accessWidener("$modid.accesswidener")
+    mixinFile("${modId()}.mixins.json")
+    accessWidener("${modId()}.accesswidener")
 }
 
 
@@ -76,13 +72,21 @@ tasks {
         options.release.set(targetJavaVersion)
     }
 
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = targetJavaVersion.toString()
+    withType<KotlinCompile>().all {
+        compilerOptions.jvmTarget = JvmTarget.JVM_21
     }
 
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.toVersion(targetJavaVersion).toString()))
         withSourcesJar()
+    }
+    jar {
+        val valTaskNames = gradle.startParameter.taskNames
+        if (!valTaskNames.contains("runDataGen")) {
+            exclude("org/teamvoided/template/data/gen/*")
+        } else {
+            println("Running datagen for task ${valTaskNames.joinToString(" ")}")
+        }
     }
 }
 
