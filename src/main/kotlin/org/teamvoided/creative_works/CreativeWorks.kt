@@ -1,6 +1,7 @@
 package org.teamvoided.creative_works
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Items
@@ -30,30 +31,31 @@ object CreativeWorks {
         ClientWorld.MARKER_PARTICLE_ITEMS = setOf(Items.STRUCTURE_VOID) + ClientWorld.MARKER_PARTICLE_ITEMS
 
         ItemTooltipCallback.EVENT.register { stack, c, cfg, text ->
-            val itemTags = stack
-                .streamTags()
-                .sorted { a, b -> a.id.path.compareTo(b.id.path) }
-                .toList()
-
-
-            if (itemTags.isNotEmpty())
-                text.addLast(ltxt("ItemTags:").setColor(TAG_COLOR))
-
-            itemTags.forEach { tag ->
-                text.addLast(ltxt(" #${tag.id}").setColor(ENTRY_COLOR))
-            }
-            if (stack.item is BlockItem) {
-                val state = (stack.item as BlockItem).block.defaultState
-                val blockTags = state
+            if (Screen.hasShiftDown() && cfg.shouldShowAdvancedDetails()) {
+                val itemTags = stack
                     .streamTags()
                     .sorted { a, b -> a.id.path.compareTo(b.id.path) }
                     .toList()
 
-                if (blockTags.isNotEmpty())
-                    text.addLast(ltxt("BlockTags:").setColor(TAG_COLOR))
+                if (itemTags.isNotEmpty())
+                    text.addLast(ltxt("ItemTags:").setColor(TAG_COLOR))
 
-                blockTags.forEach { tag ->
+                itemTags.forEach { tag ->
                     text.addLast(ltxt(" #${tag.id}").setColor(ENTRY_COLOR))
+                }
+                if (stack.item is BlockItem) {
+                    val state = (stack.item as BlockItem).block.defaultState
+                    val blockTags = state
+                        .streamTags()
+                        .sorted { a, b -> a.id.path.compareTo(b.id.path) }
+                        .toList()
+
+                    if (blockTags.isNotEmpty())
+                        text.addLast(ltxt("BlockTags:").setColor(TAG_COLOR))
+
+                    blockTags.forEach { tag ->
+                        text.addLast(ltxt(" #${tag.id}").setColor(ENTRY_COLOR))
+                    }
                 }
             }
         }

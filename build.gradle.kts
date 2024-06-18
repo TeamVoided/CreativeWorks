@@ -80,18 +80,18 @@ tasks {
         toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.toVersion(targetJavaVersion).toString()))
         withSourcesJar()
     }
-    jar {
-        val valTaskNames = gradle.startParameter.taskNames
-        if (!valTaskNames.contains("runDataGen")) {
-            exclude("org/teamvoided/template/data/gen/*")
-        } else {
-            println("Running datagen for task ${valTaskNames.joinToString(" ")}")
-        }
-    }
+//    jar {
+//        val valTaskNames = gradle.startParameter.taskNames
+//        if (!valTaskNames.contains("runDataGen")) {
+//            exclude("org/teamvoided/template/data/gen/*")
+//        } else {
+//            println("Running datagen for task ${valTaskNames.joinToString(" ")}")
+//        }
+//    }
 }
 
 publishScript {
-    releaseRepository("TeamVoided", "https://maven.teamvoided.org/releases")
+    releaseRepository("TeamVoided", "https://maven.teamvoided.org/snapshots")
     publication(modSettings.modId(), false)
     publishSources(true)
 }
