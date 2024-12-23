@@ -9,6 +9,7 @@ import net.minecraft.block.entity.StructureBlockBlockEntity
 import net.minecraft.block.enums.StructureBlockMode
 import net.minecraft.command.argument.BlockPosArgumentType
 import net.minecraft.command.argument.ResourceKeyArgument
+import net.minecraft.command.argument.ResourceKeyArgument.*
 import net.minecraft.registry.Holder
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.server.command.CommandManager
@@ -24,24 +25,25 @@ import net.minecraft.util.math.Direction
 import net.minecraft.world.gen.feature.JigsawFeature
 import net.minecraft.world.gen.feature.StructureFeature
 import org.teamvoided.creative_works.CreativeWorks.log
+import org.teamvoided.creative_works.util.childOf
 
 object StructureCommand {
     private const val gap = 3
     private const val loopDepth = 64
 
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
-        val structNode = CommandManager.literal("structure").build()
-        dispatcher.root.addChild(structNode)
+        val struct = CommandManager.literal("structure").build()
+        dispatcher.root.addChild(struct)
 
-        val structNodeStructArg = argument("id", ResourceKeyArgument.key(RegistryKeys.STRUCTURE_FEATURE)).executes { struct(it, ResourceKeyArgument.getStructure(it, "id")) }.build()
-        structNode.addChild(structNodeStructArg)
+        val id = argument("id", key(RegistryKeys.STRUCTURE_FEATURE))
+            .executes { struct(it, getStructure(it, "id")) }
+            .build()
+            .childOf(struct)
 
-        val structNodePosArg = argument("pos", BlockPosArgumentType.blockPos()).executes {
-            struct(
-                it, ResourceKeyArgument.getStructure(it, "id"), BlockPosArgumentType.getBlockPos(it, "pos")
-            )
-        }.build()
-        structNodeStructArg.addChild(structNodePosArg)
+        argument("pos", BlockPosArgumentType.blockPos())
+            .executes { struct(it, getStructure(it, "id"), BlockPosArgumentType.getBlockPos(it, "pos")) }
+            .build()
+            .childOf(id)
     }
 
     private fun struct(
