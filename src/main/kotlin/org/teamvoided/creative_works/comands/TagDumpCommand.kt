@@ -16,8 +16,8 @@ import net.minecraft.text.Style
 import net.minecraft.text.Text
 import org.teamvoided.creative_works.CreativeWorks.ENTRY_COLOR
 import org.teamvoided.creative_works.CreativeWorks.TAG_COLOR
-import org.teamvoided.creative_works.CreativeWorks.ltxt
 import org.teamvoided.creative_works.util.childOf
+import org.teamvoided.creative_works.util.ltxt
 
 object TagDumpCommand {
 

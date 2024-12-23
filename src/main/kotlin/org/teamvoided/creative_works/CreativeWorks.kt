@@ -2,14 +2,12 @@ package org.teamvoided.creative_works
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.world.ClientWorld
 import net.minecraft.item.BlockItem
-import net.minecraft.item.Items
-import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.teamvoided.creative_works.init.CWCommands
+import org.teamvoided.creative_works.util.ltxt
 
 @Suppress("unused")
 object CreativeWorks {
@@ -56,8 +54,6 @@ object CreativeWorks {
             }
         }
     }
-
-    fun ltxt(s: String) = Text.literal(s)
 
 
     fun id(path: String) = Identifier.of(MODID, path)

@@ -2,22 +2,12 @@ package org.teamvoided.creative_works.comands
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.CommandBuildContext
-import net.minecraft.command.argument.RegistryEntryOrTagArgument
 import net.minecraft.entity.effect.StatusEffect
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
-import net.minecraft.item.Item
 import net.minecraft.registry.Holder
 import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.HoverEvent
-import net.minecraft.text.Style
-import net.minecraft.text.Text
-import org.teamvoided.creative_works.CreativeWorks.ENTRY_COLOR
-import org.teamvoided.creative_works.CreativeWorks.TAG_COLOR
-import org.teamvoided.creative_works.CreativeWorks.ltxt
 import org.teamvoided.creative_works.util.childOf
 
 object PotionCommand {
