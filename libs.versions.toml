@@ -1,12 +1,22 @@
 [versions]
 kotlin = "2.0.0"
-fabric-loom = "1.6-SNAPSHOT"
-iridium = "3.3.1"
+fabric-loom = "1.9-SNAPSHOT"
+iridium = "3.3.2"
 
 farrow = "1.0.0+arrow.1.2.4"
 
+# dev
+modmenu = "11.0.3"
+emi = "1.1.18+1.21.1"
+#dev-tools-unlocker = "1.0.0"
+
 [libraries]
-farrow = { module = "net.wiredtomato:farrow", version.ref = "farrow" }
+#farrow = { module = "net.wiredtomato:farrow", version.ref = "farrow" }
+
+# dev
+modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
+emi = { module = "dev.emi:emi-fabric", version.ref = "emi" }
+#dev-tools-unlocker = { module = "maven.modrinth:dev-tools-unlocker", version.ref = "dev-tools-unlocker" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

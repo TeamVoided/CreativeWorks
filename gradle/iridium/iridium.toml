@@ -4,13 +4,13 @@ githubRepo = "Teamvoided/CreativeWorks"
 discordServerInviteId = "KZ5Q364hEg"
 authors = [ "TheEnderCore", "DuskAutumnStorm" ]
 majorMinecraftVersion = "1.21"
-minecraftVersion = "1.21"
-fabricLoaderVersion = "0.15.11"
-fabricApiVersion = "0.100.1+1.21"
+minecraftVersion = "1.21.1"
+fabricLoaderVersion = "0.16.9"
+fabricApiVersion = "0.107.0+1.21.1"
 fabricLangKotlinVersion = "1.11.0+kotlin.2.0.0"
 license = "MIT"
 modules = [ ]
-modDescription = "Template Mod Description"
+modDescription = "Mod for mod devs and ppl who need to test things."
 # Modmenu badges, values can be: [ library, deprecated ]
 badges = [ ]
 disableKotlin = false
@@ -24,4 +24,4 @@ disableKotlin = false
     # MOJPARCH: Parchment layered on top of the official Mojang mappings
     # MOJYARN: Yarn layered on top of the official Mojang mappings
     type = "QUILT"
-    version = "1.21+build.2"
+    version = "1.21.1+build.3"

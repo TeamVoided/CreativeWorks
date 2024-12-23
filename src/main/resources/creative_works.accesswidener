@@ -1,4 +1,1 @@
 accessWidener v2 named
-
-mutable field net/minecraft/client/world/ClientWorld MARKER_PARTICLE_ITEMS Ljava/util/Set;
-accessible field net/minecraft/client/world/ClientWorld MARKER_PARTICLE_ITEMS Ljava/util/Set;

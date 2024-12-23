@@ -22,14 +22,10 @@ object CreativeWorks {
     val log: Logger = LoggerFactory.getLogger(CreativeWorks::class.simpleName)
 
     fun commonInit() {
-        log.info("Hello from Common")
         CWCommands.init()
     }
 
     fun clientInit() {
-        log.info("Hello from Client")
-        ClientWorld.MARKER_PARTICLE_ITEMS = setOf(Items.STRUCTURE_VOID) + ClientWorld.MARKER_PARTICLE_ITEMS
-
         ItemTooltipCallback.EVENT.register { stack, c, cfg, text ->
             if (Screen.hasShiftDown() && cfg.shouldShowAdvancedDetails()) {
                 val itemTags = stack

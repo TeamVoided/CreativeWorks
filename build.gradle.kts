@@ -37,7 +37,7 @@ modSettings {
 
 dependencies {
     modImplementation(fileTree("libs"))
-    modImplementation(libs.farrow)
+//    modImplementation(libs.farrow)
 
 }
 
@@ -59,6 +59,7 @@ loom {
             ideConfigGenerated(true)
             runDir("run")
             programArgs("--quickPlaySingleplayer", "test")
+            programArgs("--username", "TheEnderCore", "--uuid", "022e8cd8-4ecf-4416-b0e8-3bfba11498f0")
         }
     }
 }
