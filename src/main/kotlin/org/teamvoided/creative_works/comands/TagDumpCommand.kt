@@ -3,78 +3,82 @@ package org.teamvoided.creative_works.comands
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.command.CommandBuildContext
-import net.minecraft.command.CommandSource
-import net.minecraft.command.argument.RegistryEntryOrTagArgument
-import net.minecraft.item.Item
-import net.minecraft.registry.RegistryKeys
+import net.minecraft.command.argument.IdentifierArgumentType.getIdentifier
+import net.minecraft.command.argument.IdentifierArgumentType.identifier
+import net.minecraft.registry.DynamicRegistryManager
+import net.minecraft.registry.HolderSet.NamedSet
+import net.minecraft.registry.Registry
+import net.minecraft.registry.tag.TagKey
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
-import net.minecraft.text.Style
-import net.minecraft.text.Text
+import net.minecraft.util.Identifier
 import org.teamvoided.creative_works.CreativeWorks.ENTRY_COLOR
 import org.teamvoided.creative_works.CreativeWorks.TAG_COLOR
-import org.teamvoided.creative_works.util.childOf
-import org.teamvoided.creative_works.util.ltxt
+import org.teamvoided.creative_works.comands.ImprovedLookup.listSuggestions
+import org.teamvoided.creative_works.util.*
+import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 object TagDumpCommand {
-
-    val ClickToCopy = ltxt("Click to copy.")
+    val ClickToCopy = ltxt("Click to copy.").styled { it.withColor(TAG_COLOR) }
 
     @Suppress("UNUSED_VARIABLE")
-    fun init(dispatcher: CommandDispatcher<ServerCommandSource>, c: CommandBuildContext) {
-        val root = literal("tagdump").build()
-        dispatcher.root.addChild(root)
+    fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
+        val root = literal("tagdump").buildChildOf(dispatcher.root)
 
+        val reg = argument("registry", identifier()).suggests { cc, builder ->
+            val list = cc.source.world.registryManager.registries().map { it.value() }
+                .filter { it.tagKeys.toList().isNotEmpty() }.map { it.key.value.toString() }
+            builder.listSuggestions(list.toList())
+        }.build().childOf(root)
 
-        val item = argument("item", RegistryEntryOrTagArgument.create(c, RegistryKeys.ITEM))
-            .suggests { cc, builder ->
-                val lookup = c.getLookupOrThrow(RegistryKeys.ITEM)
-                CommandSource.suggestResource(lookup.streamTagKeys().map { it.id }, builder, "#")
-            }
-            .executes { itemTagDump(it, RegistryEntryOrTagArgument.getResult(it, "item", RegistryKeys.ITEM)) }
-            .build()
-            .childOf(root)
+        argument("entry", identifier()).suggests { cc, builder ->
+            val list = cc.source.world.registryManager.getRegistry(getIdentifier(cc, "registry"))
+                ?.tagKeys?.map { it.id.toString() }
+            builder.listSuggestions(list?.toList())
+        }.executes { tagDump(it, getIdentifier(it, "registry"), getIdentifier(it, "entry")) }.build().childOf(reg)
 
     }
 
-    private fun itemTagDump(
-        c: CommandContext<ServerCommandSource>,
-        result: RegistryEntryOrTagArgument.Result<Item>
-    ): Int {
-        val src = c.source
+    private fun tagDump(ctx: CommandContext<ServerCommandSource>, regId: Identifier?, entryId: Identifier?): Int {
+        if (regId == null || entryId == null) return 0
+        val src = ctx.source
 
-        val value = result.resultValue
-        if (value.left().isPresent) {
-            src.message("Result<single> : ${value.left().get()} ")
-        }
-        if (value.right().isPresent) {
-            val left = value.right().get()
-
-            src.sendSystemMessage(
-                ltxt("Tag : ${left.key.id}").setStyle(
-                    Style.EMPTY
-                        .withColor(TAG_COLOR)
-                        .withClickEvent(ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, left.key.id.toString()))
-                        .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, ClickToCopy))
-                )
-            )
-            left.forEach {
-                src.sendSystemMessage(
-                    ltxt(" - ${it.value()} ").setStyle(
-                        Style.EMPTY
-                            .withColor(ENTRY_COLOR)
-                            .withClickEvent(ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, it.value().toString()))
-                            .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, ClickToCopy))
-                    )
-                )
-            }
-        }
-
+        val reg = src.world.registryManager.getRegistry(regId) ?: return 0
+        val tag = reg.getTag(entryId)
+        if (tag.isPresent) printNamedSet(src, tag.get())
+        else src.sendSystemMessage(ltxt("Tag $entryId not found"))
         return 1
     }
 
-    fun ServerCommandSource.message(msg: String) = this.sendSystemMessage(Text.literal(msg))
+    fun <T> Registry<T>.getTag(id: Identifier): Optional<NamedSet<T>> = this.getTag(TagKey.of<T>(this.key, id))
+    fun DynamicRegistryManager.getRegistry(id: Identifier): Registry<out Any>? =
+        this.registries().filter { it.key().value == id }.findFirst().map { it.value() }.getOrNull()
+
+    fun <T : Any> printNamedSet(src: ServerCommandSource, set: NamedSet<T>) {
+        src.sendSystemMessage(
+            ltxt("Tag : ${set.key.id}").styled {
+                it.withColor(TAG_COLOR)
+                    .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, set.key.id.toString())
+                    .hoverEvent(HoverEvent.Action.SHOW_TEXT, ClickToCopy)
+            }
+        )
+        if (set.toList().isEmpty()) {
+            src.sendSystemMessage(ltxt(" Tag is empty!").styled { it.withColor(ENTRY_COLOR) })
+            return
+        }
+        set.map { it.key.get().value.toString() }.forEach { entry ->
+            src.sendSystemMessage(
+                ltxt(" - $entry ").styled { style ->
+                    style.withColor(ENTRY_COLOR)
+                        .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entry)
+                        .hoverEvent(
+                            HoverEvent.Action.SHOW_TEXT, ClickToCopy.copy().styled { it.withColor(ENTRY_COLOR) })
+                }
+            )
+        }
+    }
 }

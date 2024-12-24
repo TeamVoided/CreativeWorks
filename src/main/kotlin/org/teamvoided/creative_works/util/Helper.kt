@@ -6,6 +6,9 @@ import com.mojang.brigadier.tree.CommandNode
 import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
 import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.text.ClickEvent
+import net.minecraft.text.HoverEvent
+import net.minecraft.text.Style
 import net.minecraft.text.Text
 import java.awt.Color
 import kotlin.math.abs
@@ -20,6 +23,11 @@ fun <S> LiteralArgumentBuilder<S>.buildChildOf(node: CommandNode<S>): CommandNod
 }
 
 fun ltxt(s: String) = Text.literal(s)
+
+fun ServerCommandSource.message(msg: String) = this.sendSystemMessage(Text.literal(msg))
+
+fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
+fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))
 
 fun Color.toHSL(): Triple<Int, Int, Int> {
     // Convert RGB [0, 255] range to [0, 1]

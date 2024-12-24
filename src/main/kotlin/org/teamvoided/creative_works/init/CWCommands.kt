@@ -11,7 +11,7 @@ import org.teamvoided.creative_works.comands.network.CWNet.pack
 
 object CWCommands {
     fun init() = CommandRegistrationCallback.EVENT.register { dispatcher, c, env ->
-        TagDumpCommand.init(dispatcher, c)
+        TagDumpCommand.init(dispatcher)
         PotionCommand.init(dispatcher)
         StructureCommand.init(dispatcher)
         TrimCommand.init(dispatcher)
