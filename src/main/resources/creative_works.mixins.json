@@ -7,7 +7,8 @@
     "RegistryEntryOrTagArgumentMixin"
   ],
   "client": [
-    "MarkerParticleItemsAdderMixin"
+    "MarkerParticleItemsAdderMixin",
+    "ParticleManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

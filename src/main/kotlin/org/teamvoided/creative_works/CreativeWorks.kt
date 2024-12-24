@@ -6,6 +6,7 @@ import net.minecraft.item.BlockItem
 import net.minecraft.util.Identifier
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.teamvoided.creative_works.comands.network.CWNet
 import org.teamvoided.creative_works.init.CWCommands
 import org.teamvoided.creative_works.util.ltxt
 
@@ -20,10 +21,12 @@ object CreativeWorks {
     val log: Logger = LoggerFactory.getLogger(CreativeWorks::class.simpleName)
 
     fun commonInit() {
+        CWNet.init()
         CWCommands.init()
     }
 
     fun clientInit() {
+        CWNet.clientInit()
         ItemTooltipCallback.EVENT.register { stack, c, cfg, text ->
             if (Screen.hasShiftDown() && cfg.shouldShowAdvancedDetails()) {
                 val itemTags = stack

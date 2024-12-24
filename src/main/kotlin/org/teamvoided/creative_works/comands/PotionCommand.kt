@@ -11,9 +11,6 @@ import net.minecraft.server.command.ServerCommandSource
 import org.teamvoided.creative_works.util.buildChildOf
 
 object PotionCommand {
-
-
-    @Suppress("UNUSED_VARIABLE")
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
         val root = literal("pot").build()
         dispatcher.root.addChild(root)
