@@ -8,10 +8,9 @@ import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.block.entity.StructureBlockBlockEntity
 import net.minecraft.block.enums.StructureBlockMode
 import net.minecraft.command.argument.BlockPosArgumentType
-import net.minecraft.command.argument.ResourceKeyArgument
 import net.minecraft.command.argument.ResourceKeyArgument.*
 import net.minecraft.registry.Holder
-import net.minecraft.registry.RegistryKeys
+import net.minecraft.registry.RegistryKeys.*
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.ServerCommandSource
@@ -35,7 +34,7 @@ object StructureCommand {
         val struct = CommandManager.literal("structure").build()
         dispatcher.root.addChild(struct)
 
-        val id = argument("id", key(RegistryKeys.STRUCTURE_FEATURE))
+        val id = argument("id", key(STRUCTURE_FEATURE))
             .executes { struct(it, getStructure(it, "id")) }
             .build()
             .childOf(struct)
@@ -58,7 +57,7 @@ object StructureCommand {
         try {
             when (structure) {
                 is JigsawFeature -> {
-                    val poolReg = world.registryManager.get(RegistryKeys.STRUCTURE_POOL)
+                    val poolReg = world.registryManager.get(STRUCTURE_POOL)
                     val didntPlace = mutableSetOf<String>()
 
                     val idn = structure.startPool.key.get().value
