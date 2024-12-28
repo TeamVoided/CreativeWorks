@@ -2,8 +2,9 @@ package org.teamvoided.creative_works.init
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import org.teamvoided.creative_works.comands.*
-import org.teamvoided.creative_works.network.CWNet
-import org.teamvoided.creative_works.network.CWNet.pack
+import org.teamvoided.creative_works.comands.PacketCommand.createIdPacket
+import org.teamvoided.creative_works.network.CWNet.CLEAR_PARTICLES
+import org.teamvoided.creative_works.network.CWNet.CW_TEST
 
 object CWCommands {
     fun init() = CommandRegistrationCallback.EVENT.register { dispatcher, ctx, env ->
@@ -15,8 +16,7 @@ object CWCommands {
         KillItemCommand.init(dispatcher, ctx)
         RenameCommand.init(dispatcher)
 
-        PacketCommand.create(dispatcher, "clear_particles", CWNet.CLEAR_PARTICLES.pack())
-        PacketCommand.create(dispatcher, "cw_test", CWNet.CLEAR_PARTICLES.pack())
-
+        dispatcher.createIdPacket("clear_particles", CLEAR_PARTICLES)
+        dispatcher.createIdPacket("cw_test", CW_TEST)
     }
 }

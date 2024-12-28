@@ -23,8 +23,7 @@ object CWNet {
         ClientPlayNetworking.registerGlobalReceiver(ClientEventPacket.ID) { packet, c ->
             when (packet.id) {
                 CLEAR_PARTICLES -> MinecraftClient.getInstance().particleManager.clearParticles()
-                CW_TEST -> {
-                }
+                CW_TEST -> runTests(c)
                 else -> log.info("Unknown event id [{}]", packet.id)
             }
         }
