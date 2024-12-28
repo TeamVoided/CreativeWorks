@@ -13,6 +13,7 @@ object CWCommands {
         TrimCommand.init(dispatcher)
         StillCommand.init(dispatcher)
         KillItemCommand.init(dispatcher, ctx)
+        RenameCommand.init(dispatcher)
 
         PacketCommand.create(dispatcher, "clear_particles", CWNet.CLEAR_PARTICLES.pack())
         PacketCommand.create(dispatcher, "cw_test", CWNet.CLEAR_PARTICLES.pack())
