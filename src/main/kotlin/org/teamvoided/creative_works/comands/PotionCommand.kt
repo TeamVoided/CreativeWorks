@@ -19,6 +19,7 @@ object PotionCommand {
         literal("st").pot(STRENGTH).buildChildOf(root)
         literal("rs").pot(RESISTANCE).buildChildOf(root)
         literal("sa").pot(SATURATION).buildChildOf(root)
+        literal("hs").pot(HASTE).buildChildOf(root)
 
     }
 
