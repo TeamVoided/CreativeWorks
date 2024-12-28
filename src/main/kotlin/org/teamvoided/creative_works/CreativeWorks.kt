@@ -11,8 +11,8 @@ import org.teamvoided.creative_works.network.CWNet
 object CreativeWorks {
     const val MODID = "creative_works"
 
-    const val TAG_COLOR = 0xDDDDDD
-    const val ENTRY_COLOR = 0xAAAAAA
+    const val MAIN_COLOR = 0xDDDDDD
+    const val SECONDARY_COLOR = 0xAAAAAA
     const val WARNING_COLOR = 0xeb6666
 
     @JvmField

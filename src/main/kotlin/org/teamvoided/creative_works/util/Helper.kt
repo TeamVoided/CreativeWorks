@@ -3,14 +3,23 @@ package org.teamvoided.creative_works.util
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
+import net.minecraft.registry.DynamicRegistryManager
+import net.minecraft.registry.HolderSet.NamedSet
 import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.tag.TagKey
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
 import net.minecraft.text.Style
 import net.minecraft.text.Text
+import net.minecraft.util.Identifier
+import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
+import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
+import org.teamvoided.creative_works.comands.TagDumpCommand.ctc
 import java.awt.Color
+import java.util.*
+import kotlin.jvm.optionals.getOrNull
 import kotlin.math.abs
 
 fun <S> CommandNode<S>.childOf(node: CommandNode<S>): CommandNode<S> {
@@ -29,6 +38,30 @@ fun ServerCommandSource.error(msg: String) = this.sendError(Text.literal(msg))
 
 fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
 fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))
+
+fun ServerCommandSource.sendNamedList(name: String, nameCopy: String, emptyMessage: String, set: List<String>) {
+    this.sendSystemMessage(
+        ltxt(name).styled {
+            it.withColor(MAIN_COLOR)
+                .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, nameCopy)
+                .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(nameCopy))
+        }
+    )
+    if (set.toList().isEmpty()) {
+        this.sendSystemMessage(ltxt(" $emptyMessage").styled { it.withColor(SECONDARY_COLOR) })
+        return
+    }
+    set.forEach { entry ->
+        this.sendSystemMessage(
+            ltxt(" - $entry ").styled { style ->
+                style.withColor(SECONDARY_COLOR)
+                    .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entry)
+                    .hoverEvent(
+                        HoverEvent.Action.SHOW_TEXT, ctc(entry).styled { it.withColor(SECONDARY_COLOR) })
+            }
+        )
+    }
+}
 
 fun Color.toHSL(): Triple<Int, Int, Int> {
     // Convert RGB [0, 255] range to [0, 1]
@@ -67,5 +100,13 @@ fun Color.toHSL(): Triple<Int, Int, Int> {
     return Triple(h, s, l)
 }
 
+fun sortTags(a: TagKey<out Any>, b: TagKey<out Any>) = sortIdentifier(a.id, b.id)
+fun sortIdentifier(a: Identifier, b: Identifier) = a.path.compareTo(b.path)
+
 fun <T, R : Registry<T>> CommandContext<ServerCommandSource>.getRegistry(key: RegistryKey<R>): Registry<T> =
     this.source.world.registryManager.get(key)
+
+fun DynamicRegistryManager.getRegistry(id: Identifier): Registry<out Any>? =
+    this.getOptional(RegistryKey.ofRegistry<Any>(id)).getOrNull()
+
+fun <T> Registry<T>.getTag(id: Identifier): Optional<NamedSet<T>> = this.getTag(TagKey.of<T>(this.key, id))
