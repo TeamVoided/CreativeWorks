@@ -25,6 +25,7 @@ repositories {
     maven("https://api.modrinth.com/maven")
     maven("https://maven.terraformersmc.com/") { name = "TerraformersMC" }
     maven("https://maven.fzzyhmstrs.me/") { name = "FzzyMaven" }
+//    maven("https://repo.alignedcookie88.com/repository/maven-public/") { name = "AlignedCookie88" }
     mavenCentral()
 }
 
@@ -43,6 +44,7 @@ dependencies {
 //    modImplementation(libs.farrow)
     modImplementation(libs.modmenu)
     modImplementation(libs.emi)
+    modImplementation(libs.imguimc)
 
 }
 

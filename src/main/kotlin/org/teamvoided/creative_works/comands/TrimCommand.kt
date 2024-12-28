@@ -173,10 +173,8 @@ object TrimCommand {
     }
 
 
-
     private val ARMOR_TYPES = Util.make(Maps.newHashMap<Pair<Holder<ArmorMaterial>, EquipmentSlot>, Item>()) { map ->
-        Registries.ITEM.filterIsInstance<ArmorItem>().filter { it.armorSlot.supportsTrim() }.forEach {
-            map[Pair.of(it.material, it.preferredSlot)] = it
-        }
+        Registries.ITEM.filterIsInstance<ArmorItem>().filter { it.armorSlot.supportsTrim() }
+            .forEach { map[Pair.of(it.material, it.preferredSlot)] = it }
     }
 }

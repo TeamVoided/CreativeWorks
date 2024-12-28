@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.comands.network
+package org.teamvoided.creative_works.network
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
@@ -12,6 +12,7 @@ import org.teamvoided.creative_works.util.clearParticles
 
 object CWNet {
     const val CLEAR_PARTICLES = 0
+    const val CW_TEST = 1
     fun Int.pack() = ClientEventPacket(this)
 
     fun init() {
@@ -22,6 +23,8 @@ object CWNet {
         ClientPlayNetworking.registerGlobalReceiver(ClientEventPacket.ID) { packet, c ->
             when (packet.id) {
                 CLEAR_PARTICLES -> MinecraftClient.getInstance().particleManager.clearParticles()
+                CW_TEST -> {
+                }
                 else -> log.info("Unknown event id [{}]", packet.id)
             }
         }

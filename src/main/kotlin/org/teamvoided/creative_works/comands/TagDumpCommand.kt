@@ -2,12 +2,12 @@ package org.teamvoided.creative_works.comands
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.CommandBuildContext
 import net.minecraft.command.argument.IdentifierArgumentType.getIdentifier
 import net.minecraft.command.argument.IdentifierArgumentType.identifier
 import net.minecraft.registry.DynamicRegistryManager
 import net.minecraft.registry.HolderSet.NamedSet
 import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
 import net.minecraft.registry.tag.TagKey
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.CommandManager.literal
@@ -23,7 +23,7 @@ import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 object TagDumpCommand {
-    val ClickToCopy = ltxt("Click to copy.").styled { it.withColor(TAG_COLOR) }
+    fun ctc(text: String) = ltxt("Click to copy: \"$text\"").styled { it.withColor(TAG_COLOR) }
 
     @Suppress("UNUSED_VARIABLE")
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
@@ -56,14 +56,15 @@ object TagDumpCommand {
 
     fun <T> Registry<T>.getTag(id: Identifier): Optional<NamedSet<T>> = this.getTag(TagKey.of<T>(this.key, id))
     fun DynamicRegistryManager.getRegistry(id: Identifier): Registry<out Any>? =
-        this.registries().filter { it.key().value == id }.findFirst().map { it.value() }.getOrNull()
+        this.getOptional(RegistryKey.ofRegistry<Any>(id)).getOrNull()
 
     fun <T : Any> printNamedSet(src: ServerCommandSource, set: NamedSet<T>) {
+        val name = set.key.id.toString()
         src.sendSystemMessage(
-            ltxt("Tag : ${set.key.id}").styled {
+            ltxt("Tag : $name").styled {
                 it.withColor(TAG_COLOR)
-                    .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, set.key.id.toString())
-                    .hoverEvent(HoverEvent.Action.SHOW_TEXT, ClickToCopy)
+                    .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, name)
+                    .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(name))
             }
         )
         if (set.toList().isEmpty()) {
@@ -76,7 +77,7 @@ object TagDumpCommand {
                     style.withColor(ENTRY_COLOR)
                         .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entry)
                         .hoverEvent(
-                            HoverEvent.Action.SHOW_TEXT, ClickToCopy.copy().styled { it.withColor(ENTRY_COLOR) })
+                            HoverEvent.Action.SHOW_TEXT, ctc(entry).styled { it.withColor(ENTRY_COLOR) })
                 }
             )
         }
