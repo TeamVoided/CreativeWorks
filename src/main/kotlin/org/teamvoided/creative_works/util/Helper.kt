@@ -1,5 +1,6 @@
 package org.teamvoided.creative_works.util
 
+import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
@@ -18,13 +19,14 @@ fun <S> CommandNode<S>.childOf(node: CommandNode<S>): CommandNode<S> {
     return this
 }
 
-fun <S> LiteralArgumentBuilder<S>.buildChildOf(node: CommandNode<S>): CommandNode<S> {
+fun <S, Q : ArgumentBuilder<S, Q>> ArgumentBuilder<S, Q>.buildChildOf(node: CommandNode<S>): CommandNode<S> {
     return this.build().childOf(node)
 }
 
 fun ltxt(s: String) = Text.literal(s)
 
 fun ServerCommandSource.message(msg: String) = this.sendSystemMessage(Text.literal(msg))
+fun ServerCommandSource.error(msg: String) = this.sendError(Text.literal(msg))
 
 fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
 fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))

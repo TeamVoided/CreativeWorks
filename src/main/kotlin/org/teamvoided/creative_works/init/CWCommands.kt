@@ -6,12 +6,13 @@ import org.teamvoided.creative_works.network.CWNet
 import org.teamvoided.creative_works.network.CWNet.pack
 
 object CWCommands {
-    fun init() = CommandRegistrationCallback.EVENT.register { dispatcher, c, env ->
+    fun init() = CommandRegistrationCallback.EVENT.register { dispatcher, ctx, env ->
         TagDumpCommand.init(dispatcher)
         PotionCommand.init(dispatcher)
         StructureCommand.init(dispatcher)
         TrimCommand.init(dispatcher)
         StillCommand.init(dispatcher)
+        KillItemCommand.init(dispatcher, ctx)
 
         PacketCommand.create(dispatcher, "clear_particles", CWNet.CLEAR_PARTICLES.pack())
         PacketCommand.create(dispatcher, "cw_test", CWNet.CLEAR_PARTICLES.pack())

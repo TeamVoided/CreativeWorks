@@ -14,6 +14,7 @@ import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.HoverEvent
+import net.minecraft.text.MutableText
 import net.minecraft.util.Identifier
 import org.teamvoided.creative_works.CreativeWorks.ENTRY_COLOR
 import org.teamvoided.creative_works.CreativeWorks.TAG_COLOR
@@ -23,9 +24,8 @@ import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 object TagDumpCommand {
-    fun ctc(text: String) = ltxt("Click to copy: \"$text\"").styled { it.withColor(TAG_COLOR) }
+    private fun ctc(text: String): MutableText = ltxt("Click to copy: \"$text\"").styled { it.withColor(TAG_COLOR) }
 
-    @Suppress("UNUSED_VARIABLE")
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
         val root = literal("tagdump").buildChildOf(dispatcher.root)
 
