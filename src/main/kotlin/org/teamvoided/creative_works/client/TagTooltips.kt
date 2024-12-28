@@ -2,10 +2,14 @@ package org.teamvoided.creative_works.client
 
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.component.DataComponentTypes
 import net.minecraft.item.BlockItem
 import net.minecraft.item.SpawnEggItem
+import net.minecraft.registry.tag.TagKey
+import net.minecraft.text.Text
 import org.teamvoided.creative_works.CreativeWorks.ENTRY_COLOR
 import org.teamvoided.creative_works.CreativeWorks.TAG_COLOR
+import org.teamvoided.creative_works.CreativeWorks.WARNING_COLOR
 import org.teamvoided.creative_works.util.ltxt
 
 object TagTooltips {
@@ -16,41 +20,49 @@ object TagTooltips {
                 .sorted { a, b -> a.id.path.compareTo(b.id.path) }
                 .toList()
 
-            if (itemTags.isNotEmpty())
-                text.addLast(ltxt("ItemTags:").setColor(TAG_COLOR))
+            text.listTags("Item", itemTags)
 
-            itemTags.forEach { tag ->
-                text.addLast(ltxt(" #${tag.id}").setColor(ENTRY_COLOR))
-            }
             val item = stack.item
+
             if (item is BlockItem) {
-                val state = item.block.defaultState
-                val blockTags = state
+                val blockTags = item.block.defaultState
                     .streamTags()
                     .sorted { a, b -> a.id.path.compareTo(b.id.path) }
                     .toList()
-
-                if (blockTags.isNotEmpty())
-                    text.addLast(ltxt("BlockTags:").setColor(TAG_COLOR))
-
-                blockTags.forEach { tag ->
-                    text.addLast(ltxt(" #${tag.id}").setColor(ENTRY_COLOR))
-                }
+                text.listTags("Block", blockTags)
             }
-            if (item is SpawnEggItem){
-                val entity = item.getEntityType(stack)
-                val entityTags = entity.builtInRegistryHolder
+
+            if (item is SpawnEggItem) {
+                val entityTags = item.getEntityType(stack).builtInRegistryHolder
                     .streamTags()
                     .sorted { a, b -> a.id.path.compareTo(b.id.path) }
                     .toList()
 
-                if (entityTags.isNotEmpty())
-                    text.addLast(ltxt("EntityTags:").setColor(TAG_COLOR))
+                text.listTags("Entity", entityTags)
+            }
 
-                entityTags.forEach { tag ->
-                    text.addLast(ltxt(" #${tag.id}").setColor(ENTRY_COLOR))
+            val enchantmentsComponent = stack.get(DataComponentTypes.STORED_ENCHANTMENTS)
+            if (enchantmentsComponent != null) {
+                val enchantments = enchantmentsComponent.enchantments
+                if (enchantments.size > 1)
+                    text.addLast(ltxt("Has more then 1 stored enchantment").setColor(WARNING_COLOR))
+                else if (enchantments.isEmpty())
+                    text.addLast(ltxt("No stored enchantments").setColor(WARNING_COLOR))
+                else {
+                    val enchantmentTags = enchantments.first()
+                        .streamTags()
+                        .sorted { a, b -> a.id.path.compareTo(b.id.path) }
+                        .toList()
+
+                    text.listTags("Enchantment", enchantmentTags)
                 }
+
             }
         }
     }
+
+    fun <T : Any> MutableList<Text>.listTags(name: String, tags: MutableList<TagKey<T>>) = if (tags.isNotEmpty()) {
+        this.addLast(ltxt("$name Tags:").setColor(TAG_COLOR))
+        tags.forEach { tag -> this.addLast(ltxt(" #${tag.id}").setColor(ENTRY_COLOR)) }
+    } else Unit
 }

@@ -13,6 +13,7 @@ object CreativeWorks {
 
     const val TAG_COLOR = 0xDDDDDD
     const val ENTRY_COLOR = 0xAAAAAA
+    const val WARNING_COLOR = 0xeb6666
 
     @JvmField
     val log: Logger = LoggerFactory.getLogger(CreativeWorks::class.simpleName)
