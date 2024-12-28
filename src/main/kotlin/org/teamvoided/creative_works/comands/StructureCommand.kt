@@ -8,9 +8,11 @@ import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.block.entity.StructureBlockBlockEntity
 import net.minecraft.block.enums.StructureBlockMode
 import net.minecraft.command.argument.BlockPosArgumentType
-import net.minecraft.command.argument.ResourceKeyArgument.*
+import net.minecraft.command.argument.ResourceKeyArgument.getStructure
+import net.minecraft.command.argument.ResourceKeyArgument.key
 import net.minecraft.registry.Holder
-import net.minecraft.registry.RegistryKeys.*
+import net.minecraft.registry.RegistryKeys.STRUCTURE_FEATURE
+import net.minecraft.registry.RegistryKeys.STRUCTURE_POOL
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.ServerCommandSource

@@ -18,7 +18,7 @@ import net.minecraft.text.MutableText
 import net.minecraft.util.Identifier
 import org.teamvoided.creative_works.CreativeWorks.ENTRY_COLOR
 import org.teamvoided.creative_works.CreativeWorks.TAG_COLOR
-import org.teamvoided.creative_works.comands.ImprovedLookup.listSuggestions
+import org.teamvoided.creative_works.comands.misc.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.*
 import java.util.*
 import kotlin.jvm.optionals.getOrNull

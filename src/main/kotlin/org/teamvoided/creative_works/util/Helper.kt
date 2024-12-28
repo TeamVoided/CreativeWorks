@@ -1,7 +1,6 @@
 package org.teamvoided.creative_works.util
 
 import com.mojang.brigadier.builder.ArgumentBuilder
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
 import net.minecraft.registry.Registry

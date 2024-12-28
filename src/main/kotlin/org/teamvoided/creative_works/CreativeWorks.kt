@@ -4,8 +4,8 @@ import net.minecraft.util.Identifier
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.teamvoided.creative_works.client.TagTooltips
-import org.teamvoided.creative_works.network.CWNet
 import org.teamvoided.creative_works.init.CWCommands
+import org.teamvoided.creative_works.network.CWNet
 
 @Suppress("unused")
 object CreativeWorks {
