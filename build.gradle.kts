@@ -66,7 +66,7 @@ loom {
             ideConfigGenerated(true)
             runDir("run")
             programArgs("--quickPlaySingleplayer", "test")
-            programArgs("--username", "TheEnderCore", "--uuid", "022e8cd8-4ecf-4416-b0e8-3bfba11498f0")
+            programArgs("--username", "Endoside", "--uuid", "a5fc6689-7d19-4c39-a04e-95e4ec460298")
         }
     }
 }
