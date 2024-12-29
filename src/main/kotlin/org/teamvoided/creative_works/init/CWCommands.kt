@@ -16,6 +16,7 @@ object CWCommands {
         KillItemCommand.init(dispatcher, ctx)
         RenameCommand.init(dispatcher)
         FindTagsCommand.init(dispatcher)
+        HandCommand.init(dispatcher)
 
         dispatcher.createIdPacket("clear_particles", CLEAR_PARTICLES)
         dispatcher.createIdPacket("cw_test", CW_TEST)
