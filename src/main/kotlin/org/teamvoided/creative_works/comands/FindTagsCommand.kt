@@ -35,7 +35,7 @@ object FindTagsCommand {
         val player = src.player ?: return 0
 
         var id = entryId
-        val tags: MutableList<TagKey<out Any>> = if (entryId == null) {
+        val tags = if (entryId == null) {
             val stack = player.mainHandStack
             if (stack.isEmpty) {
                 src.error("You are not holding an item!")
@@ -44,8 +44,7 @@ object FindTagsCommand {
             id = Registries.ITEM.getId(stack.item)
             stack.streamTags()
                 .sorted(::sortTags)
-                .toList() as MutableList<TagKey<out Any>>
-
+                .toList()
         } else {
             val entry = regsitry.get(entryId)
             if (entry == null) {
