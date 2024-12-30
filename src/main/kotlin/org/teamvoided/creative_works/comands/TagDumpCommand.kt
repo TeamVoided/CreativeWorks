@@ -2,18 +2,16 @@ package org.teamvoided.creative_works.comands
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.argument.IdentifierArgumentType.getIdentifier
-import net.minecraft.command.argument.IdentifierArgumentType.identifier
 import net.minecraft.registry.Registry
-import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.MutableText
 import net.minecraft.util.Identifier
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
+import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegistry
+import org.teamvoided.creative_works.comands.args.RegistryArgumentType.regTagEntryArg
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.registryTagArg
-import org.teamvoided.creative_works.comands.misc.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
 import org.teamvoided.creative_works.util.getTag
 import org.teamvoided.creative_works.util.ltxt
@@ -25,11 +23,7 @@ object TagDumpCommand {
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
         val root = literal("tagdump").buildChildOf(dispatcher.root)
         val reg = registryTagArg("registry").buildChildOf(root)
-
-        argument("entry", identifier()).suggests { ctx, builder ->
-            builder.listSuggestions(getRegistry(ctx, "registry").tagKeys.map { it.id.toString() }.toList())
-        }.executes { tagDump(it, getRegistry(it, "registry"), getIdentifier(it, "entry")) }.buildChildOf(reg)
-
+        regTagEntryArg().executes { tagDump(it, getRegistry(it), getEntry(it)) }.buildChildOf(reg)
     }
 
     private fun tagDump(ctx: CommandContext<ServerCommandSource>, reg: Registry<out Any>?, entryId: Identifier?): Int {

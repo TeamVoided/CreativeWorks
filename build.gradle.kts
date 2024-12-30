@@ -41,11 +41,12 @@ modSettings {
 
 dependencies {
     modImplementation(fileTree("libs"))
+    modImplementation(libs.imguimc)
+    include(libs.imguimc)
+
 //    modImplementation(libs.farrow)
     modImplementation(libs.modmenu)
     modImplementation(libs.emi)
-    modImplementation(libs.imguimc)
-
 }
 
 loom {
