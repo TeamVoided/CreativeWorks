@@ -3,6 +3,7 @@ package org.teamvoided.creative_works.util
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.registry.DynamicRegistryManager
 import net.minecraft.registry.HolderSet.NamedSet
 import net.minecraft.registry.Registry
@@ -17,6 +18,8 @@ import net.minecraft.util.Identifier
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.TagDumpCommand.ctc
+import org.teamvoided.creative_works.comands.TagDumpCommand.cto
+import org.teamvoided.creative_works.network.CWNet
 import java.awt.Color
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
@@ -35,6 +38,20 @@ fun ltxt(s: String) = Text.literal(s)
 
 fun ServerCommandSource.message(msg: String) = this.sendSystemMessage(Text.literal(msg))
 fun ServerCommandSource.error(msg: String) = this.sendError(Text.literal(msg))
+
+fun ServerCommandSource.copyMessage(msg: String, copy: String, copyText: String = copy) =
+    this.sendSystemMessage(Text.literal(msg).styled {
+        it.withColor(SECONDARY_COLOR).clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, copy)
+            .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(copyText).styled { it.withColor(SECONDARY_COLOR) })
+    })
+
+fun ServerCommandSource.openMessage(msg: String, folder: String, openText: String = "") = ServerPlayNetworking.send(
+    player, CWNet.OpenFileMessagePacket(Text.literal(msg).styled {
+        it.withColor(SECONDARY_COLOR).clickEvent(ClickEvent.Action.OPEN_FILE, folder)
+            .hoverEvent(HoverEvent.Action.SHOW_TEXT, cto(openText).styled { it.withColor(SECONDARY_COLOR) })
+    })
+)
+
 
 fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
 fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))

@@ -19,6 +19,8 @@ import org.teamvoided.creative_works.util.sendNamedList
 
 object TagDumpCommand {
     fun ctc(text: String): MutableText = ltxt("Click to copy: \"$text\"").styled { it.withColor(MAIN_COLOR) }
+    fun cto(text: String): MutableText = ltxt("Click to open: \"$text\"").styled { it.withColor(MAIN_COLOR) }
+
 
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
         val root = literal("tagdump").buildChildOf(dispatcher.root)
