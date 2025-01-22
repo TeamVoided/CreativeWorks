@@ -5,6 +5,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.teamvoided.creative_works.client.TagTooltips
 import org.teamvoided.creative_works.init.CWCommands
+import org.teamvoided.creative_works.init.CWWorldTypes
 import org.teamvoided.creative_works.network.CWNet
 
 @Suppress("unused")
@@ -19,6 +20,7 @@ object CreativeWorks {
     val log: Logger = LoggerFactory.getLogger(CreativeWorks::class.simpleName)
 
     fun commonInit() {
+        CWWorldTypes.init()
         CWNet.init()
         CWCommands.init()
     }
