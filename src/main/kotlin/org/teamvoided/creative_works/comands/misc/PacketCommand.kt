@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.comands
+package org.teamvoided.creative_works.comands.misc
 
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
