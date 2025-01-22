@@ -16,6 +16,7 @@ import org.teamvoided.creative_works.util.clearParticles
 object CWNet {
     const val CLEAR_PARTICLES = 0
     const val CW_TEST = 1
+    const val IMGUI_DEBUG = 2
     fun Int.pack() = ClientEventPacket(this)
 
     fun init() {
@@ -28,6 +29,7 @@ object CWNet {
             when (packet.id) {
                 CLEAR_PARTICLES -> MinecraftClient.getInstance().particleManager.clearParticles()
                 CW_TEST -> runTests(c)
+                IMGUI_DEBUG -> imguiDebug()
                 else -> log.info("Unknown event id [{}]", packet.id)
             }
         }
