@@ -33,7 +33,7 @@ modSettings {
 
     entrypoint("main", "org.teamvoided.creative_works.CreativeWorks::commonInit")
     entrypoint("client", "org.teamvoided.creative_works.CreativeWorks::clientInit")
-//    entrypoint("fabric-datagen", "org.teamvoided.creative_works.CreativeWorksData")
+    entrypoint("fabric-datagen", "org.teamvoided.creative_works.data.gen.CreativeWorksData")
     mixinFile("${modId()}.mixins.json")
     accessWidener("${modId()}.accesswidener")
 }
@@ -51,16 +51,14 @@ dependencies {
 
 loom {
     runs {
-        /*
         create("DataGen") {
             client()
             ideConfigGenerated(true)
             vmArg("-Dfabric-api.datagen")
             vmArg("-Dfabric-api.datagen.output-dir=${file("src/main/generated")}")
-            vmArg("-Dfabric-api.datagen.modid=${modid}")
+            vmArg("-Dfabric-api.datagen.modid=${modSettings.modId()}")
             runDir("build/datagen")
         }
-         */
 
         create("TestWorld") {
             client()
