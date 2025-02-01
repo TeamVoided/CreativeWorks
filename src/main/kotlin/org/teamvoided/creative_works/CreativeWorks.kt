@@ -3,6 +3,7 @@ package org.teamvoided.creative_works
 import net.minecraft.util.Identifier
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.teamvoided.creative_works.client.DebugWidgetRegistry
 import org.teamvoided.creative_works.client.TagTooltips
 import org.teamvoided.creative_works.init.CWCommands
 import org.teamvoided.creative_works.init.CWWorldTypes
@@ -28,6 +29,8 @@ object CreativeWorks {
     fun clientInit() {
         CWNet.clientInit()
         TagTooltips.renderTagTooltip()
+        DebugWidgetRegistry.init()
+//        TestRenderer.init()
     }
 
 
