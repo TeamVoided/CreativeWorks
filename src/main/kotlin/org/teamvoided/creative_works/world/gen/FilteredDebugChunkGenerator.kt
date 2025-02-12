@@ -37,7 +37,6 @@ class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerat
 
         X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size.toFloat()))
         Z_SIDE_LENGTH = MathHelper.ceil(BLOCK_STATES.size.toFloat() / X_SIDE_LENGTH.toFloat())
-        println("Block States : $BLOCK_STATES")
     }
 
     companion object {
