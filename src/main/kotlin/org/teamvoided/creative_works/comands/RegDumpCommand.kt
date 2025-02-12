@@ -34,7 +34,7 @@ import java.io.File
 
 object RegDumpCommand {
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
-        val root = literal("regdump").buildChildOf(dispatcher.root)
+        val root = literal("regdump").executes(::dumpAll).buildChildOf(dispatcher.root)
         val registry = registryArg().executes { regdump(it, getRegistry(it)) }.buildChildOf(root)
         regEntryArg().executes { regdump(it, getRegistry(it), getEntry(it)) }.buildChildOf(registry)
 
@@ -52,11 +52,18 @@ object RegDumpCommand {
     }
 
     val gson = GsonBuilder().setPrettyPrinting().create()
-
     val REG_LIST = (getDynamicRegistries() + DIMENSION_REGISTRIES).associate { it.key to it.elementCodec }
 
+    fun dumpAll(ctx: CommandContext<ServerCommandSource>): Int {
+        val src = ctx.source ?: return 0
+        val dynReg = src.world?.registryManager ?: return 0
+        dynReg.registries().forEach { regdump(ctx, it.value, null, true) }
+        return 1
+    }
+
     fun regdump(
-        ctx: CommandContext<ServerCommandSource>, registry: Registry<out Any>, entryId: Identifier? = null
+        ctx: CommandContext<ServerCommandSource>, registry: Registry<out Any>, entryId: Identifier? = null,
+        silent: Boolean = false
     ): Int {
         val src = ctx.source ?: return 0
         val world = src.world ?: return 0
@@ -78,7 +85,7 @@ object RegDumpCommand {
         if (codec == null) {
             val obj = JsonArray()
             registry.entries.forEach { obj.add(it.key.value.toString()) }
-            with(world.dumpFolder(id.fileFormat()).resolve("${id.fileFormat()}.json")) {
+            with(world.dumpFolder(id.namespace, false).resolve("${id.fileFormatOLD()}.json")) {
                 parentFile.mkdirs()
                 createNewFile()
                 writeText(gson.toJson(obj))
@@ -87,7 +94,7 @@ object RegDumpCommand {
             return 1
         }
         val list = registry.entries.associate { it.key.value to codec.encodeStart(ops, it.value) }
-        src.dumpResources(world, id, list)
+        src.dumpResources(world, id, list, true, silent)
 
         return 1
     }
@@ -127,7 +134,11 @@ object RegDumpCommand {
     }
 
     fun ServerCommandSource.dumpResources(
-        world: ServerWorld, name: Identifier, list: Map<Identifier, DataResult<JsonElement>>, toFile: Boolean = true
+        world: ServerWorld,
+        name: Identifier,
+        list: Map<Identifier, DataResult<JsonElement>>,
+        toFile: Boolean = true,
+        silent: Boolean = false
     ) {
         val folder = world.dumpFolder(name.fileFormat(), !toFile)
         list.forEach { (name, data) ->
@@ -139,7 +150,8 @@ object RegDumpCommand {
                 this.error(" Error while encoding $output")
             }.ifSuccess {
                 output = gson.toJson(it)
-                this.sendSystemMessage(Text.literal(" $output").styled { s -> s.withColor(SECONDARY_COLOR) })
+                if (!silent) this.sendSystemMessage(
+                    Text.literal(" $output").styled { s -> s.withColor(SECONDARY_COLOR) })
             }
             if (toFile) {
                 file.parentFile.mkdirs()
@@ -160,7 +172,9 @@ object RegDumpCommand {
         return regFolder
     }
 
-    fun Identifier?.fileFormat(): String = this?.toString()?.replace(":", "-") ?: "null"
+    fun Identifier?.fileFormat(): String = this?.toString()?.replace(":", "/") ?: "null"
+    fun Identifier?.fileFormatOLD(): String =
+        this?.toString()?.replace("minecraft:", "")?.replace(":", "-") ?: "null"
 
 }
 
