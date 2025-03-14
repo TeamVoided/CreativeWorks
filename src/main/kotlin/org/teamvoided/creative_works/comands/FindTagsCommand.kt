@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext
 import net.minecraft.registry.DefaultedRegistry
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
+import net.minecraft.registry.tag.TagKey
 import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.util.Identifier
@@ -56,7 +57,10 @@ object FindTagsCommand {
             regsitry.tags
                 .filter { it.second.map { hld -> hld.value() }.contains(entry) }
                 .map { it.first }
-                .sorted(::sortTags)
+                .sorted { first, second ->
+                    @Suppress("UNCHECKED_CAST")
+                    sortTags(first as TagKey<Any>, second as TagKey<Any>)
+                }
                 .toList()
         }
         src.sendNamedList("Entry : $id", id.toString(), "Entry has no tags!", tags.map { it.id.toString() })

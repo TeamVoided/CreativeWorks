@@ -113,7 +113,7 @@ fun Color.toHSL(): Triple<Int, Int, Int> {
     return Triple(h, s, l)
 }
 
-fun sortTags(a: TagKey<out Any>, b: TagKey<out Any>) = sortIdentifier(a.id, b.id)
+fun <T> sortTags(a: TagKey<T>, b: TagKey<T>) = sortIdentifier(a.id, b.id)
 fun sortIdentifier(a: Identifier, b: Identifier) = a.path.compareTo(b.path)
 
 fun <T, R : Registry<T>> CommandContext<ServerCommandSource>.getRegistry(key: RegistryKey<R>): Registry<T> =
