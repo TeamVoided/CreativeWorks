@@ -1,5 +1,7 @@
 package org.teamvoided.creative_works.client
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonPrimitive
 import com.mojang.serialization.JsonOps
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
 import net.minecraft.client.gui.screen.Screen
@@ -16,15 +18,17 @@ import net.minecraft.text.Text
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.CreativeWorks.WARNING_COLOR
-import org.teamvoided.creative_works.util.ltxt
-import org.teamvoided.creative_works.util.sortTags
+import org.teamvoided.creative_works.util.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 object TooltipExtensions {
     fun renderTooltip() = ItemTooltipCallback.EVENT.register { stack, ctx, cfg, text ->
         if (cfg.shouldShowAdvancedDetails()) {
             if (Screen.hasShiftDown()) tagToolTips(stack, text)
             if (Screen.hasAltDown()) componentToolTips(stack, text, ctx)
+            // Mixin to this to get comp copying and dumping
+            // MinecraftClient.getInstance().keyboard
         }
     }
 
@@ -55,35 +59,45 @@ object TooltipExtensions {
 
         val rawComponents = stack.components
         if (rawComponents !is PatchedDataComponentMap) return
-        rawComponents.baseComponents.let { components ->
-            if (!components.isEmpty) {
+
+        rawComponents.baseComponents.toList().sortedBy { it.type.toString() }.let { components ->
+            if (components.isNotEmpty()) {
                 text.addLast(ltxt("Base Components:").setColor(MAIN_COLOR))
-//                val obs = JsonObject()
                 components.forEach {
+                    val result = it.encodeValue(ops)
+                    val data =
+                        if (result.isSuccess) result.getOrThrow()
+                        else JsonPrimitive(result.error().getOrNull()?.message() ?: "Failed to get encoding error!")
                     text.addLast(
-                        ltxt(
-                            it.type.toString().removeMc() + " : " +
-                                    it.encodeValue(ops).getOrThrow().toString()
-                        ).setColor(SECONDARY_COLOR)
+                        ltxt(" ${it.type.toString().removeMc()}: ").setColor(SECONDARY_COLOR)
+                            .append(basicJsonToText(data).toText())
                     )
                 }
             }
         }
-        rawComponents.patchedComponents.let { components ->
+        rawComponents.patchedComponents.toList().sortedBy { it.first.toString() }.let { components ->
             if (components.isNotEmpty()) {
                 text.addLast(ltxt("Components:").setColor(MAIN_COLOR))
-                components.forEach { (type, data) ->
+                val removed = JsonArray()
+                components.forEach comp@{ (type, data) ->
                     val ts = type.toString().removeMc()
-                    if (data.isEmpty) text.addLast(ltxt("$ts : Is removed!").setColor(WARNING_COLOR))
+                    if (data.isEmpty) removed.add(ts)
                     else {
                         val x = type as DataComponentType<Any>
                         val y = data as Optional<Any>
+                        val result = x.codec?.encodeStart(ops, y.get())
+                        val resultData =
+                            if (result != null && result.isSuccess) result.getOrThrow()
+                            else JsonPrimitive(result?.error()?.getOrNull()?.message() ?: "Failed to get encoding error!")
                         text.addLast(
-                            ltxt(
-                                "$ts : " + x.codec?.encodeStart(ops, y.get())?.getOrThrow().toString()
-                            ).setColor(SECONDARY_COLOR)
+                            ltxt(" $ts: ").setColor(SECONDARY_COLOR)
+                                .append(basicJsonToText(resultData).toText())
                         )
                     }
+                }
+                if (!removed.isEmpty) {
+                    text.addLast(ltxt("Removed Components: ").setColor(WARNING_COLOR))
+                    text.addLast(ltxt(" ").append(basicJsonToText(removed).toText()))
                 }
             }
         }
