@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType.getString
 import com.mojang.brigadier.arguments.StringArgumentType.word
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.CommandBuildContext
 import net.minecraft.command.argument.EntityArgumentType
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
