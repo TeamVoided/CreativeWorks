@@ -11,12 +11,9 @@ class ItemTagsProvider(
     output: FabricDataOutput,
     registriesFuture: CompletableFuture<HolderLookup.Provider>,
 //    blockTags: BlockTagsProvider
-) :
-    FabricTagProvider.ItemTagProvider(output, registriesFuture) {
+) : FabricTagProvider.ItemTagProvider(output, registriesFuture) {
     override fun configure(arg: HolderLookup.Provider) {
-        getOrCreateTagBuilder(CWItemTags.HAVE_BLOCK_PARTICLE)
-            .add(Items.BARRIER)
-            .add(Items.STRUCTURE_VOID)
+        getOrCreateTagBuilder(CWItemTags.HAS_BLOCK_PARTICLE)
+            .add(Items.BARRIER, Items.STRUCTURE_VOID)
     }
-
 }

@@ -7,7 +7,7 @@ import org.teamvoided.creative_works.CreativeWorks.id
 
 object CWItemTags {
     @JvmField
-    val HAVE_BLOCK_PARTICLE = create("have_block_particle")
+    val HAS_BLOCK_PARTICLE = create("has_block_particle")
 
 
     fun create(path: String): TagKey<Item> = TagKey.of(RegistryKeys.ITEM, id(path))
