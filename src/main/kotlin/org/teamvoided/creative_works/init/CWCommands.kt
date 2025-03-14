@@ -6,10 +6,7 @@ import org.teamvoided.creative_works.comands.registry.FindTagsCommand
 import org.teamvoided.creative_works.comands.registry.RegDumpCommand
 import org.teamvoided.creative_works.comands.registry.TagDumpCommand
 import org.teamvoided.creative_works.comands.utils.PacketCommand.createIdPacket
-import org.teamvoided.creative_works.comands.world.KillItemCommand
-import org.teamvoided.creative_works.comands.world.StillCommand
-import org.teamvoided.creative_works.comands.world.StructureCommand
-import org.teamvoided.creative_works.comands.world.TrimCommand
+import org.teamvoided.creative_works.comands.world.*
 import org.teamvoided.creative_works.network.CWNet.CLEAR_PARTICLES
 import org.teamvoided.creative_works.network.CWNet.CW_TEST
 import org.teamvoided.creative_works.network.CWNet.IMGUI_DEBUG
@@ -26,6 +23,7 @@ object CWCommands {
         KillItemCommand.init(dispatcher, ctx)
         StructureCommand.init(dispatcher)
         TrimCommand.init(dispatcher)
+        PlaceAllCommand.init(dispatcher)
 
         //Player
         GearCommand.init(dispatcher)
