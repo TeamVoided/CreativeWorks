@@ -31,7 +31,7 @@ object CWCommands {
         PotionCommand.init(dispatcher)
         ClearCooldownCommand.init(dispatcher)
         RenameCommand.init(dispatcher)
-        HandCommand.init(dispatcher, ctx)
+        HandCommand.init(dispatcher)
         ApplyCommand.init(dispatcher)
         ResetComponentsCommand.init(dispatcher)
 

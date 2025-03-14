@@ -20,23 +20,23 @@ import org.teamvoided.creative_works.util.error
 import org.teamvoided.creative_works.util.message
 
 object HandCommand {
-    fun init(dispatcher: CommandDispatcher<ServerCommandSource>, ctx: CommandBuildContext) {
-        val root = literal("hand").executes { exe(it, ctx, null, null) }.buildChildOf(dispatcher.root)
+    fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
+        val root = literal("hand").executes { exe(it, null, null) }.buildChildOf(dispatcher.root)
         val hand = argument("hand", word())
             .suggests { _, builder -> builder.listSuggestions(Hand.entries.map { it.toString().lowercase() }) }
-            .executes { exe(it, ctx, Hand.valueOf(getString(it, "hand")), null) }
+            .executes { exe(it, Hand.valueOf(getString(it, "hand")), null) }
             .buildChildOf(root)
         argument("entity", EntityArgumentType.entity())
             .executes {
                 exe(
-                    it, ctx, Hand.valueOf(getString(it, "hand").uppercase()), EntityArgumentType.getEntity(it, "entity")
+                    it, Hand.valueOf(getString(it, "hand").uppercase()), EntityArgumentType.getEntity(it, "entity")
                 )
             }
             .buildChildOf(hand)
     }
 
     fun exe(
-        ctx: CommandContext<ServerCommandSource>, provider: CommandBuildContext, handIn: Hand?, entity: Entity?
+        ctx: CommandContext<ServerCommandSource>, handIn: Hand?, entity: Entity?
     ): Int {
         val src = ctx.source ?: return 0
         val target: LivingEntity? = if (entity is LivingEntity) entity else src.player
@@ -44,7 +44,7 @@ object HandCommand {
             src.error("Command has no target!")
             return 0
         }
-        val ops = provider.createSerializationContext(NbtOps.INSTANCE)
+        val ops = target.world.registryManager.createSerializationContext(NbtOps.INSTANCE)
         val hand = handIn ?: Hand.MAIN_HAND
         val stack = target.getStackInHand(hand)
         if (stack.isEmpty) {
