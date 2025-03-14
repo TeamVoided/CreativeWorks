@@ -17,7 +17,7 @@ object CWCommands {
         KillItemCommand.init(dispatcher, ctx)
         RenameCommand.init(dispatcher)
         FindTagsCommand.init(dispatcher)
-        HandCommand.init(dispatcher)
+        HandCommand.init(dispatcher, ctx)
         HealthCommand.init(dispatcher)
         GearCommand.init(dispatcher)
         RegDumpCommand.init(dispatcher)
