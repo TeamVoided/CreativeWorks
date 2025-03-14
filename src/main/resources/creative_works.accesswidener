@@ -12,3 +12,6 @@ accessible method net/minecraft/structure/pool/SinglePoolElement getStructure (L
 # Component ToolTips
 accessible field net/minecraft/component/PatchedDataComponentMap baseComponents Lnet/minecraft/component/DataComponentMap;
 accessible field net/minecraft/component/PatchedDataComponentMap patchedComponents Lit/unimi/dsi/fastutil/objects/Reference2ObjectMap;
+
+#Cooldown Command
+accessible field net/minecraft/entity/player/ItemCooldownManager entries Ljava/util/Map;

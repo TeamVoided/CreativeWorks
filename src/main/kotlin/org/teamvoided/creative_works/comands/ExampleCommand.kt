@@ -1,5 +1,6 @@
 package org.teamvoided.creative_works.comands
 
+import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.server.command.CommandManager.literal
@@ -19,6 +20,6 @@ object ExampleCommand {
 
 
         src.message("Exmaple!")
-        return 1
+        return Command.SINGLE_SUCCESS
     }
 }
