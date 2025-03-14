@@ -14,7 +14,7 @@ import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.util.Hand
-import org.teamvoided.creative_works.comands.misc.ImprovedLookup.listSuggestions
+import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
 import org.teamvoided.creative_works.util.error
 import org.teamvoided.creative_works.util.message

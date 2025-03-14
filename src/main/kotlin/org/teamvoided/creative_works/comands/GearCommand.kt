@@ -23,7 +23,7 @@ import net.minecraft.server.command.CommandManager.literal
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.StringIdentifiable
-import org.teamvoided.creative_works.comands.misc.ImprovedLookup.listSuggestions
+import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
 import org.teamvoided.creative_works.util.message
 

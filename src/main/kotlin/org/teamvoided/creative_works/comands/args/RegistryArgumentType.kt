@@ -12,7 +12,7 @@ import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import org.teamvoided.creative_works.comands.misc.ImprovedLookup.listSuggestions
+import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.getRegistry
 import java.util.concurrent.CompletableFuture
 

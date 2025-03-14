@@ -28,7 +28,7 @@ import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegistry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.regEntryArg
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.registryArg
-import org.teamvoided.creative_works.comands.misc.ImprovedLookup.listSuggestions
+import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.*
 import java.io.File
 

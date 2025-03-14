@@ -2,7 +2,7 @@ package org.teamvoided.creative_works.init
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import org.teamvoided.creative_works.comands.*
-import org.teamvoided.creative_works.comands.misc.PacketCommand.createIdPacket
+import org.teamvoided.creative_works.comands.utils.PacketCommand.createIdPacket
 import org.teamvoided.creative_works.network.CWNet.CLEAR_PARTICLES
 import org.teamvoided.creative_works.network.CWNet.CW_TEST
 import org.teamvoided.creative_works.network.CWNet.IMGUI_DEBUG
