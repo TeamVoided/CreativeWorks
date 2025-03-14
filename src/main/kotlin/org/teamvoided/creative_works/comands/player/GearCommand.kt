@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.comands
+package org.teamvoided.creative_works.comands.player
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.BoolArgumentType
@@ -29,7 +29,7 @@ import org.teamvoided.creative_works.util.message
 
 object GearCommand {
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
-        val root = literal("gear").executes(::exe).buildChildOf(dispatcher.root)
+        val root = literal("gear").executes(GearCommand::exe).buildChildOf(dispatcher.root)
         val type = argument("type", word())
             .suggests { _, builder -> builder.listSuggestions(GearType.entries.map { it.asString() }) }
             .executes { exe(it, GearType.get(getString(it, "type")), false) }

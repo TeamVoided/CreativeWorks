@@ -1,8 +1,15 @@
 package org.teamvoided.creative_works.init
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
-import org.teamvoided.creative_works.comands.*
+import org.teamvoided.creative_works.comands.player.*
+import org.teamvoided.creative_works.comands.registry.FindTagsCommand
+import org.teamvoided.creative_works.comands.registry.RegDumpCommand
+import org.teamvoided.creative_works.comands.registry.TagDumpCommand
 import org.teamvoided.creative_works.comands.utils.PacketCommand.createIdPacket
+import org.teamvoided.creative_works.comands.world.KillItemCommand
+import org.teamvoided.creative_works.comands.world.StillCommand
+import org.teamvoided.creative_works.comands.world.StructureCommand
+import org.teamvoided.creative_works.comands.world.TrimCommand
 import org.teamvoided.creative_works.network.CWNet.CLEAR_PARTICLES
 import org.teamvoided.creative_works.network.CWNet.CW_TEST
 import org.teamvoided.creative_works.network.CWNet.IMGUI_DEBUG
@@ -23,10 +30,10 @@ object CWCommands {
         //Player
         GearCommand.init(dispatcher)
         HealthCommand.init(dispatcher)
-        HandCommand.init(dispatcher, ctx)
         PotionCommand.init(dispatcher)
-        RenameCommand.init(dispatcher)
         ClearCooldownCommand.init(dispatcher)
+        RenameCommand.init(dispatcher)
+        HandCommand.init(dispatcher, ctx)
 
 
         dispatcher.createIdPacket("clear_particles", CLEAR_PARTICLES)

@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.comands
+package org.teamvoided.creative_works.comands.world
 
 import com.google.common.collect.Maps
 import com.mojang.brigadier.CommandDispatcher

@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.comands
+package org.teamvoided.creative_works.comands.registry
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext

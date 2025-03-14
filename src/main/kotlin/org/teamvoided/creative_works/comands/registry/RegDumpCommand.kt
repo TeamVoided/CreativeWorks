@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.comands
+package org.teamvoided.creative_works.comands.registry
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
@@ -34,7 +34,7 @@ import java.io.File
 
 object RegDumpCommand {
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
-        val root = literal("regdump").executes(::dumpAll).buildChildOf(dispatcher.root)
+        val root = literal("regdump").executes(RegDumpCommand::dumpAll).buildChildOf(dispatcher.root)
         val registry = registryArg().executes { regdump(it, getRegistry(it)) }.buildChildOf(root)
         regEntryArg().executes { regdump(it, getRegistry(it), getEntry(it)) }.buildChildOf(registry)
 

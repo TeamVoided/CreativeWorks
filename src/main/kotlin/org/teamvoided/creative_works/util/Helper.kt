@@ -16,7 +16,7 @@ import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
-import org.teamvoided.creative_works.comands.TagDumpCommand.ctc
+import org.teamvoided.creative_works.comands.registry.TagDumpCommand.ctc
 import java.awt.Color
 import java.util.*
 import kotlin.jvm.optionals.getOrNull

@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.comands
+package org.teamvoided.creative_works.comands.world
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
@@ -10,7 +10,7 @@ import org.teamvoided.creative_works.util.message
 
 object StillCommand {
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
-        literal("still").executes(::exe).buildChildOf(dispatcher.root)
+        literal("still").executes(StillCommand::exe).buildChildOf(dispatcher.root)
     }
 
     fun exe(ctx: CommandContext<ServerCommandSource>): Int {
@@ -20,7 +20,7 @@ object StillCommand {
 
         world.gameRules.get(GameRules.DO_WEATHER_CYCLE).setValue(false, server)
         world.gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).setValue(false, server)
-        server.overworld.setWeather(-1, 0, false, false);
+        server.overworld.setWeather(-1, 0, false, false)
         server.overworld.timeOfDay = 6000
 
         src.message("Weather and daylight cycle disabled!")

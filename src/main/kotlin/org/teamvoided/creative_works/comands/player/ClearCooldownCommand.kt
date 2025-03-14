@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.comands
+package org.teamvoided.creative_works.comands.player
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
@@ -27,6 +27,7 @@ object ClearCooldownCommand {
             return 0
         }
 
+        @Suppress("INACCESSIBLE_TYPE")
         target.itemCooldownManager.entries.map { it.key }.forEach { target.itemCooldownManager.set(it, 0) }
         src.message("Cooldowns cleared!")
         return Command.SINGLE_SUCCESS
