@@ -81,8 +81,12 @@ object PlaceAllCommand {
                 val newPos = startPos.add(col * 2, row * 2, row * 2)
                 world.setBlockState(newPos.offset(Direction.DOWN), Blocks.BARRIER.defaultState)
                 world.setBlockState(newPos.offset(Direction.SOUTH), Blocks.BARRIER.defaultState)
-                world.setBlockState(newPos, getState(block))
-                placeAdditional(world, newPos, block)
+                try {
+                    world.setBlockState(newPos, getState(block))
+                    placeAdditional(world, newPos, block)
+                } catch (e: Exception) {
+                    src.error("Error while placing block ${block.translationKey}")
+                }
 
                 placeSign(world, newPos, block)
             }
