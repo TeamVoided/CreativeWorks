@@ -19,6 +19,7 @@ object PacketCommand {
 
     fun CommandDispatcher<ServerCommandSource>.createPacket(name: String, packet: CustomPayload) =
         create(this, name, packet)
+
     fun CommandDispatcher<ServerCommandSource>.createIdPacket(name: String, id: Int) =
-        create(this, name, id.pack())
+        createPacket(name, id.pack())
 }
