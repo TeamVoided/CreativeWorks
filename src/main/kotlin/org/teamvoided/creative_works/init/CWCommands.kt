@@ -35,6 +35,7 @@ object CWCommands {
         RenameCommand.init(dispatcher)
         HandCommand.init(dispatcher, ctx)
         ApplyCommand.init(dispatcher)
+        ResetComponentsCommand.init(dispatcher, ctx)
 
 
         dispatcher.createIdPacket("clear_particles", CLEAR_PARTICLES)
