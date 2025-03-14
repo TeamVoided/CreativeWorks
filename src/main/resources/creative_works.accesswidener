@@ -8,3 +8,7 @@ accessible field net/minecraft/structure/Structure blockInfoLists Ljava/util/Lis
 accessible field net/minecraft/structure/Structure$PalettedBlockInfoList infos Ljava/util/List;
 # Methods
 accessible method net/minecraft/structure/pool/SinglePoolElement getStructure (Lnet/minecraft/structure/StructureTemplateManager;)Lnet/minecraft/structure/Structure;
+
+# Component ToolTips
+accessible field net/minecraft/component/PatchedDataComponentMap baseComponents Lnet/minecraft/component/DataComponentMap;
+accessible field net/minecraft/component/PatchedDataComponentMap patchedComponents Lit/unimi/dsi/fastutil/objects/Reference2ObjectMap;

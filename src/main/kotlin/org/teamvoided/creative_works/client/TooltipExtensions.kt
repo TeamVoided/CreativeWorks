@@ -1,0 +1,99 @@
+package org.teamvoided.creative_works.client
+
+import com.mojang.serialization.JsonOps
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
+import net.minecraft.client.gui.screen.Screen
+import net.minecraft.component.DataComponentType
+import net.minecraft.component.DataComponentTypes
+import net.minecraft.component.PatchedDataComponentMap
+import net.minecraft.item.BlockItem
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
+import net.minecraft.item.SpawnEggItem
+import net.minecraft.registry.Holder
+import net.minecraft.registry.tag.TagKey
+import net.minecraft.text.Text
+import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
+import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
+import org.teamvoided.creative_works.CreativeWorks.WARNING_COLOR
+import org.teamvoided.creative_works.util.ltxt
+import org.teamvoided.creative_works.util.sortTags
+import java.util.*
+
+object TooltipExtensions {
+    fun renderTooltip() = ItemTooltipCallback.EVENT.register { stack, ctx, cfg, text ->
+        if (cfg.shouldShowAdvancedDetails()) {
+            if (Screen.hasShiftDown()) tagToolTips(stack, text)
+            if (Screen.hasAltDown()) componentToolTips(stack, text, ctx)
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun tagToolTips(stack: ItemStack, text: MutableList<Text>) {
+        val item = stack.item
+
+        text.listTags("Item", item.builtInRegistryHolder.toSortedTags())
+
+        if (item is BlockItem) text.listTags("Block", item.block.builtInRegistryHolder.toSortedTags())
+
+        if (item is SpawnEggItem)
+            text.listTags("Entity", item.getEntityType(stack).builtInRegistryHolder.toSortedTags())
+
+        val enchantmentsComponent = stack.get(DataComponentTypes.STORED_ENCHANTMENTS)
+        if (enchantmentsComponent != null) {
+            val enchantments = enchantmentsComponent.enchantments
+            if (enchantments.size > 1)
+                text.addLast(ltxt("Has more then 1 stored enchantment").setColor(WARNING_COLOR))
+            else if (enchantments.isEmpty())
+                text.addLast(ltxt("No stored enchantments").setColor(WARNING_COLOR))
+            else text.listTags("Enchantment", enchantments.first().toSortedTags())
+        }
+    }
+
+    private fun componentToolTips(stack: ItemStack, text: MutableList<Text>, ctx: Item.TooltipContext) {
+        val ops = ctx.lookup?.createSerializationContext(JsonOps.INSTANCE) ?: return
+
+        val rawComponents = stack.components
+        if (rawComponents !is PatchedDataComponentMap) return
+        rawComponents.baseComponents.let { components ->
+            if (!components.isEmpty) {
+                text.addLast(ltxt("Base Components:").setColor(MAIN_COLOR))
+//                val obs = JsonObject()
+                components.forEach {
+                    text.addLast(
+                        ltxt(
+                            it.type.toString().removeMc() + " : " +
+                                    it.encodeValue(ops).getOrThrow().toString()
+                        ).setColor(SECONDARY_COLOR)
+                    )
+                }
+            }
+        }
+        rawComponents.patchedComponents.let { components ->
+            if (components.isNotEmpty()) {
+                text.addLast(ltxt("Components:").setColor(MAIN_COLOR))
+                components.forEach { (type, data) ->
+                    val ts = type.toString().removeMc()
+                    if (data.isEmpty) text.addLast(ltxt("$ts : Is removed!").setColor(WARNING_COLOR))
+                    else {
+                        val x = type as DataComponentType<Any>
+                        val y = data as Optional<Any>
+                        text.addLast(
+                            ltxt(
+                                "$ts : " + x.codec?.encodeStart(ops, y.get())?.getOrThrow().toString()
+                            ).setColor(SECONDARY_COLOR)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun <T : Any> MutableList<Text>.listTags(name: String, tags: MutableList<TagKey<T>>) = if (tags.isNotEmpty()) {
+        this.addLast(ltxt("$name Tags:").setColor(MAIN_COLOR))
+        tags.forEach { tag -> this.addLast(ltxt(" #${tag.id}").setColor(SECONDARY_COLOR)) }
+    } else Unit
+
+    fun <T> Holder<T>.toSortedTags() = this.streamTags().sorted(::sortTags).toList()
+    fun String.removeMc() = this.removePrefix("minecraft:")
+}
