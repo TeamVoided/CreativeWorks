@@ -3,6 +3,7 @@ package org.teamvoided.creative_works
 import net.minecraft.util.Identifier
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.teamvoided.creative_works.client.Clint
 import org.teamvoided.creative_works.client.DebugWidgetRegistry
 import org.teamvoided.creative_works.client.TooltipExtensions
 import org.teamvoided.creative_works.init.CWCommands
@@ -27,6 +28,7 @@ object CreativeWorks {
     }
 
     fun clientInit() {
+        Clint.init()
         CWNet.clientInit()
         TooltipExtensions.renderTooltip()
         DebugWidgetRegistry.init()
