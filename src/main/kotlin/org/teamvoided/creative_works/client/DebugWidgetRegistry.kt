@@ -16,14 +16,14 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKey
 @Suppress("unused")
 object DebugWidgetRegistry {
     private val customScreen = CustomScreen()
-    var wingetsEnabled = false
+    var widgetsEnabled = false
     val debugKey: KeyBind = makeKey(KeyBind("Debug Widget Key", GLFW.GLFW_KEY_V, "Debug"))
 
     fun init() {
         ClientTickEvents.END_CLIENT_TICK.register {
             if (debugKey.wasPressed()) {
-                wingetsEnabled = !wingetsEnabled
-                if (wingetsEnabled) Imguimc.pushRenderable(customScreen)
+                widgetsEnabled = !widgetsEnabled
+                if (widgetsEnabled) Imguimc.pushRenderable(customScreen)
                 else Imguimc.pullRenderableAfterRender(customScreen)
             }
         }
