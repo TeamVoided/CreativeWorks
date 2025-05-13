@@ -15,10 +15,14 @@ import net.minecraft.item.SpawnEggItem
 import net.minecraft.registry.Holder
 import net.minecraft.registry.tag.TagKey
 import net.minecraft.text.Text
+import org.teamvoided.creative_works.CreativeWorks
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.CreativeWorks.WARNING_COLOR
-import org.teamvoided.creative_works.util.*
+import org.teamvoided.creative_works.util.basicJsonToText
+import org.teamvoided.creative_works.util.ltxt
+import org.teamvoided.creative_works.util.sortTags
+import org.teamvoided.creative_works.util.toText
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -60,21 +64,22 @@ object TooltipExtensions {
         val rawComponents = stack.components
         if (rawComponents !is PatchedDataComponentMap) return
 
-        rawComponents.baseComponents.toList().sortedBy { it.type.toString() }.let { components ->
-            if (components.isNotEmpty()) {
-                text.addLast(ltxt("Base Components:").setColor(MAIN_COLOR))
-                components.forEach {
-                    val result = it.encodeValue(ops)
-                    val data =
-                        if (result.isSuccess) result.getOrThrow()
-                        else JsonPrimitive(result.error().getOrNull()?.message() ?: "Failed to get encoding error!")
-                    text.addLast(
-                        ltxt(" ${it.type.toString().removeMc()}: ").setColor(SECONDARY_COLOR)
-                            .append(basicJsonToText(data).toText())
-                    )
+        if (CreativeWorks.config.enableBaseComponents)
+            rawComponents.baseComponents.toList().sortedBy { it.type.toString() }.let { components ->
+                if (components.isNotEmpty()) {
+                    text.addLast(ltxt("Base Components:").setColor(MAIN_COLOR))
+                    components.forEach {
+                        val result = it.encodeValue(ops)
+                        val data =
+                            if (result.isSuccess) result.getOrThrow()
+                            else JsonPrimitive(result.error().getOrNull()?.message() ?: "Failed to get encoding error!")
+                        text.addLast(
+                            ltxt(" ${it.type.toString().removeMc()}: ").setColor(SECONDARY_COLOR)
+                                .append(basicJsonToText(data).toText())
+                        )
+                    }
                 }
             }
-        }
         rawComponents.patchedComponents.toList().sortedBy { it.first.toString() }.let { components ->
             if (components.isNotEmpty()) {
                 text.addLast(ltxt("Components:").setColor(MAIN_COLOR))
@@ -88,7 +93,9 @@ object TooltipExtensions {
                         val result = x.codec?.encodeStart(ops, y.get())
                         val resultData =
                             if (result != null && result.isSuccess) result.getOrThrow()
-                            else JsonPrimitive(result?.error()?.getOrNull()?.message() ?: "Failed to get encoding error!")
+                            else JsonPrimitive(
+                                result?.error()?.getOrNull()?.message() ?: "Failed to get encoding error!"
+                            )
                         text.addLast(
                             ltxt(" $ts: ").setColor(SECONDARY_COLOR)
                                 .append(basicJsonToText(resultData).toText())

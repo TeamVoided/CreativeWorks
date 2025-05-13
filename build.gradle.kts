@@ -43,10 +43,13 @@ dependencies {
     modImplementation(fileTree("libs"))
     modImplementation(libs.imguimc)
     include(libs.imguimc)
+    modImplementation(libs.fzzy.config)
+
 
 //    modImplementation(libs.farrow)
     modImplementation(libs.modmenu)
     modImplementation(libs.emi)
+
 }
 
 loom {
@@ -87,14 +90,6 @@ tasks {
         toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.toVersion(targetJavaVersion).toString()))
         withSourcesJar()
     }
-//    jar {
-//        val valTaskNames = gradle.startParameter.taskNames
-//        if (!valTaskNames.contains("runDataGen")) {
-//            exclude("org/teamvoided/template/data/gen/*")
-//        } else {
-//            println("Running datagen for task ${valTaskNames.joinToString(" ")}")
-//        }
-//    }
 }
 
 publishScript {

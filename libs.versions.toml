@@ -3,9 +3,8 @@ kotlin = "2.0.0"
 fabric-loom = "1.9-SNAPSHOT"
 iridium = "3.3.2"
 
-farrow = "1.0.0+arrow.1.2.4"
-
 imguimc = "1.21.1-1.0.8"
+fzzy-config = "0.6.7+1.21"
 
 # dev
 modmenu = "11.0.3"
@@ -13,13 +12,12 @@ emi = "1.1.20+1.21.1"
 #dev-tools-unlocker = "1.0.0"
 
 [libraries]
-#farrow = { module = "net.wiredtomato:farrow", version.ref = "farrow" }
-
+imguimc = { module = "maven.modrinth:imgui-mc", version.ref = "imguimc" }
+fzzy-config = { module = "me.fzzyhmstrs:fzzy_config", version.ref = "fzzy-config" }
 # dev
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 emi = { module = "dev.emi:emi-fabric", version.ref = "emi" }
 #dev-tools-unlocker = { module = "maven.modrinth:dev-tools-unlocker", version.ref = "dev-tools-unlocker" }
-imguimc = { module = "maven.modrinth:imgui-mc", version.ref = "imguimc" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
