@@ -25,6 +25,7 @@ object CWCommands {
         StructureCommand.init(dispatcher)
         TrimCommand.init(dispatcher)
         PlaceAllCommand.init(dispatcher)
+        NbtCheckCommand.init(dispatcher)
 
         //WorldGen
         SplineCommand.init(dispatcher, ctx)

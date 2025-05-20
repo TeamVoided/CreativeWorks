@@ -14,7 +14,7 @@ object ExampleCommand {
         literal("EXAMPLE").executes(::exe).buildChildOf(dispatcher.root)
     }
 
-    fun exe(ctx: CommandContext<ServerCommandSource>): Int {
+    private fun exe(ctx: CommandContext<ServerCommandSource>): Int {
         val src = ctx.source ?: return 0
         val server = src.server ?: return 0
         val world = src.world ?: return 0
