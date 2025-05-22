@@ -1,22 +1,23 @@
 [versions]
-kotlin = "2.0.0"
-fabric-loom = "1.9-SNAPSHOT"
-iridium = "3.3.2"
+kotlin = "2.1.20"
+fabric-loom = "1.10-SNAPSHOT"
+iridium = "3.4.0"
 
-imguimc = "1.21.1-1.0.8"
-fzzy-config = "0.6.7+1.21"
-
-# dev
+# Dependencies
 modmenu = "11.0.3"
-emi = "1.1.20+1.21.1"
+emi = "1.1.22+1.21.1"
+fzzy-config = "0.6.9+1.21"
+imguimc = "1.21.1-1.0.8"
+
+# Testing
 #dev-tools-unlocker = "1.0.0"
 
 [libraries]
+# Dependencies
 imguimc = { module = "maven.modrinth:imgui-mc", version.ref = "imguimc" }
-fzzy-config = { module = "me.fzzyhmstrs:fzzy_config", version.ref = "fzzy-config" }
-# dev
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 emi = { module = "dev.emi:emi-fabric", version.ref = "emi" }
+fzzy-config = { module = "me.fzzyhmstrs:fzzy_config", version.ref = "fzzy-config" }
 #dev-tools-unlocker = { module = "maven.modrinth:dev-tools-unlocker", version.ref = "dev-tools-unlocker" }
 
 [plugins]

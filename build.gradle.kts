@@ -12,25 +12,16 @@ plugins {
     alias(libs.plugins.iridium.upload)
 }
 
-group = property("maven_group")!!
-version = property("mod_version")!!
-base.archivesName.set(modSettings.modId())
-
-val modrinth_id: String? by project
-val curse_id: String? by project
-
-
 repositories {
     maven("https://teamvoided.org/releases")
     maven("https://api.modrinth.com/maven")
     maven("https://maven.terraformersmc.com/") { name = "TerraformersMC" }
     maven("https://maven.fzzyhmstrs.me/") { name = "FzzyMaven" }
-//    maven("https://repo.alignedcookie88.com/repository/maven-public/") { name = "AlignedCookie88" }
+    maven("https://api.modrinth.com/maven")
     mavenCentral()
 }
 
 modSettings {
-
     entrypoint("main", "org.teamvoided.creative_works.CreativeWorks::commonInit")
     entrypoint("client", "org.teamvoided.creative_works.CreativeWorks::clientInit")
     entrypoint("fabric-datagen", "org.teamvoided.creative_works.data.gen.CreativeWorksData")
@@ -45,8 +36,6 @@ dependencies {
     include(libs.imguimc)
     modImplementation(libs.fzzy.config)
 
-
-//    modImplementation(libs.farrow)
     modImplementation(libs.modmenu)
     modImplementation(libs.emi)
 
@@ -67,8 +56,11 @@ loom {
             client()
             ideConfigGenerated(true)
             runDir("run")
-            programArgs("--quickPlaySingleplayer", "test")
-            programArgs("--username", "Endoside", "--uuid", "a5fc6689-7d19-4c39-a04e-95e4ec460298")
+            programArgs(
+                "--quickPlaySingleplayer", "test",
+                "--username", "Endoside",
+                "--uuid", "a5fc6689-7d19-4c39-a04e-95e4ec460298"
+            )
         }
     }
 }

@@ -1,5 +1,7 @@
 projectTitle = "CreativeWorks"
 modId = "creative_works"
+modVersion = "0.4.0"
+group = "org.teamvoided"
 githubRepo = "Teamvoided/CreativeWorks"
 discordServerInviteId = "KZ5Q364hEg"
 authors = [ "TheEnderCore", "DuskAutumnStorm" ]
