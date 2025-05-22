@@ -42,10 +42,23 @@ dependencies {
 }
 
 val username = "Endoside"
-val uuid = "a5fc6689-7d19-4c39-a04e-95e4ec460298"
+val uuid: String? = "a5fc6689-7d19-4c39-a04e-95e4ec460298"
 
 loom {
     runs {
+        named("client") {
+            programArgs("--username", username)
+            uuid?.let { programArgs("--uuid", uuid) }
+        }
+
+        create("TestWorld") {
+            client()
+            ideConfigGenerated(true)
+            runDir("run")
+            programArgs("--quickPlaySingleplayer", "test", "--username", username)
+            uuid?.let { programArgs("--uuid", uuid) }
+        }
+
         create("DataGen") {
             client()
             ideConfigGenerated(true)
@@ -53,20 +66,6 @@ loom {
             vmArg("-Dfabric-api.datagen.output-dir=${file("src/main/generated")}")
             vmArg("-Dfabric-api.datagen.modid=${modSettings.modId()}")
             runDir("build/datagen")
-        }
-
-        create("SetClient") {
-            client()
-            ideConfigGenerated(true)
-            runDir("run")
-            programArgs("--username", username, "--uuid", uuid)
-        }
-
-        create("TestWorld") {
-            client()
-            ideConfigGenerated(true)
-            runDir("run")
-            programArgs("--quickPlaySingleplayer", "test", "--username", username, "--uuid", uuid)
         }
     }
 }
