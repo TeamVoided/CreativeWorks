@@ -5,7 +5,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.command.argument.RegistryEntryOrTagArgument;
 import net.minecraft.registry.HolderLookup;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,7 +15,6 @@ import org.teamvoided.creative_works.comands.utils.ImprovedLookup;
 
 import java.util.concurrent.CompletableFuture;
 
-@Debug(export = true)
 @Mixin(RegistryEntryOrTagArgument.class)
 public class RegistryEntryOrTagArgumentMixin<T> {
     @Final
