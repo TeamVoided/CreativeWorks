@@ -41,6 +41,9 @@ dependencies {
 
 }
 
+val username = "Endoside"
+val uuid = "a5fc6689-7d19-4c39-a04e-95e4ec460298"
+
 loom {
     runs {
         create("DataGen") {
@@ -52,15 +55,18 @@ loom {
             runDir("build/datagen")
         }
 
+        create("SetClient") {
+            client()
+            ideConfigGenerated(true)
+            runDir("run")
+            programArgs("--username", username, "--uuid", uuid)
+        }
+
         create("TestWorld") {
             client()
             ideConfigGenerated(true)
             runDir("run")
-            programArgs(
-                "--quickPlaySingleplayer", "test",
-                "--username", "Endoside",
-                "--uuid", "a5fc6689-7d19-4c39-a04e-95e4ec460298"
-            )
+            programArgs("--quickPlaySingleplayer", "test", "--username", username, "--uuid", uuid)
         }
     }
 }
