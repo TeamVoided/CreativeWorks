@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.client
+package org.teamvoided.creative_works.c
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient

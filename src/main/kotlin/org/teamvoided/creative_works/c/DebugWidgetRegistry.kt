@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.client
+package org.teamvoided.creative_works.c
 
 import imgui.ImColor
 import imgui.ImGui
