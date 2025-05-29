@@ -39,6 +39,7 @@ object CWCommands {
         HandCommand.init(dispatcher)
         ApplyCommand.init(dispatcher)
         ResetComponentsCommand.init(dispatcher)
+        SeeDataCommand.init(dispatcher)
 
 
         dispatcher.createIdPacket("clear_particles", CLEAR_PARTICLES)
