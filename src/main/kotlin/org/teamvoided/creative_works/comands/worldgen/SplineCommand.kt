@@ -15,7 +15,7 @@ import net.minecraft.world.gen.chunk.AquiferSampler
 import net.minecraft.world.gen.chunk.Blender
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler
-import org.teamvoided.creative_works.c.DebugWidgetRegistry
+import org.teamvoided.creative_works.client.DebugWidgetRegistry
 import org.teamvoided.creative_works.comands.args.RegistryEntryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryEntryArgumentType.registryEntryArg
 import org.teamvoided.creative_works.util.buildChildOf

@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.c
+package org.teamvoided.creative_works.client
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonPrimitive

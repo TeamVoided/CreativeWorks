@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.c.screen
+package org.teamvoided.creative_works.client.screen
 
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.gui.GuiGraphics

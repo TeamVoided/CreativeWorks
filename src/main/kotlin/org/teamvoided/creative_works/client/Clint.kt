@@ -1,9 +1,9 @@
-package org.teamvoided.creative_works.c
+package org.teamvoided.creative_works.client
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.option.KeyBind
 import org.lwjgl.glfw.GLFW
-import org.teamvoided.creative_works.c.screen.SpleenScreen
+import org.teamvoided.creative_works.client.screen.SpleenScreen
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding as makeKey
 
 object Clint {
