@@ -15,7 +15,6 @@ import net.minecraft.world.gen.chunk.AquiferSampler
 import net.minecraft.world.gen.chunk.Blender
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler
-import org.teamvoided.creative_works.client.DebugWidgetRegistry
 import org.teamvoided.creative_works.comands.args.RegistryEntryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryEntryArgumentType.registryEntryArg
 import org.teamvoided.creative_works.util.buildChildOf
@@ -24,9 +23,9 @@ import kotlin.jvm.optionals.getOrNull
 
 object SplineCommand {
 
-    val limit = DebugWidgetRegistry.addDouble(": Limit", 1.0)
-    val posLabel = DebugWidgetRegistry.addString("Noise:", "")
-    val breakButton = DebugWidgetRegistry.addButton("Break")
+//    val limit = DebugWidgetRegistry.addDouble(": Limit", 1.0)
+//    val posLabel = DebugWidgetRegistry.addString("Noise:", "")
+//    val breakButton = DebugWidgetRegistry.addButton("Break")
     fun init(dispatcher: CommandDispatcher<ServerCommandSource>, ctx: CommandBuildContext) {
         val root = literal("spline").buildChildOf(dispatcher.root)
 
@@ -59,8 +58,8 @@ object SplineCommand {
                             val pos = chunk.pos.getBlockPos(x, y, z)
                             world.chunkManager.chunkGenerator
                             val value = denseFn.compute(set)
-                            posLabel.set(pos.toString())
-                            if (breakButton.get()) break@base
+//                            posLabel.set(pos.toString())
+//                            if (breakButton.get()) break@base
                             val state = if (value > 0) colorLis[0] else glassList[0]
                             world.setBlockState(pos, state.defaultState)
                         }
