@@ -38,7 +38,7 @@ object HandCommand {
         ctx: CommandContext<ServerCommandSource>, handIn: Hand?, entity: Entity?
     ): Int {
         val src = ctx.source ?: return 0
-        val target: LivingEntity? = if (entity is LivingEntity) entity else src.player
+        val target: LivingEntity? = entity as? LivingEntity ?: src.player
         if (target == null) {
             src.error("Command has no target!")
             return 0

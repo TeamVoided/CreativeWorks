@@ -37,12 +37,12 @@ object HealthCommand {
         val toHeal = mutableListOf<LivingEntity>()
         if (entityIn == null) toHeal.add(src.player ?: return 0)
         else {
-            val maped = entityIn.filterIsInstance<LivingEntity>()
-            if (maped.isEmpty()) {
+            val mapped = entityIn.filterIsInstance<LivingEntity>()
+            if (mapped.isEmpty()) {
                 src.error("No entities found!")
                 return 0
             }
-            toHeal.addAll(maped)
+            toHeal.addAll(mapped)
         }
 
         val amount = amountIn ?: -1f

@@ -31,10 +31,17 @@ fun <S, Q : ArgumentBuilder<S, Q>> ArgumentBuilder<S, Q>.buildChildOf(node: Comm
     return this.build().childOf(node)
 }
 
-fun ltxt(s: String) = Text.literal(s)
 
 fun ServerCommandSource.message(msg: String) = this.sendSystemMessage(Text.literal(msg))
 fun ServerCommandSource.error(msg: String) = this.sendError(Text.literal(msg))
+
+fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
+fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))
+
+fun <T> Registry<T>.getTag(id: Identifier): Optional<NamedSet<T>> = this.getTag(TagKey.of<T>(this.key, id))
+
+
+fun ltxt(s: String) = Text.literal(s)
 
 fun ServerCommandSource.copyMessage(msg: String, copy: String, copyText: String = copy) =
     this.sendSystemMessage(Text.literal(msg).styled {
@@ -47,10 +54,6 @@ fun ServerCommandSource.openMessage(msg: String, folder: String, openText: Strin
         it.withColor(SECONDARY_COLOR).clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, folder)
             .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(openText).styled { it.withColor(SECONDARY_COLOR) })
     })
-
-
-fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
-fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))
 
 fun ServerCommandSource.sendNamedList(name: String, nameCopy: String, emptyMessage: String, set: List<String>) {
     this.sendSystemMessage(
@@ -122,4 +125,3 @@ fun <T, R : Registry<T>> CommandContext<ServerCommandSource>.getRegistry(key: Re
 fun DynamicRegistryManager.getRegistry(id: Identifier): Registry<out Any>? =
     this.getOptional(RegistryKey.ofRegistry<Any>(id)).getOrNull()
 
-fun <T> Registry<T>.getTag(id: Identifier): Optional<NamedSet<T>> = this.getTag(TagKey.of<T>(this.key, id))
