@@ -21,7 +21,7 @@ public class RegistryEntryOrTagArgumentMixin<T> {
     @Shadow
     private HolderLookup<T> lookup;
 
-    @Inject(method = "listSuggestions", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "listSuggestions", at = @At("HEAD"), cancellable = true)
     private void improvedSuggestions(CommandContext<T> commandContext, SuggestionsBuilder suggestionsBuilder, CallbackInfoReturnable<CompletableFuture<Suggestions>> cir) {
         cir.setReturnValue(ImprovedLookup.listElementsAndTags(lookup, commandContext, suggestionsBuilder));
     }
