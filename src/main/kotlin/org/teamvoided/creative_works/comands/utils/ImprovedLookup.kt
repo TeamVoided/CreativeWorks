@@ -4,7 +4,10 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import net.minecraft.registry.HolderLookup
+import net.minecraft.util.Identifier
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
+import java.util.function.Function
 
 object ImprovedLookup {
     @JvmStatic
@@ -23,6 +26,19 @@ object ImprovedLookup {
         return this.buildFuture()
     }
 
+    @JvmStatic
+    fun <T> filterByQuery(
+        candidates: Iterable<T>, query: String, prefix: String,
+        getId: Function<T, Identifier>, addToBuilder: Consumer<T>,
+    ) {
+        for (obj in candidates) {
+            val id = prefix + getId.apply(obj).toString()
+            if (filterByQuery(id, query)) {
+                addToBuilder.accept(obj)
+            }
+        }
+    }
+
     fun filterByQuery(entry: String, query: String): Boolean {
         if (query.contains(":") && entry.contains(":")) {
             val splitQuery = query.split(":")
@@ -36,8 +52,7 @@ object ImprovedLookup {
             if (!queryN.isEmpty()) {
                 namespaceMatches = entryN.contains(queryN)
             }
-
-          /*  println(buildString {
+            /*println(buildString {
                 appendLine()
                 appendLine("Entry: \"$entry\"")
                 appendLine("\t- \"$entryN\" |:| \"$entryP\"")
@@ -45,7 +60,7 @@ object ImprovedLookup {
                 appendLine("\t- \"$queryN\" |:| \"$queryP\"")
                 appendLine("Namespace match: $namespaceMatches")
                 appendLine("Path match: ${entryP.contains(queryP)}")
-            })*/
+                })*/
             return namespaceMatches && entryP.contains(queryP)
         }
         return entry.contains(query)
