@@ -19,7 +19,7 @@ object ImprovedLookup {
         return suggestionsBuilder.listSuggestions(list)
     }
 
-    fun SuggestionsBuilder.listSuggestions(list: Iterable<String>?, ignoreCaps: Boolean = true)
+    fun SuggestionsBuilder.listSuggestions(list: Iterable<String>?)
             : CompletableFuture<Suggestions> {
         val query = this.remainingLowerCase.trim().lowercase()
         list?.filter { filterByQuery(it.trim().lowercase(), query) }?.forEach(this::suggest)
