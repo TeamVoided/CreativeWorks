@@ -23,6 +23,6 @@ public class RegistryEntryOrTagArgumentMixin<T> {
 
     @Inject(method = "listSuggestions", at = @At("RETURN"), cancellable = true)
     private void improvedSuggestions(CommandContext<T> commandContext, SuggestionsBuilder suggestionsBuilder, CallbackInfoReturnable<CompletableFuture<Suggestions>> cir) {
-        cir.setReturnValue(ImprovedLookup.listSuggestions(lookup, commandContext, suggestionsBuilder));
+        cir.setReturnValue(ImprovedLookup.listElementsAndTags(lookup, commandContext, suggestionsBuilder));
     }
 }

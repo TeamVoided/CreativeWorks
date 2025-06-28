@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture
 
 object ImprovedLookup {
     @JvmStatic
-    fun <S> listSuggestions(
+    fun <S> listElementsAndTags(
         lookup: HolderLookup<S>, ignored: CommandContext<S>, suggestionsBuilder: SuggestionsBuilder
     ): CompletableFuture<Suggestions> {
         val list = lookup.streamTagKeys().map { "#${it.id()}" }.toList() +

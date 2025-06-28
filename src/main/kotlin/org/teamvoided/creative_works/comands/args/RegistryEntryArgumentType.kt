@@ -9,12 +9,10 @@ import net.minecraft.command.argument.IdentifierArgumentType.identifier
 import net.minecraft.registry.Holder
 import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
-import net.minecraft.registry.RegistryKeys
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.minecraft.world.gen.DensityFunctions
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import java.util.concurrent.CompletableFuture
 import kotlin.jvm.optionals.getOrNull
