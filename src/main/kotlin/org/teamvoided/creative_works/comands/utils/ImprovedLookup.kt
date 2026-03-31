@@ -4,7 +4,7 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import net.minecraft.core.HolderLookup
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import java.util.function.Function
@@ -29,7 +29,7 @@ object ImprovedLookup {
     @JvmStatic
     fun <T> filterByQuery(
         candidates: Iterable<T>, query: String, prefix: String,
-        getId: Function<T, ResourceLocation>, addToBuilder: Consumer<T>,
+        getId: Function<T, Identifier>, addToBuilder: Consumer<T>,
     ) {
         for (obj in candidates) {
             val id = prefix + getId.apply(obj).toString()

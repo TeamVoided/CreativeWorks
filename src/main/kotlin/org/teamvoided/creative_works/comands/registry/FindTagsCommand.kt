@@ -8,7 +8,7 @@ import net.minecraft.core.Registry
 import net.minecraft.tags.TagKey
 import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegistry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.regEntryArg
@@ -29,7 +29,7 @@ object FindTagsCommand {
 
     }
 
-    fun exe(ctx: CommandContext<CommandSourceStack>, regsitry: Registry<out Any>, entryId: ResourceLocation?): Int {
+    fun exe(ctx: CommandContext<CommandSourceStack>, regsitry: Registry<out Any>, entryId: Identifier?): Int {
         val src = ctx.source ?: return 0
         val player = src.player ?: return 0
 

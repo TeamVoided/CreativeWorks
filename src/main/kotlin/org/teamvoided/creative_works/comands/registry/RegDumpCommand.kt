@@ -21,7 +21,7 @@ import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.level.storage.LevelResource.ROOT
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
@@ -62,7 +62,7 @@ object RegDumpCommand {
     }
 
     fun regdump(
-        ctx: CommandContext<CommandSourceStack>, registry: Registry<out Any>, entryId: ResourceLocation? = null,
+        ctx: CommandContext<CommandSourceStack>, registry: Registry<out Any>, entryId: Identifier? = null,
         silent: Boolean = false
     ): Int {
         val src = ctx.source ?: return 0
@@ -101,8 +101,8 @@ object RegDumpCommand {
 
     fun painAndSuffering(
         ctx: CommandContext<CommandSourceStack>,
-        extra: ResourceLocation,
-        entryId: ResourceLocation? = null
+        extra: Identifier,
+        entryId: Identifier? = null
     ): Int {
         val src = ctx.source ?: return 0
         val world = src.level ?: return 0
@@ -135,8 +135,8 @@ object RegDumpCommand {
 
     fun CommandSourceStack.dumpResources(
         world: ServerLevel,
-        name: ResourceLocation,
-        list: Map<ResourceLocation, DataResult<JsonElement>>,
+        name: Identifier,
+        list: Map<Identifier, DataResult<JsonElement>>,
         toFile: Boolean = true,
         silent: Boolean = false
     ) {
@@ -172,8 +172,8 @@ object RegDumpCommand {
         return regFolder
     }
 
-    fun ResourceLocation?.fileFormat(): String = this?.toString()?.replace(":", "/") ?: "null"
-    fun ResourceLocation?.fileFormatOLD(): String =
+    fun Identifier?.fileFormat(): String = this?.toString()?.replace(":", "/") ?: "null"
+    fun Identifier?.fileFormatOLD(): String =
         this?.toString()?.replace("minecraft:", "")?.replace(":", "-") ?: "null"
 
 }

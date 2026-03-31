@@ -25,7 +25,7 @@ package org.teamvoided.creative_works.comands
 //            val featNamespace = argument("namespace", word()).suggests { cont, builder ->
 //                builder.listSuggestions(
 //                    cont.source.server.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE)
-//                        ?.keySet()?.map(ResourceLocation::getNamespace)?.toSet() ?: setOf()
+//                        ?.keySet()?.map(Identifier::getNamespace)?.toSet() ?: setOf()
 //                )
 //            }.executes {
 //                placeAll(it, getString(it, "namespace"), BlockPos.containing(it.getSource().position))

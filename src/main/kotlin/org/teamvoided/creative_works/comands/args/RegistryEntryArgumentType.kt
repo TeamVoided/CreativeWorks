@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import java.util.concurrent.CompletableFuture
 import kotlin.jvm.optionals.getOrNull
@@ -37,7 +37,7 @@ object RegistryEntryArgumentType {
     fun <T> getEntry(
         ctx: CommandContext<CommandSourceStack>, name: String, registry: ResourceKey<Registry<T>>,
     ): Holder.Reference<T> {
-        val id = ctx.getArgument(name, ResourceLocation::class.java)
+        val id = ctx.getArgument(name, Identifier::class.java)
         return getRegistry(ctx, registry).getHolder(id).getOrNull()
             ?: throw UNKNOWN_REGISTRY_ENTRY_EXCEPTION.create(id)
     }

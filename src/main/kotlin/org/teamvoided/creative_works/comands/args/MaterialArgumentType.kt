@@ -13,19 +13,19 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.commands.Commands
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.teamvoided.creative_works.util.getRegistry
 import java.util.concurrent.CompletableFuture
 
 object MaterialArgumentType {
-    fun materialArg(name: String): RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> {
+    fun materialArg(name: String): RequiredArgumentBuilder<CommandSourceStack, Identifier> {
         return Commands.argument(name, ResourceLocationArgument.id())
             .suggests(MaterialArgumentType::listSuggestions)
     }
 
     @Throws(CommandSyntaxException::class)
     fun getMaterial(ctx: CommandContext<CommandSourceStack>, name: String): TrimMaterial {
-        val id = ctx.getArgument(name, ResourceLocation::class.java)
+        val id = ctx.getArgument(name, Identifier::class.java)
         return ctx.getRegistry(Registries.TRIM_MATERIAL).get(id) ?: throw UNKNOWN_MATERIAL_EXCEPTION.create(id)
     }
 

@@ -13,7 +13,7 @@ import net.minecraft.commands.arguments.coordinates.BlockPosArgument.getSpawnabl
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Display.BlockDisplay
 import net.minecraft.world.entity.EntityType
@@ -174,5 +174,5 @@ object PlaceAllCommand {
         )
     }
 
-    private fun getId(block: Block): ResourceLocation = BuiltInRegistries.BLOCK.getKey(block)
+    private fun getId(block: Block): Identifier = BuiltInRegistries.BLOCK.getKey(block)
 }

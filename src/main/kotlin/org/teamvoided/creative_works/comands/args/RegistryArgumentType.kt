@@ -11,7 +11,7 @@ import net.minecraft.core.Registry
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.getRegistry
 import java.util.concurrent.CompletableFuture
@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture
 object RegistryArgumentType {
     val REGISTRY = "registry"
     val ENTRY = "entry"
-    fun registryArg(name: String = REGISTRY): RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> =
+    fun registryArg(name: String = REGISTRY): RequiredArgumentBuilder<CommandSourceStack, Identifier> =
         argument(name, id()).suggests(::listSuggestions)
 
     fun regEntryArg(name: String = ENTRY, regName: String = REGISTRY) =
@@ -27,7 +27,7 @@ object RegistryArgumentType {
             builder.listSuggestions(getRegistry(ctx, regName).registryKeySet().map { it.location().toString() }.toList())
         }
 
-    fun registryTagArg(name: String = REGISTRY): RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> =
+    fun registryTagArg(name: String = REGISTRY): RequiredArgumentBuilder<CommandSourceStack, Identifier> =
         argument(name, id()).suggests(::listSuggestionsTagsOnly)
 
     fun regTagEntryArg(name: String = ENTRY, regName: String = REGISTRY) =
@@ -37,14 +37,14 @@ object RegistryArgumentType {
 
     @Throws(CommandSyntaxException::class)
     fun getRegistry(ctx: CommandContext<CommandSourceStack>, name: String = REGISTRY): Registry<out Any> {
-        val id = ctx.getArgument(name, ResourceLocation::class.java)
+        val id = ctx.getArgument(name, Identifier::class.java)
         return ctx.source.level.registryAccess().getRegistry(id)
             ?: throw UNKNOWN_REGISTRY_EXCEPTION.create(id)
     }
 
     @Throws(CommandSyntaxException::class)
-    fun getEntry(ctx: CommandContext<CommandSourceStack>, name: String = ENTRY): ResourceLocation =
-        ctx.getArgument(name, ResourceLocation::class.java)
+    fun getEntry(ctx: CommandContext<CommandSourceStack>, name: String = ENTRY): Identifier =
+        ctx.getArgument(name, Identifier::class.java)
 
     private fun listSuggestions(
         ctx: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder

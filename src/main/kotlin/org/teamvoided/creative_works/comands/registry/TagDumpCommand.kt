@@ -6,7 +6,7 @@ import net.minecraft.core.Registry
 import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegistry
@@ -28,7 +28,7 @@ object TagDumpCommand {
         regTagEntryArg().executes { tagDump(it, getRegistry(it), getEntry(it)) }.buildChildOf(reg)
     }
 
-    private fun tagDump(ctx: CommandContext<CommandSourceStack>, reg: Registry<out Any>?, entryId: ResourceLocation?): Int {
+    private fun tagDump(ctx: CommandContext<CommandSourceStack>, reg: Registry<out Any>?, entryId: Identifier?): Int {
         if (reg == null || entryId == null) return 0
         val src = ctx.source
 

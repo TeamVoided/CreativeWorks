@@ -13,7 +13,7 @@ import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.registry.TagDumpCommand.ctc
@@ -38,7 +38,7 @@ fun CommandSourceStack.error(msg: String) = this.sendFailure(Component.literal(m
 fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
 fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))
 
-fun <T> Registry<T>.getTag(id: ResourceLocation): Optional<Named<T>> = this.getTag(TagKey.create<T>(this.key(), id))
+fun <T> Registry<T>.getTag(id: Identifier): Optional<Named<T>> = this.getTag(TagKey.create<T>(this.key(), id))
 
 
 fun ltxt(s: String) = Component.literal(s)
@@ -117,11 +117,11 @@ fun Color.toHSL(): Triple<Int, Int, Int> {
 }
 
 fun <T> sortTags(a: TagKey<T>, b: TagKey<T>) = sortIdentifier(a.location, b.location)
-fun sortIdentifier(a: ResourceLocation, b: ResourceLocation) = a.path.compareTo(b.path)
+fun sortIdentifier(a: Identifier, b: Identifier) = a.path.compareTo(b.path)
 
 fun <T, R : Registry<T>> CommandContext<CommandSourceStack>.getRegistry(key: ResourceKey<R>): Registry<T> =
     this.source.level.registryAccess().registryOrThrow(key)
 
-fun RegistryAccess.getRegistry(id: ResourceLocation): Registry<out Any>? =
+fun RegistryAccess.getRegistry(id: Identifier): Registry<out Any>? =
     this.registry(ResourceKey.createRegistryKey<Any>(id)).getOrNull()
 

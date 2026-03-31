@@ -19,7 +19,7 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure
@@ -70,7 +70,7 @@ object StructureCommand {
                     val idn = structure.startPool.unwrapKey().get().location()
                     log.info("ORIGIN_POOL - [{}]", idn)
 
-                    val placedPools = mutableSetOf<ResourceLocation>()
+                    val placedPools = mutableSetOf<Identifier>()
                     val toPalace = mutableSetOf(idn)
 
                     var xOffset = 0
@@ -111,8 +111,8 @@ object StructureCommand {
         pool: StructureTemplatePool,
         world: ServerLevel,
         xOffset: Int,
-        toPalace: MutableSet<ResourceLocation>,
-        placedPools: MutableSet<ResourceLocation>,
+        toPalace: MutableSet<Identifier>,
+        placedPools: MutableSet<Identifier>,
         originPos: BlockPos,
         didntPlace: MutableSet<String>
     ): Int {
@@ -168,15 +168,15 @@ object StructureCommand {
         world: ServerLevel,
         zOffset: Int,
         xOffset: Int,
-        toPalace: MutableSet<ResourceLocation>,
-        placedPools: MutableSet<ResourceLocation>,
+        toPalace: MutableSet<Identifier>,
+        placedPools: MutableSet<Identifier>,
         originPos: BlockPos
     ): Pair<Int, Int> {
         val struct = sPoolEle.getTemplate(world.structureManager)
         struct.palettes.forEach { i ->
             for (it in i.blocks) {
-                val pool = ResourceLocation.parse(it.nbt()?.getString("pool") ?: continue)
-                if (pool == ResourceLocation.withDefaultNamespace("empty")) continue
+                val pool = Identifier.parse(it.nbt()?.getString("pool") ?: continue)
+                if (pool == Identifier.withDefaultNamespace("empty")) continue
                 if (!placedPools.contains(pool)) toPalace.add(pool)
             }
         }

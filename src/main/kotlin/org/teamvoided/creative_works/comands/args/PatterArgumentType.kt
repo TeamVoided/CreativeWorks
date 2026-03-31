@@ -13,19 +13,19 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.commands.Commands
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.teamvoided.creative_works.util.getRegistry
 import java.util.concurrent.CompletableFuture
 
 object PatterArgumentType {
-    fun patternArg(name: String): RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> {
+    fun patternArg(name: String): RequiredArgumentBuilder<CommandSourceStack, Identifier> {
         return Commands.argument(name, ResourceLocationArgument.id())
             .suggests(PatterArgumentType::listSuggestions)
     }
 
     @Throws(CommandSyntaxException::class)
     fun getPattern(ctx: CommandContext<CommandSourceStack>, name: String): TrimPattern {
-        val id = ctx.getArgument(name, ResourceLocation::class.java)
+        val id = ctx.getArgument(name, Identifier::class.java)
         return ctx.getRegistry(Registries.TRIM_PATTERN).get(id) ?: throw UNKNOWN_PATTERN_EXCEPTION.create(id)
     }
 
