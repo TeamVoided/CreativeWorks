@@ -1,7 +1,7 @@
 package org.teamvoided.creative_works.client
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 
 
 @Suppress("unused")
@@ -11,8 +11,8 @@ object TestRenderer {
     val color = DebugWidgetRegistry.addColor(": Color")
 
     fun init() = HudRenderCallback.EVENT.register { gui, delta ->
-        gui.drawText(
-            MinecraftClient.getInstance().textRenderer,
+        gui.drawString(
+            Minecraft.getInstance().font,
             "Debug Text",
             textX.get(), textY.get(),
             color.getColor(), true

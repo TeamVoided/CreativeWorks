@@ -1,13 +1,13 @@
 package org.teamvoided.creative_works.util
 
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.util.math.BlockPos
+import net.minecraft.core.BlockPos
 
 object DebugRenderer {
     private var shouldRender = false
     private val debugValues = mutableMapOf<String, Any?>() //Name - Value
-    private var client: MinecraftClient? = null
+    private var client: Minecraft? = null
 
     fun toggle() {
         shouldRender = !shouldRender
@@ -21,15 +21,15 @@ object DebugRenderer {
     private fun MutableMap.MutableEntry<String, Any?>.toText(): String = "${this.key}: ${this.value}"
 
     fun render(gui: GuiGraphics) {
-        client = MinecraftClient.getInstance()
+        client = Minecraft.getInstance()
         if (!shouldRender || client == null) return
-        val textRend = client!!.textRenderer
+        val textRend = client!!.font
 
         var idx = 0
         for (it in debugValues) {
-            gui.drawText(textRend, it.toText(), 3, 3 + ((1 + textRend.fontHeight) * idx), 0xffffff, true)
+            gui.drawString(textRend, it.toText(), 3, 3 + ((1 + textRend.lineHeight) * idx), 0xffffff, true)
             idx++
         }
     }
-    fun getCords(c: MinecraftClient? = client): BlockPos? = c?.player?.blockPos
+    fun getCords(c: Minecraft? = client): BlockPos? = c?.player?.blockPosition()
 }

@@ -4,20 +4,20 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.FloatArgumentType.floatArg
 import com.mojang.brigadier.arguments.FloatArgumentType.getFloat
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.argument.EntityArgumentType.entities
-import net.minecraft.command.argument.EntityArgumentType.getEntities
-import net.minecraft.entity.Entity
-import net.minecraft.entity.LivingEntity
-import net.minecraft.server.command.CommandManager.argument
-import net.minecraft.server.command.CommandManager.literal
-import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.commands.arguments.EntityArgument.entities
+import net.minecraft.commands.arguments.EntityArgument.getEntities
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.Commands.literal
+import net.minecraft.commands.CommandSourceStack
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
 import org.teamvoided.creative_works.util.error
 import org.teamvoided.creative_works.util.message
 
 object HealthCommand {
-    fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
+    fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val root = literal("health")
             .executes { exe(it, null, null) }
             .buildChildOf(dispatcher.root)
@@ -32,7 +32,7 @@ object HealthCommand {
         dispatcher.register(literal("heal").executes { exe(it, null, null) }.redirect(root))
     }
 
-    fun exe(ctx: CommandContext<ServerCommandSource>, amountIn: Float?, entityIn: MutableCollection<out Entity>?): Int {
+    fun exe(ctx: CommandContext<CommandSourceStack>, amountIn: Float?, entityIn: MutableCollection<out Entity>?): Int {
         val src = ctx.source ?: return 0
         val toHeal = mutableListOf<LivingEntity>()
         if (entityIn == null) toHeal.add(src.player ?: return 0)

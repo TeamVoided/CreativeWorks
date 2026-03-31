@@ -2,14 +2,14 @@ package org.teamvoided.creative_works.comands.utils
 
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
-import net.minecraft.network.packet.payload.CustomPayload
-import net.minecraft.server.command.CommandManager.literal
-import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.commands.Commands.literal
+import net.minecraft.commands.CommandSourceStack
 import org.teamvoided.creative_works.network.CWNet.pack
 import org.teamvoided.creative_works.util.buildChildOf
 
 object PacketCommand {
-    private fun create(dispatcher: CommandDispatcher<ServerCommandSource>, name: String, packet: CustomPayload) {
+    private fun create(dispatcher: CommandDispatcher<CommandSourceStack>, name: String, packet: CustomPacketPayload) {
         literal(name).executes cmd@{
             val player = it.source?.player ?: return@cmd 0
             ServerPlayNetworking.send(player, packet)
@@ -17,9 +17,9 @@ object PacketCommand {
         }.buildChildOf(dispatcher.root)
     }
 
-    fun CommandDispatcher<ServerCommandSource>.createPacket(name: String, packet: CustomPayload) =
+    fun CommandDispatcher<CommandSourceStack>.createPacket(name: String, packet: CustomPacketPayload) =
         create(this, name, packet)
 
-    fun CommandDispatcher<ServerCommandSource>.createIdPacket(name: String, id: Int) =
+    fun CommandDispatcher<CommandSourceStack>.createIdPacket(name: String, id: Int) =
         createPacket(name, id.pack())
 }

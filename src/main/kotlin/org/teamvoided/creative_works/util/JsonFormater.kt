@@ -5,19 +5,19 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import net.minecraft.text.MutableText
-import net.minecraft.text.Text
-import net.minecraft.text.Text.literal
-import net.minecraft.util.Formatting
+import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.Component.literal
+import net.minecraft.ChatFormatting
 
-val NULL_COLOR = Formatting.LIGHT_PURPLE
-val BOOLEAN_COLOR = Formatting.YELLOW
-val NUMBER_COLOR = Formatting.GOLD
-val STRING_COLOR = Formatting.GREEN
+val NULL_COLOR = ChatFormatting.LIGHT_PURPLE
+val BOOLEAN_COLOR = ChatFormatting.YELLOW
+val NUMBER_COLOR = ChatFormatting.GOLD
+val STRING_COLOR = ChatFormatting.GREEN
 
-val KEY_COLOR = Formatting.GRAY
+val KEY_COLOR = ChatFormatting.GRAY
 
-val ERROR_COLOR = Formatting.RED
+val ERROR_COLOR = ChatFormatting.RED
 
 const val MAX_LENGTH = 51
 
@@ -31,7 +31,7 @@ fun sign(sign: String) = text(sign, KEY_COLOR)
 
 fun error(msg: String) = text(msg, ERROR_COLOR)
 
-fun basicJsonToText(json: JsonElement): List<Text> = buildList {
+fun basicJsonToText(json: JsonElement): List<Component> = buildList {
     when (json) {
         is JsonNull -> add(NULL)
         is JsonPrimitive -> {
@@ -81,7 +81,7 @@ fun basicJsonToText(json: JsonElement): List<Text> = buildList {
     }
 }
 
-fun jsonToText(json: JsonElement): List<Text> = buildList {
+fun jsonToText(json: JsonElement): List<Component> = buildList {
     when (json) {
         is JsonNull -> add(NULL)
         is JsonPrimitive -> {
@@ -119,7 +119,7 @@ fun jsonToText(json: JsonElement): List<Text> = buildList {
     }
 }
 
-private fun MutableList<Text>.parseArray(array: JsonArray) {
+private fun MutableList<Component>.parseArray(array: JsonArray) {
     if (array.isEmpty) {
         add(sign("[]"))
         return
@@ -149,8 +149,8 @@ private fun MutableList<Text>.parseArray(array: JsonArray) {
     add(sign(" ]"))
 }
 
-fun Collection<Text>.toText() = this.reduce { acc, text -> acc.copy().append(text) }
+fun Collection<Component>.toText() = this.reduce { acc, text -> acc.copy().append(text) }
 
-fun text(obj: Any): MutableText = literal(obj.toString())
-fun MutableText.color(color: Formatting): MutableText = this.formatted(color)
-fun text(obj: Any, color: Formatting): MutableText = text(obj).color(color)
+fun text(obj: Any): MutableComponent = literal(obj.toString())
+fun MutableComponent.color(color: ChatFormatting): MutableComponent = this.withStyle(color)
+fun text(obj: Any, color: ChatFormatting): MutableComponent = text(obj).color(color)

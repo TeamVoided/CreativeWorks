@@ -2,23 +2,23 @@ package org.teamvoided.creative_works.client.screen
 
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.text.Text
-import net.minecraft.util.Util
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.network.chat.Component
+import net.minecraft.Util
 import java.awt.Color
 import kotlin.math.abs
 
-class SpleenScreen : Screen(Text.literal("Gay!")) {
+class SpleenScreen : Screen(Component.literal("Gay!")) {
     override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         super.render(graphics, mouseX, mouseY, delta)
-        val l = Util.getMeasuringTimeMs()
+        val l = Util.getMillis()
 
         val i = this.width / 2
         val j = this.height / 2
         drawChunkMap(graphics, i, j, 2, 0)
         val k: Int = 10 + 9 + 2
-        graphics.drawCenteredShadowedText(this.textRenderer, Text.literal("GAY!"), i, j - k, 16777215)
+        graphics.drawCenteredString(this.font, Component.literal("GAY!"), i, j - k, 16777215)
     }
 
     fun drawChunkMap(
@@ -37,7 +37,7 @@ class SpleenScreen : Screen(Text.literal("Gay!")) {
         val o = centerY - m / 2
         val outOff = k / 2 + 1
         val outline = -16772609
-        graphics.runManaged {
+        graphics.drawManaged {
             if (pixelMargin != 0) {
                 graphics.fill(centerX - outOff, centerY - outOff, centerX - outOff + 1, centerY + outOff, outline)
                 graphics.fill(centerX + outOff - 1, centerY - outOff, centerX + outOff, centerY + outOff, outline)
@@ -61,7 +61,7 @@ class SpleenScreen : Screen(Text.literal("Gay!")) {
         var y1 = y1.toFloat()
         var x2proc = x2.toFloat()
         var y2 = y2.toFloat()
-        val matrix4f = this.matrices.peek().model
+        val matrix4f = this.pose().last().pose()
         /*if (x1proc < x2proc) {
             x1proc = x2.toFloat()
             x2proc = x1.toFloat()
@@ -73,11 +73,11 @@ class SpleenScreen : Screen(Text.literal("Gay!")) {
             y2 = i
         }*/
 
-        val vertexConsumer: VertexConsumer = this.vertexConsumers.getBuffer(RenderLayer.getGui())
-        vertexConsumer.xyz(matrix4f, x1proc, y1, z.toFloat()).color(color)
-        vertexConsumer.xyz(matrix4f, x1proc, y2, z.toFloat()).color(color)
-        vertexConsumer.xyz(matrix4f, x2proc, y2, z.toFloat()).color(color)
-        vertexConsumer.xyz(matrix4f, x2proc, y1, z.toFloat()).color(color)
+        val vertexConsumer: VertexConsumer = this.bufferSource().getBuffer(RenderType.gui())
+        vertexConsumer.addVertex(matrix4f, x1proc, y1, z.toFloat()).setColor(color)
+        vertexConsumer.addVertex(matrix4f, x1proc, y2, z.toFloat()).setColor(color)
+        vertexConsumer.addVertex(matrix4f, x2proc, y2, z.toFloat()).setColor(color)
+        vertexConsumer.addVertex(matrix4f, x2proc, y1, z.toFloat()).setColor(color)
 //        this.flushIfUnmanaged()
     }
 }

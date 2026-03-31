@@ -1,6 +1,6 @@
 package org.teamvoided.creative_works.util.trash
 
-import net.minecraft.text.Text.literal
+import net.minecraft.network.chat.Component.literal
 import java.io.StringWriter
 
 class TextWriter : StringWriter() {

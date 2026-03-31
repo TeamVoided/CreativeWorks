@@ -1,10 +1,10 @@
 package org.teamvoided.creative_works.init
 
-import net.minecraft.client.world.GeneratorType
-import net.minecraft.registry.Registries.CHUNK_GENERATOR
-import net.minecraft.registry.Registry
-import net.minecraft.registry.RegistryKey
-import net.minecraft.registry.RegistryKeys
+import net.minecraft.world.level.levelgen.presets.WorldPreset
+import net.minecraft.core.registries.BuiltInRegistries.CHUNK_GENERATOR
+import net.minecraft.core.Registry
+import net.minecraft.resources.ResourceKey
+import net.minecraft.core.registries.Registries
 import org.teamvoided.creative_works.CreativeWorks.id
 import org.teamvoided.creative_works.world.gen.FilteredDebugChunkGenerator
 
@@ -15,5 +15,5 @@ object CWWorldTypes {
         Registry.register(CHUNK_GENERATOR, id("filtered_debug"), FilteredDebugChunkGenerator.CODEC)
     }
 
-    fun key(path: String): RegistryKey<GeneratorType> = RegistryKey.of(RegistryKeys.GENERATOR_TYPE, id(path))
+    fun key(path: String): ResourceKey<WorldPreset> = ResourceKey.create(Registries.WORLD_PRESET, id(path))
 }

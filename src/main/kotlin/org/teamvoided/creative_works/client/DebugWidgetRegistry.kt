@@ -4,7 +4,7 @@ import imgui.ImColor
 import imgui.ImGui
 import imgui.type.*
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.minecraft.client.option.KeyBind
+import net.minecraft.client.KeyMapping
 import org.lwjgl.glfw.GLFW
 import xyz.breadloaf.imguimc.Imguimc
 import xyz.breadloaf.imguimc.interfaces.Renderable
@@ -17,11 +17,11 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKey
 object DebugWidgetRegistry {
     private val customScreen = CustomScreen()
     var widgetsEnabled = false
-    val debugKey: KeyBind = makeKey(KeyBind("Debug Widget Key", GLFW.GLFW_KEY_V, "Debug"))
+    val debugKey: KeyMapping = makeKey(KeyMapping("Debug Widget Key", GLFW.GLFW_KEY_V, "Debug"))
 
     fun init() {
         ClientTickEvents.END_CLIENT_TICK.register {
-            if (debugKey.wasPressed()) {
+            if (debugKey.consumeClick()) {
                 widgetsEnabled = !widgetsEnabled
                 if (widgetsEnabled) Imguimc.pushRenderable(customScreen)
                 else Imguimc.pullRenderableAfterRender(customScreen)

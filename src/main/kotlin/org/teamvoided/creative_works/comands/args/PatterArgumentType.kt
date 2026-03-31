@@ -6,38 +6,39 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.minecraft.command.CommandSource
-import net.minecraft.command.argument.IdentifierArgumentType
-import net.minecraft.item.trim.ArmorTrimPattern
-import net.minecraft.registry.RegistryKeys
-import net.minecraft.server.command.CommandManager
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.commands.SharedSuggestionProvider
+import net.minecraft.commands.arguments.ResourceLocationArgument
+import net.minecraft.world.item.armortrim.TrimPattern
+import net.minecraft.core.registries.Registries
+import net.minecraft.commands.Commands
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import org.teamvoided.creative_works.util.getRegistry
 import java.util.concurrent.CompletableFuture
 
 object PatterArgumentType {
-    fun patternArg(name: String): RequiredArgumentBuilder<ServerCommandSource, Identifier> {
-        return CommandManager.argument(name, IdentifierArgumentType.identifier())
+    fun patternArg(name: String): RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> {
+        return Commands.argument(name, ResourceLocationArgument.id())
             .suggests(PatterArgumentType::listSuggestions)
     }
 
     @Throws(CommandSyntaxException::class)
-    fun getPattern(ctx: CommandContext<ServerCommandSource>, name: String): ArmorTrimPattern {
-        val id = ctx.getArgument(name, Identifier::class.java)
-        return ctx.getRegistry(RegistryKeys.TRIM_PATTERN).get(id) ?: throw UNKNOWN_PATTERN_EXCEPTION.create(id)
+    fun getPattern(ctx: CommandContext<CommandSourceStack>, name: String): TrimPattern {
+        val id = ctx.getArgument(name, ResourceLocation::class.java)
+        return ctx.getRegistry(Registries.TRIM_PATTERN).get(id) ?: throw UNKNOWN_PATTERN_EXCEPTION.create(id)
     }
 
     private fun listSuggestions(
-        commandContext: CommandContext<ServerCommandSource>, suggestionsBuilder: SuggestionsBuilder
+        commandContext: CommandContext<CommandSourceStack>, suggestionsBuilder: SuggestionsBuilder
     ): CompletableFuture<Suggestions> {
-        return if (commandContext.source is CommandSource) CommandSource.suggestMatching(
-            commandContext.source.world.registryManager.get(RegistryKeys.TRIM_PATTERN).keys.map { it.value.toString() },
+        return if (commandContext.source is SharedSuggestionProvider) SharedSuggestionProvider.suggest(
+            commandContext.source.level.registryAccess().registryOrThrow(Registries.TRIM_PATTERN).registryKeySet()
+                .map { it.location().toString() },
             suggestionsBuilder
         ) else Suggestions.empty()
     }
 
     private val UNKNOWN_PATTERN_EXCEPTION =
-        DynamicCommandExceptionType { Text.translatable("Pattern %s not found!", it) }
+        DynamicCommandExceptionType { Component.translatable("Pattern %s not found!", it) }
 }

@@ -3,18 +3,18 @@ package org.teamvoided.creative_works.comands.worldgen
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.block.Blocks
-import net.minecraft.command.CommandBuildContext
-import net.minecraft.registry.Holder
-import net.minecraft.registry.RegistryKeys
-import net.minecraft.server.command.CommandManager.literal
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.world.gen.DensityFunction
-import net.minecraft.world.gen.StructureWeightSampler
-import net.minecraft.world.gen.chunk.AquiferSampler
-import net.minecraft.world.gen.chunk.Blender
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings
-import net.minecraft.world.gen.chunk.ChunkNoiseSampler
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.commands.CommandBuildContext
+import net.minecraft.core.Holder
+import net.minecraft.core.registries.Registries
+import net.minecraft.commands.Commands.literal
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.world.level.levelgen.DensityFunction
+import net.minecraft.world.level.levelgen.Beardifier
+import net.minecraft.world.level.levelgen.Aquifer
+import net.minecraft.world.level.levelgen.blending.Blender
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings
+import net.minecraft.world.level.levelgen.NoiseChunk
 import org.teamvoided.creative_works.comands.args.RegistryEntryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryEntryArgumentType.registryEntryArg
 import org.teamvoided.creative_works.util.buildChildOf
@@ -26,48 +26,48 @@ object SplineCommand {
 //    val limit = DebugWidgetRegistry.addDouble(": Limit", 1.0)
 //    val posLabel = DebugWidgetRegistry.addString("Noise:", "")
 //    val breakButton = DebugWidgetRegistry.addButton("Break")
-    fun init(dispatcher: CommandDispatcher<ServerCommandSource>, ctx: CommandBuildContext) {
+    fun init(dispatcher: CommandDispatcher<CommandSourceStack>, ctx: CommandBuildContext) {
         val root = literal("spline").buildChildOf(dispatcher.root)
 
-        registryEntryArg("id", RegistryKeys.DENSITY_FUNCTION).executes {
-            exe(it, getEntry(it, "id", RegistryKeys.DENSITY_FUNCTION))
+        registryEntryArg("id", Registries.DENSITY_FUNCTION).executes {
+            exe(it, getEntry(it, "id", Registries.DENSITY_FUNCTION))
         }.buildChildOf(root)
     }
 
-    fun exe(ctx: CommandContext<ServerCommandSource>, entry: Holder.Reference<DensityFunction>): Int {
+    fun exe(ctx: CommandContext<CommandSourceStack>, entry: Holder.Reference<DensityFunction>): Int {
         val src = ctx.source ?: return 0
-        val world = src.world ?: return 0
+        val world = src.level ?: return 0
 
         val denseFn = entry.value()
         base@
         for (chunkX in -1..1) {
             for (chunkZ in -1..1) {
                 val chunk = world.getChunk(chunkX, chunkZ)
-                val set = ChunkNoiseSampler.create(
+                val set = NoiseChunk.forChunk(
                     chunk,
-                    world.chunkManager.randomState,
-                    StructureWeightSampler.createSampler(world.structureManager, chunk.getPos()),
-                    world.registryManager.get(RegistryKeys.CHUNK_GENERATOR_SETTINGS)
-                        .getOrThrow(ChunkGeneratorSettings.OVERWORLD),
-                    { x, z, t -> AquiferSampler.FluidStatus(0, Blocks.AIR.defaultState) },
+                    world.chunkSource.randomState(),
+                    Beardifier.forStructuresInChunk(world.structureManager(), chunk.getPos()),
+                    world.registryAccess().registryOrThrow(Registries.NOISE_SETTINGS)
+                        .getOrThrow(NoiseGeneratorSettings.OVERWORLD),
+                    { x, z, t -> Aquifer.FluidStatus(0, Blocks.AIR.defaultBlockState()) },
                     Blender.empty()
                 )
                 for (x in 0..16) {
-                    for (y in world.dimension.minY..(128)) {
+                    for (y in world.dimensionType().minY..(128)) {
                         for (z in 0..16) {
-                            val pos = chunk.pos.getBlockPos(x, y, z)
-                            world.chunkManager.chunkGenerator
+                            val pos = chunk.pos.getBlockAt(x, y, z)
+                            world.chunkSource.generator
                             val value = denseFn.compute(set)
 //                            posLabel.set(pos.toString())
 //                            if (breakButton.get()) break@base
                             val state = if (value > 0) colorLis[0] else glassList[0]
-                            world.setBlockState(pos, state.defaultState)
+                            world.setBlockAndUpdate(pos, state.defaultBlockState())
                         }
                     }
                 }
             }
         }
-        src.message("${entry.key.getOrNull()?.value?.path}")
+        src.message("${entry.unwrapKey().getOrNull()?.location()?.path}")
         return Command.SINGLE_SUCCESS
     }
 

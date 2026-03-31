@@ -4,23 +4,27 @@ import com.google.common.collect.Maps
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.datafixers.util.Pair
-import net.minecraft.command.argument.BlockPosArgumentType
-import net.minecraft.component.DataComponentTypes
-import net.minecraft.entity.EquipmentSlot
-import net.minecraft.entity.decoration.ArmorStandEntity
-import net.minecraft.item.*
-import net.minecraft.item.trim.ArmorTrimMaterial
-import net.minecraft.item.trim.ArmorTrimPattern
-import net.minecraft.item.trim.ArmorTrimPermutation
-import net.minecraft.registry.Holder
-import net.minecraft.registry.Registries
-import net.minecraft.registry.RegistryKeys
-import net.minecraft.server.command.CommandManager.argument
-import net.minecraft.server.command.CommandManager.literal
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.text.Text
-import net.minecraft.util.Util
-import net.minecraft.util.math.BlockPos
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.decoration.ArmorStand
+import net.minecraft.world.item.armortrim.TrimMaterial
+import net.minecraft.world.item.armortrim.TrimPattern
+import net.minecraft.world.item.armortrim.ArmorTrim
+import net.minecraft.core.Holder
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.Commands.literal
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.network.chat.Component
+import net.minecraft.Util
+import net.minecraft.core.BlockPos
+import net.minecraft.world.item.ArmorItem
+import net.minecraft.world.item.ArmorMaterial
+import net.minecraft.world.item.ArmorMaterials
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
 import org.teamvoided.creative_works.comands.args.MaterialArgumentType
 import org.teamvoided.creative_works.comands.args.MaterialArgumentType.materialArg
 import org.teamvoided.creative_works.comands.args.PatterArgumentType
@@ -34,18 +38,18 @@ object TrimCommand {
     private var items = false
     private var grid = false
 
-    fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
+    fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val trimNode = literal("trim").buildChildOf(dispatcher.root)
 
         literal("items").executes(TrimCommand::toggleItems).buildChildOf(trimNode)
         literal("grid").executes(TrimCommand::toggleGrid).buildChildOf(trimNode)
 
 
-        val trimNodeBlockPodArg = argument("pos", BlockPosArgumentType.blockPos()).build()
+        val trimNodeBlockPodArg = argument("pos", BlockPosArgument.blockPos()).build()
         trimNode.addChild(trimNodeBlockPodArg)
 
         literal("all")
-            .executes { all(it, BlockPosArgumentType.getBlockPos(it, "pos")) }
+            .executes { all(it, BlockPosArgument.getSpawnablePos(it, "pos")) }
             .buildChildOf(trimNodeBlockPodArg)
 
 
@@ -54,7 +58,7 @@ object TrimCommand {
         val patNodePatArg = patternArg("pattern").executes {
             pat(
                 it, PatterArgumentType.getPattern(it, "pattern"),
-                BlockPosArgumentType.getBlockPos(it, "pos")
+                BlockPosArgument.getSpawnablePos(it, "pos")
             )
         }.build()
         patNode.addChild(patNodePatArg)
@@ -62,7 +66,7 @@ object TrimCommand {
         val matNode = literal("material").build()
         trimNodeBlockPodArg.addChild(matNode)
         materialArg("material").executes {
-            mat(it, MaterialArgumentType.getMaterial(it, "material"), BlockPosArgumentType.getBlockPos(it, "pos"))
+            mat(it, MaterialArgumentType.getMaterial(it, "material"), BlockPosArgument.getSpawnablePos(it, "pos"))
         }.build().childOf(matNode)
 
 
@@ -76,59 +80,59 @@ object TrimCommand {
                 both(
                     it, MaterialArgumentType.getMaterial(it, "material"),
                     PatterArgumentType.getPattern(it, "pattern"),
-                    BlockPosArgumentType.getBlockPos(it, "pos")
+                    BlockPosArgument.getSpawnablePos(it, "pos")
                 )
             }
             .build()
         bothNodeMatArg.addChild(bothNodePatArg)
     }
 
-    private fun toggleItems(c: CommandContext<ServerCommandSource>): Int {
+    private fun toggleItems(c: CommandContext<CommandSourceStack>): Int {
         val src = c.source
         items = !items
-        src.sendSystemMessage(Text.translatable("Items toggled! [%s]", items))
+        src.sendSystemMessage(Component.translatable("Items toggled! [%s]", items))
         return 1
     }
 
-    private fun toggleGrid(c: CommandContext<ServerCommandSource>): Int {
+    private fun toggleGrid(c: CommandContext<CommandSourceStack>): Int {
         val src = c.source
         grid = !grid
-        src.sendSystemMessage(Text.translatable("Grid toggled! [%s]", grid))
+        src.sendSystemMessage(Component.translatable("Grid toggled! [%s]", grid))
         return 1
     }
 
-    private fun all(c: CommandContext<ServerCommandSource>, pos: BlockPos): Int =
+    private fun all(c: CommandContext<CommandSourceStack>, pos: BlockPos): Int =
         spawnArmorTrims(c.source, { true }, { true }, pos, false)
 
-    private fun pat(c: CommandContext<ServerCommandSource>, pat: ArmorTrimPattern, pos: BlockPos): Int =
+    private fun pat(c: CommandContext<CommandSourceStack>, pat: TrimPattern, pos: BlockPos): Int =
         spawnArmorTrims(c.source, { it == pat }, { true }, pos, false)
 
 
-    private fun mat(c: CommandContext<ServerCommandSource>, mat: ArmorTrimMaterial, pos: BlockPos): Int =
+    private fun mat(c: CommandContext<CommandSourceStack>, mat: TrimMaterial, pos: BlockPos): Int =
         spawnArmorTrims(c.source, { true }, { it == mat }, pos, false)
 
     private fun both(
-        c: CommandContext<ServerCommandSource>, mat: ArmorTrimMaterial, pat: ArmorTrimPattern, pos: BlockPos
+        c: CommandContext<CommandSourceStack>, mat: TrimMaterial, pat: TrimPattern, pos: BlockPos
     ): Int =
         spawnArmorTrims(c.source, { it == pat }, { it == mat }, pos, true)
 
 
     private fun spawnArmorTrims(
-        s: ServerCommandSource, patPred: (ArmorTrimPattern) -> Boolean, matPred: (ArmorTrimMaterial) -> Boolean,
+        s: CommandSourceStack, patPred: (TrimPattern) -> Boolean, matPred: (TrimMaterial) -> Boolean,
         blockPos: BlockPos, row: Boolean
     ): Int {
-        val world = s.world
-        val permList = mutableListOf<ArmorTrimPermutation>()
-        val armorReg = Registries.ARMOR_MATERIAL.filter { it != ArmorMaterials.ARMADILLO.value() }
-        val patternReg = world.registryManager.get(RegistryKeys.TRIM_PATTERN)
-        val materialReg = world.registryManager.get(RegistryKeys.TRIM_MATERIAL)
+        val world = s.level
+        val permList = mutableListOf<ArmorTrim>()
+        val armorReg = BuiltInRegistries.ARMOR_MATERIAL.filter { it != ArmorMaterials.ARMADILLO.value() }
+        val patternReg = world.registryAccess().registryOrThrow(Registries.TRIM_PATTERN)
+        val materialReg = world.registryAccess().registryOrThrow(Registries.TRIM_MATERIAL)
 
         val patterns = patternReg.filter(patPred)
         val materials = materialReg.filter(matPred)
 
         patterns.forEach { pattern ->
             materials.forEach { material ->
-                permList.add(ArmorTrimPermutation(materialReg.wrapAsHolder(material), patternReg.wrapAsHolder(pattern)))
+                permList.add(ArmorTrim(materialReg.wrapAsHolder(material), patternReg.wrapAsHolder(pattern)))
             }
         }
 
@@ -140,41 +144,41 @@ object TrimCommand {
                 val x = blockPos.x + 0.5 - (if (row) k else (if (grid) j % patterns.size else j)) * 2.0
                 val y = blockPos.y + (if (row) 0.0 else (k % armorReg.size) * 3.0)
                 val z = blockPos.z + 0.5 + (if (grid) (j / patterns.size) * 5 else 0)
-                val stand = ArmorStandEntity(world, x, y, z)
-                stand.yaw = 180.0f
-                stand.setHideBasePlate(true)
-                stand.setNoGravity(true)
-                stand.addScoreboardTag("placed_with_trim_command")
+                val stand = ArmorStand(world, x, y, z)
+                stand.yRot = 180.0f
+                stand.isNoBasePlate = true
+                stand.isNoGravity = true
+                stand.addTag("placed_with_trim_command")
                 if (items) {
-                    stand.equipStack(EquipmentSlot.MAINHAND, entry.material.value().ingredient.value().defaultStack)
-                    stand.equipStack(EquipmentSlot.OFFHAND, entry.pattern.value().templateItem.value().defaultStack)
+                    stand.setItemSlot(EquipmentSlot.MAINHAND, entry.material().value().ingredient.value().defaultInstance)
+                    stand.setItemSlot(EquipmentSlot.OFFHAND, entry.pattern().value().templateItem.value().defaultInstance)
                 }
 
                 EquipmentSlot.entries.forEach { slot ->
-                    ARMOR_TYPES[Pair.of(Registries.ARMOR_MATERIAL.wrapAsHolder(material), slot)]?.let {
+                    ARMOR_TYPES[Pair.of(BuiltInRegistries.ARMOR_MATERIAL.wrapAsHolder(material), slot)]?.let {
                         val itemStack = ItemStack(it)
-                        itemStack.set(DataComponentTypes.TRIM, entry)
-                        stand.equipStack(slot, itemStack)
+                        itemStack.set(DataComponents.TRIM, entry)
+                        stand.setItemSlot(slot, itemStack)
                     }
                 }
-                world.spawnEntity(stand)
+                world.addFreshEntity(stand)
                 ++k
             }
             ++j
         }
 
-        s.sendFeedback({ Text.literal("Armorstands with trimmed armor spawned around you") }, true)
+        s.sendSuccess({ Component.literal("Armorstands with trimmed armor spawned around you") }, true)
         return 1
     }
 
-    private fun ArmorTrimPermutation.getColor(): Triple<Int, Int, Int>? {
-        val textColor = this.material.value().description.style.color ?: return null
-        return Color(textColor.rgb).toHSL()
+    private fun ArmorTrim.getColor(): Triple<Int, Int, Int>? {
+        val textColor = this.material().value().description.style.color ?: return null
+        return Color(textColor.value).toHSL()
     }
 
 
     private val ARMOR_TYPES = Util.make(Maps.newHashMap<Pair<Holder<ArmorMaterial>, EquipmentSlot>, Item>()) { map ->
-        Registries.ITEM.filterIsInstance<ArmorItem>().filter { it.armorSlot.supportsTrim() }
-            .forEach { map[Pair.of(it.material, it.preferredSlot)] = it }
+        BuiltInRegistries.ITEM.filterIsInstance<ArmorItem>().filter { it.type.hasTrims() }
+            .forEach { map[Pair.of(it.material, it.equipmentSlot)] = it }
     }
 }

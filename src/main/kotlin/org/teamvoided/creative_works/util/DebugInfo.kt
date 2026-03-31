@@ -2,11 +2,11 @@ package org.teamvoided.creative_works.util
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.option.KeyBind
-import net.minecraft.server.world.ServerChunkManager
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.world.gen.DensityFunction.SinglePointContext
+import net.minecraft.client.Minecraft
+import net.minecraft.client.KeyMapping
+import net.minecraft.server.level.ServerChunkCache
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.levelgen.DensityFunction.SinglePointContext
 import org.lwjgl.glfw.GLFW
 import org.teamvoided.creative_works.util.DebugRenderer.addToRenderer
 import org.teamvoided.creative_works.util.DebugRenderer.getCords
@@ -18,7 +18,7 @@ object DebugInfo {
         ClientTickEvents.END_CLIENT_TICK.register { _ ->
             cords()
            worldgenInfo()
-            if (debugKey.wasPressed()) DebugRenderer.toggle()
+            if (debugKey.consumeClick()) DebugRenderer.toggle()
         }
     }
 
@@ -28,12 +28,12 @@ object DebugInfo {
     }
 
     private fun worldgenInfo() {
-        val serverWorld: ServerWorld = getServerWorld() ?: return
-        val serverChunkManager: ServerChunkManager = serverWorld.chunkManager
-        val randomState = serverChunkManager.randomState
+        val serverWorld: ServerLevel = getServerWorld() ?: return
+        val serverChunkManager: ServerChunkCache = serverWorld.chunkSource
+        val randomState = serverChunkManager.randomState()
         val pos = getCords() ?: return
         val decimalFormat = DecimalFormat("0.000")
-        val noiseRouter = randomState.router
+        val noiseRouter = randomState.router()
         val singlePointContext = SinglePointContext(pos.x, pos.y, pos.z)
 //        val d = noiseRouter.weirdness().compute(singlePointContext)
 //        "-------".addToRenderer("NoiseRouter")
@@ -51,10 +51,10 @@ object DebugInfo {
     }
 
     fun keybind(translationKey: String, keyCode: Int, category: String = "") =
-        KeyBindingHelper.registerKeyBinding(KeyBind(translationKey, keyCode, category))
+        KeyBindingHelper.registerKeyBinding(KeyMapping(translationKey, keyCode, category))
 
 
-    private fun getServerWorld(): ServerWorld? {
-        return MinecraftClient.getInstance().server?.getWorld(MinecraftClient.getInstance().world?.registryKey)
+    private fun getServerWorld(): ServerLevel? {
+        return Minecraft.getInstance().singleplayerServer?.getLevel(Minecraft.getInstance().level?.dimension())
     }
 }

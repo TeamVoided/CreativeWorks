@@ -2,13 +2,13 @@ package org.teamvoided.creative_works.comands.registry
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.registry.DefaultedRegistry
-import net.minecraft.registry.Registries
-import net.minecraft.registry.Registry
-import net.minecraft.registry.tag.TagKey
-import net.minecraft.server.command.CommandManager.literal
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.util.Identifier
+import net.minecraft.core.DefaultedRegistry
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.Registry
+import net.minecraft.tags.TagKey
+import net.minecraft.commands.Commands.literal
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.resources.ResourceLocation
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegistry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.regEntryArg
@@ -16,8 +16,8 @@ import org.teamvoided.creative_works.comands.args.RegistryArgumentType.registryT
 import org.teamvoided.creative_works.util.*
 
 object FindTagsCommand {
-    fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
-        val root = literal("findtags").executes { exe(it, Registries.ITEM, null) }.buildChildOf(dispatcher.root)
+    fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {
+        val root = literal("findtags").executes { exe(it, BuiltInRegistries.ITEM, null) }.buildChildOf(dispatcher.root)
         val reg = registryTagArg().buildChildOf(root)
         regEntryArg().executes { exe(it, getRegistry(it), getEntry(it)) }.buildChildOf(reg)
 
@@ -29,19 +29,19 @@ object FindTagsCommand {
 
     }
 
-    fun exe(ctx: CommandContext<ServerCommandSource>, regsitry: Registry<out Any>, entryId: Identifier?): Int {
+    fun exe(ctx: CommandContext<CommandSourceStack>, regsitry: Registry<out Any>, entryId: ResourceLocation?): Int {
         val src = ctx.source ?: return 0
         val player = src.player ?: return 0
 
         var id = entryId
         val tags = if (entryId == null) {
-            val stack = player.mainHandStack
+            val stack = player.mainHandItem
             if (stack.isEmpty) {
                 src.error("You are not holding an item!")
                 return 0
             }
-            id = Registries.ITEM.getId(stack.item)
-            stack.streamTags()
+            id = BuiltInRegistries.ITEM.getKey(stack.item)
+            stack.tags
                 .sorted(::sortTags)
                 .toList()
         } else {
@@ -50,8 +50,8 @@ object FindTagsCommand {
                 src.error("Registry entry \"$entryId\" not found!")
                 return 0
             }
-            if (regsitry is DefaultedRegistry<*> && regsitry.defaultId != entryId && regsitry.get(regsitry.defaultId) == entry) {
-                src.message("\"$entryId\" returned default registry entry: ${regsitry.defaultId}!")
+            if (regsitry is DefaultedRegistry<*> && regsitry.defaultKey != entryId && regsitry.get(regsitry.defaultKey) == entry) {
+                src.message("\"$entryId\" returned default registry entry: ${regsitry.defaultKey}!")
                 return 0
             }
             regsitry.tags
@@ -63,7 +63,7 @@ object FindTagsCommand {
                 }
                 .toList()
         }
-        src.sendNamedList("Entry : $id", id.toString(), "Entry has no tags!", tags.map { it.id.toString() })
+        src.sendNamedList("Entry : $id", id.toString(), "Entry has no tags!", tags.map { it.location.toString() })
         return 1
     }
 }

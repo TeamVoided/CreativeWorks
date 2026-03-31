@@ -7,19 +7,19 @@ import com.mojang.brigadier.arguments.IntegerArgumentType.integer
 import com.mojang.brigadier.arguments.StringArgumentType.word
 import com.mojang.brigadier.arguments.StringArgumentType.getString
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.command.argument.EntityArgumentType.entity
-import net.minecraft.command.argument.EntityArgumentType.getEntity
-import net.minecraft.entity.Entity
-import net.minecraft.server.command.CommandManager.argument
-import net.minecraft.server.command.CommandManager.literal
-import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.commands.arguments.EntityArgument.entity
+import net.minecraft.commands.arguments.EntityArgument.getEntity
+import net.minecraft.world.entity.Entity
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.Commands.literal
+import net.minecraft.commands.CommandSourceStack
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
 import org.teamvoided.creative_works.util.error
 import org.teamvoided.creative_works.util.message
 
 object ApplyCommand {
-    fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
+    fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val root = literal("apply").buildChildOf(dispatcher.root)
 
         val type = argument("type", word())
@@ -36,7 +36,7 @@ object ApplyCommand {
             .buildChildOf(target)
     }
 
-    fun exe(ctx: CommandContext<ServerCommandSource>, type: ApplyType, entity: Entity?, amount: Int): Int {
+    fun exe(ctx: CommandContext<CommandSourceStack>, type: ApplyType, entity: Entity?, amount: Int): Int {
         val src = ctx.source ?: return 0
         val target = entity ?: src.player
         if (target == null) {
@@ -47,12 +47,12 @@ object ApplyCommand {
 
         val message = when (type) {
             ApplyType.FIRE_TICKS -> {
-                target.fireTicks = amount
+                target.remainingFireTicks = amount
                 "Fire ticks set to $amount"
             }
 
             ApplyType.FROZEN_TICKS -> {
-                target.frozenTicks = amount
+                target.ticksFrozen = amount
                 "Frozen ticks set to $amount"
             }
         }
@@ -66,6 +66,6 @@ object ApplyCommand {
     }
 
     private fun applyTypes() = ApplyType.entries.map { it.toString().lowercase() }
-    private fun type(it: CommandContext<ServerCommandSource>) = ApplyType.valueOf(getString(it, "type").uppercase())
+    private fun type(it: CommandContext<CommandSourceStack>) = ApplyType.valueOf(getString(it, "type").uppercase())
 
 }

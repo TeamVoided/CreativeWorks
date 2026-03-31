@@ -3,8 +3,8 @@ package org.teamvoided.creative_works.comands.utils
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.minecraft.registry.HolderLookup
-import net.minecraft.util.Identifier
+import net.minecraft.core.HolderLookup
+import net.minecraft.resources.ResourceLocation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import java.util.function.Function
@@ -14,8 +14,8 @@ object ImprovedLookup {
     fun <S> listElementsAndTags(
         lookup: HolderLookup<S>, ignored: CommandContext<S>, suggestionsBuilder: SuggestionsBuilder,
     ): CompletableFuture<Suggestions> {
-        val list = lookup.streamTagKeys().map { "#${it.id()}" }.toList() +
-                lookup.streamElementKeys().map { it.value.toString() }.toList()
+        val list = lookup.listTagIds().map { "#${it.location()}" }.toList() +
+                lookup.listElementIds().map { it.location().toString() }.toList()
         return suggestionsBuilder.listSuggestions(list)
     }
 
@@ -29,7 +29,7 @@ object ImprovedLookup {
     @JvmStatic
     fun <T> filterByQuery(
         candidates: Iterable<T>, query: String, prefix: String,
-        getId: Function<T, Identifier>, addToBuilder: Consumer<T>,
+        getId: Function<T, ResourceLocation>, addToBuilder: Consumer<T>,
     ) {
         for (obj in candidates) {
             val id = prefix + getId.apply(obj).toString()

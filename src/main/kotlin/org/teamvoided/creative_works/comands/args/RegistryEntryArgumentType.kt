@@ -5,14 +5,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.minecraft.command.argument.IdentifierArgumentType.identifier
-import net.minecraft.registry.Holder
-import net.minecraft.registry.Registry
-import net.minecraft.registry.RegistryKey
-import net.minecraft.server.command.CommandManager.argument
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.commands.arguments.ResourceLocationArgument.id
+import net.minecraft.core.Holder
+import net.minecraft.core.Registry
+import net.minecraft.resources.ResourceKey
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import java.util.concurrent.CompletableFuture
 import kotlin.jvm.optionals.getOrNull
@@ -21,46 +21,46 @@ object RegistryEntryArgumentType {
     val REGISTRY = "registry"
     val ENTRY = "entry"
 
-    fun <T> registryEntryArg(name: String, registry: RegistryKey<Registry<T>>) =
-        argument(name, identifier()).suggests { ctx, builder ->
-            builder.listSuggestions(getRegistry(ctx, registry).keys.map { it.value.toString() }.toList())
+    fun <T> registryEntryArg(name: String, registry: ResourceKey<Registry<T>>) =
+        argument(name, id()).suggests { ctx, builder ->
+            builder.listSuggestions(getRegistry(ctx, registry).registryKeySet().map { it.location().toString() }.toList())
         }
 
 
     @Throws(CommandSyntaxException::class)
-    fun <T> getRegistry(ctx: CommandContext<ServerCommandSource>, name: RegistryKey<Registry<T>>): Registry<T> {
-        return ctx.source.world.registryManager.getOptional(name).getOrNull()
+    fun <T> getRegistry(ctx: CommandContext<CommandSourceStack>, name: ResourceKey<Registry<T>>): Registry<T> {
+        return ctx.source.level.registryAccess().registry(name).getOrNull()
             ?: throw UNKNOWN_REGISTRY_EXCEPTION.create(name)
     }
 
     @Throws(CommandSyntaxException::class)
     fun <T> getEntry(
-        ctx: CommandContext<ServerCommandSource>, name: String, registry: RegistryKey<Registry<T>>,
+        ctx: CommandContext<CommandSourceStack>, name: String, registry: ResourceKey<Registry<T>>,
     ): Holder.Reference<T> {
-        val id = ctx.getArgument(name, Identifier::class.java)
+        val id = ctx.getArgument(name, ResourceLocation::class.java)
         return getRegistry(ctx, registry).getHolder(id).getOrNull()
             ?: throw UNKNOWN_REGISTRY_ENTRY_EXCEPTION.create(id)
     }
 
     private fun listSuggestions(
-        ctx: CommandContext<ServerCommandSource>, builder: SuggestionsBuilder,
+        ctx: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder,
     ): CompletableFuture<Suggestions> {
-        val list = ctx.source.world.registryManager.registries().map { it.value().key.value.toString() }
+        val list = ctx.source.level.registryAccess().registries().map { it.value().key().location().toString() }
         return builder.listSuggestions(list.toList())
     }
 
     private fun listSuggestionsTagsOnly(
-        ctx: CommandContext<ServerCommandSource>, builder: SuggestionsBuilder,
+        ctx: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder,
     ): CompletableFuture<Suggestions> {
-        val list = ctx.source.world.registryManager
+        val list = ctx.source.level.registryAccess()
             .registries().map { it.value() }
-            .filter { it.tagKeys.toList().isNotEmpty() }
-            .map { it.key.value.toString() }
+            .filter { it.tagNames.toList().isNotEmpty() }
+            .map { it.key().location().toString() }
         return builder.listSuggestions(list.toList())
     }
 
     private val UNKNOWN_REGISTRY_EXCEPTION =
-        DynamicCommandExceptionType { Text.translatable("Registry %s not found!", it) }
+        DynamicCommandExceptionType { Component.translatable("Registry %s not found!", it) }
     private val UNKNOWN_REGISTRY_ENTRY_EXCEPTION =
-        DynamicCommandExceptionType { Text.translatable("Registry entry %s not found!", it) }
+        DynamicCommandExceptionType { Component.translatable("Registry entry %s not found!", it) }
 }

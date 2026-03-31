@@ -2,41 +2,41 @@ package org.teamvoided.creative_works.world.gen
 
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.minecraft.block.Block
-import net.minecraft.block.BlockState
-import net.minecraft.block.Blocks
-import net.minecraft.registry.Holder
-import net.minecraft.registry.Registries
-import net.minecraft.registry.RegistryOps
-import net.minecraft.structure.StructureManager
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.ChunkSectionPos
-import net.minecraft.util.math.MathHelper
-import net.minecraft.world.ChunkRegion
-import net.minecraft.world.HeightLimitView
-import net.minecraft.world.Heightmap
-import net.minecraft.world.StructureWorldAccess
-import net.minecraft.world.biome.Biome
-import net.minecraft.world.biome.Biomes
-import net.minecraft.world.biome.source.BiomeAccess
-import net.minecraft.world.biome.source.FixedBiomeSource
-import net.minecraft.world.chunk.Chunk
-import net.minecraft.world.gen.GenerationStep
-import net.minecraft.world.gen.RandomState
-import net.minecraft.world.gen.chunk.Blender
-import net.minecraft.world.gen.chunk.ChunkGenerator
-import net.minecraft.world.gen.chunk.VerticalBlockSample
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.core.Holder
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.resources.RegistryOps
+import net.minecraft.world.level.StructureManager
+import net.minecraft.core.BlockPos
+import net.minecraft.core.SectionPos
+import net.minecraft.util.Mth
+import net.minecraft.server.level.WorldGenRegion
+import net.minecraft.world.level.LevelHeightAccessor
+import net.minecraft.world.level.levelgen.Heightmap
+import net.minecraft.world.level.WorldGenLevel
+import net.minecraft.world.level.biome.Biome
+import net.minecraft.world.level.biome.Biomes
+import net.minecraft.world.level.biome.BiomeManager
+import net.minecraft.world.level.biome.FixedBiomeSource
+import net.minecraft.world.level.chunk.ChunkAccess
+import net.minecraft.world.level.levelgen.GenerationStep
+import net.minecraft.world.level.levelgen.RandomState
+import net.minecraft.world.level.levelgen.blending.Blender
+import net.minecraft.world.level.chunk.ChunkGenerator
+import net.minecraft.world.level.NoiseColumn
 import java.util.concurrent.CompletableFuture
 
 class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerator(FixedBiomeSource(biome)) {
 
     init {
-        BLOCK_STATES = Registries.BLOCK.toList().filter { Registries.BLOCK.getId(it).namespace == MOD_ID }
-            .flatMap { block: Block -> block.stateManager.states.stream().toList() }
+        BLOCK_STATES = BuiltInRegistries.BLOCK.toList().filter { BuiltInRegistries.BLOCK.getKey(it).namespace == MOD_ID }
+            .flatMap { block: Block -> block.stateDefinition.possibleStates.stream().toList() }
 
 
-        X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size.toFloat()))
-        Z_SIDE_LENGTH = MathHelper.ceil(BLOCK_STATES.size.toFloat() / X_SIDE_LENGTH.toFloat())
+        X_SIDE_LENGTH = Mth.ceil(Mth.sqrt(BLOCK_STATES.size.toFloat()))
+        Z_SIDE_LENGTH = Mth.ceil(BLOCK_STATES.size.toFloat() / X_SIDE_LENGTH.toFloat())
     }
 
     companion object {
@@ -45,46 +45,46 @@ class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerat
         }
 
         val MOD_ID = "cinderscapes"
-        var BLOCK_STATES = listOf(Blocks.NETHERITE_BLOCK.defaultState)
+        var BLOCK_STATES = listOf(Blocks.NETHERITE_BLOCK.defaultBlockState())
 
-        var X_SIDE_LENGTH: Int = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size.toFloat()))
-        var Z_SIDE_LENGTH: Int = MathHelper.ceil(BLOCK_STATES.size.toFloat() / X_SIDE_LENGTH.toFloat())
-        val AIR = Blocks.AIR.defaultState
-        val BARRIER = Blocks.BARRIER.defaultState
+        var X_SIDE_LENGTH: Int = Mth.ceil(Mth.sqrt(BLOCK_STATES.size.toFloat()))
+        var Z_SIDE_LENGTH: Int = Mth.ceil(BLOCK_STATES.size.toFloat() / X_SIDE_LENGTH.toFloat())
+        val AIR = Blocks.AIR.defaultBlockState()
+        val BARRIER = Blocks.BARRIER.defaultBlockState()
         const val BLOCK_MARGIN: Int = 2
         const val HEIGHT: Int = 70
         const val BARRIER_HEIGHT: Int = 60
     }
 
-    override fun getCodec(): MapCodec<out ChunkGenerator?> = CODEC
+    override fun codec(): MapCodec<out ChunkGenerator?> = CODEC
     override fun buildSurface(
-        region: ChunkRegion, structureManager: StructureManager, randomState: RandomState, chunk: Chunk
+        region: WorldGenRegion, structureManager: StructureManager, randomState: RandomState, chunk: ChunkAccess
     ) = Unit
 
-    override fun generateFeatures(world: StructureWorldAccess, chunk: Chunk, structureManager: StructureManager?) {
-        val mutable = BlockPos.Mutable()
+    override fun applyBiomeDecoration(world: WorldGenLevel, chunk: ChunkAccess, structureManager: StructureManager?) {
+        val mutable = BlockPos.MutableBlockPos()
         for (k in 0..15) {
             for (l in 0..15) {
-                val m = ChunkSectionPos.getOffsetPos(chunk.pos.x, k)
-                val n = ChunkSectionPos.getOffsetPos(chunk.pos.z, l)
-                world.setBlockState(mutable.set(m, BARRIER_HEIGHT, n), BARRIER, Block.NOTIFY_LISTENERS)
-                world.setBlockState(mutable.set(m, HEIGHT, n), getBlockState(m, n), Block.NOTIFY_LISTENERS)
+                val m = SectionPos.sectionToBlockCoord(chunk.pos.x, k)
+                val n = SectionPos.sectionToBlockCoord(chunk.pos.z, l)
+                world.setBlock(mutable.set(m, BARRIER_HEIGHT, n), BARRIER, Block.UPDATE_CLIENTS)
+                world.setBlock(mutable.set(m, HEIGHT, n), getBlockState(m, n), Block.UPDATE_CLIENTS)
             }
         }
     }
 
-    override fun populateNoise(
-        blender: Blender, randomState: RandomState, structureManager: StructureManager, chunk: Chunk
+    override fun fillFromNoise(
+        blender: Blender, randomState: RandomState, structureManager: StructureManager, chunk: ChunkAccess
     ) = CompletableFuture.completedFuture(chunk)
 
-    override fun getHeight(
-        x: Int, z: Int, heightmap: Heightmap.Type, world: HeightLimitView, randomState: RandomState
+    override fun getBaseHeight(
+        x: Int, z: Int, heightmap: Heightmap.Types, world: LevelHeightAccessor, randomState: RandomState
     ) = 0
 
-    override fun getColumnSample(x: Int, z: Int, world: HeightLimitView, randomState: RandomState) =
-        VerticalBlockSample(0, arrayOfNulls(0))
+    override fun getBaseColumn(x: Int, z: Int, world: LevelHeightAccessor, randomState: RandomState) =
+        NoiseColumn(0, arrayOfNulls(0))
 
-    override fun addDebugLines(lines: List<String>, randomState: RandomState, pos: BlockPos) = Unit
+    override fun addDebugScreenInfo(lines: List<String>, randomState: RandomState, pos: BlockPos) = Unit
 
     fun getBlockState(xI: Int, zI: Int): BlockState {
         var x = xI
@@ -94,7 +94,7 @@ class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerat
             x /= BLOCK_MARGIN
             z /= BLOCK_MARGIN
             if (x <= X_SIDE_LENGTH && z <= Z_SIDE_LENGTH) {
-                val i = MathHelper.abs(x * X_SIDE_LENGTH + z)
+                val i = Mth.abs(x * X_SIDE_LENGTH + z)
                 if (i < BLOCK_STATES.size) blockState = BLOCK_STATES[i]
             }
         }
@@ -102,13 +102,13 @@ class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerat
         return blockState
     }
 
-    override fun carve(
-        chunkRegion: ChunkRegion, seed: Long, randomState: RandomState, biomeAccess: BiomeAccess,
-        structureManager: StructureManager, chunk: Chunk, generationStep: GenerationStep.Carver
+    override fun applyCarvers(
+        chunkRegion: WorldGenRegion, seed: Long, randomState: RandomState, biomeAccess: BiomeManager,
+        structureManager: StructureManager, chunk: ChunkAccess, generationStep: GenerationStep.Carving
     ) = Unit
 
-    override fun populateEntities(region: ChunkRegion) = Unit
-    override fun getMinimumY(): Int = 0
-    override fun getWorldHeight(): Int = 384
+    override fun spawnOriginalMobs(region: WorldGenRegion) = Unit
+    override fun getMinY(): Int = 0
+    override fun getGenDepth(): Int = 384
     override fun getSeaLevel(): Int = 63
 }

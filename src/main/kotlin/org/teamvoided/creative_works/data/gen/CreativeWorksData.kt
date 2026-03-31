@@ -5,9 +5,9 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider
-import net.minecraft.registry.HolderLookup
-import net.minecraft.registry.RegistryKeys
-import net.minecraft.registry.RegistrySetBuilder
+import net.minecraft.core.HolderLookup
+import net.minecraft.core.registries.Registries
+import net.minecraft.core.RegistrySetBuilder
 import org.teamvoided.creative_works.data.gen.prov.GeneratorTypes
 import org.teamvoided.creative_works.data.gen.tags.ItemTagsProvider
 import org.teamvoided.creative_works.data.gen.tags.WorldPresetTagsProvider
@@ -27,14 +27,14 @@ object CreativeWorksData : DataGeneratorEntrypoint {
     }
 
     override fun buildRegistry(gen: RegistrySetBuilder) {
-        gen.add(RegistryKeys.GENERATOR_TYPE, GeneratorTypes::bootstrap)
+        gen.add(Registries.WORLD_PRESET, GeneratorTypes::bootstrap)
     }
 
     class DynRegProvider(o: FabricDataOutput, r: CompletableFuture<HolderLookup.Provider>) :
         FabricDynamicRegistryProvider(o, r) {
         override fun getName(): String = "Data Gen"
         override fun configure(reg: HolderLookup.Provider, e: Entries) {
-            e.addAll(reg.getLookupOrThrow(RegistryKeys.GENERATOR_TYPE))
+            e.addAll(reg.lookupOrThrow(Registries.WORLD_PRESET))
         }
     }
 

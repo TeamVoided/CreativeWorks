@@ -1,17 +1,17 @@
 accessWidener v2 named
 
 # Fields
-accessible field net/minecraft/world/gen/feature/JigsawFeature startPool Lnet/minecraft/registry/Holder;
-accessible field net/minecraft/structure/pool/StructurePool elements Lit/unimi/dsi/fastutil/objects/ObjectArrayList;
-accessible field net/minecraft/structure/pool/SinglePoolElement template Lcom/mojang/datafixers/util/Either;
-accessible field net/minecraft/structure/Structure blockInfoLists Ljava/util/List;
-accessible field net/minecraft/structure/Structure$PalettedBlockInfoList infos Ljava/util/List;
+accessible field net/minecraft/world/level/levelgen/structure/structures/JigsawStructure startPool Lnet/minecraft/core/Holder;
+accessible field net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool templates Lit/unimi/dsi/fastutil/objects/ObjectArrayList;
+accessible field net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement template Lcom/mojang/datafixers/util/Either;
+accessible field net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate palettes Ljava/util/List;
+accessible field net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate$Palette blocks Ljava/util/List;
 # Methods
-accessible method net/minecraft/structure/pool/SinglePoolElement getStructure (Lnet/minecraft/structure/StructureTemplateManager;)Lnet/minecraft/structure/Structure;
+accessible method net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement getTemplate (Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;)Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate;
 
 # Component ToolTips
-accessible field net/minecraft/component/PatchedDataComponentMap baseComponents Lnet/minecraft/component/DataComponentMap;
-accessible field net/minecraft/component/PatchedDataComponentMap patchedComponents Lit/unimi/dsi/fastutil/objects/Reference2ObjectMap;
+accessible field net/minecraft/core/component/PatchedDataComponentMap prototype Lnet/minecraft/core/component/DataComponentMap;
+accessible field net/minecraft/core/component/PatchedDataComponentMap patch Lit/unimi/dsi/fastutil/objects/Reference2ObjectMap;
 
 #Cooldown Command
-accessible field net/minecraft/entity/player/ItemCooldownManager entries Ljava/util/Map;
+accessible field net/minecraft/world/item/ItemCooldowns cooldowns Ljava/util/Map;

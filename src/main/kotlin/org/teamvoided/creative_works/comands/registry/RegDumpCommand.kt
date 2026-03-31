@@ -9,20 +9,20 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import com.mojang.serialization.JsonOps
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries.getDynamicRegistries
-import net.minecraft.advancement.Advancement
-import net.minecraft.command.argument.IdentifierArgumentType
-import net.minecraft.loot.LootTable
-import net.minecraft.recipe.Recipe
-import net.minecraft.registry.Registry
-import net.minecraft.registry.RegistryKeys
-import net.minecraft.registry.RegistryLoader.DIMENSION_REGISTRIES
-import net.minecraft.server.command.CommandManager.argument
-import net.minecraft.server.command.CommandManager.literal
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
-import net.minecraft.util.WorldSavePath.ROOT
+import net.minecraft.advancements.Advancement
+import net.minecraft.commands.arguments.ResourceLocationArgument
+import net.minecraft.world.level.storage.loot.LootTable
+import net.minecraft.world.item.crafting.Recipe
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.RegistryDataLoader.DIMENSION_REGISTRIES
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.Commands.literal
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.level.storage.LevelResource.ROOT
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegistry
@@ -33,7 +33,7 @@ import org.teamvoided.creative_works.util.*
 import java.io.File
 
 object RegDumpCommand {
-    fun init(dispatcher: CommandDispatcher<ServerCommandSource>) {
+    fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val root = literal("regdump").executes(RegDumpCommand::dumpAll).buildChildOf(dispatcher.root)
         val registry = registryArg().executes { regdump(it, getRegistry(it)) }.buildChildOf(root)
         regEntryArg().executes { regdump(it, getRegistry(it), getEntry(it)) }.buildChildOf(registry)
@@ -41,36 +41,36 @@ object RegDumpCommand {
 
         val extra = literal("regdump_extra").buildChildOf(dispatcher.root)
 
-        argument("extra", IdentifierArgumentType.identifier())
+        argument("extra", ResourceLocationArgument.id())
             .suggests { ctx, builder ->
-                val list = mutableListOf(RegistryKeys.LOOT_TABLE, RegistryKeys.ADVANCEMENT, RegistryKeys.RECIPE)
-                    .map { it.value.toString() }
+                val list = mutableListOf(Registries.LOOT_TABLE, Registries.ADVANCEMENT, Registries.RECIPE)
+                    .map { it.location().toString() }
                 builder.listSuggestions(list)
 
             }
-            .executes { painAndSuffering(it, IdentifierArgumentType.getIdentifier(it, "extra")) }.buildChildOf(extra)
+            .executes { painAndSuffering(it, ResourceLocationArgument.getId(it, "extra")) }.buildChildOf(extra)
     }
 
     val gson = GsonBuilder().setPrettyPrinting().create()
     val REG_LIST = (getDynamicRegistries() + DIMENSION_REGISTRIES).associate { it.key to it.elementCodec }
 
-    fun dumpAll(ctx: CommandContext<ServerCommandSource>): Int {
+    fun dumpAll(ctx: CommandContext<CommandSourceStack>): Int {
         val src = ctx.source ?: return 0
-        val dynReg = src.world?.registryManager ?: return 0
+        val dynReg = src.level?.registryAccess() ?: return 0
         dynReg.registries().forEach { regdump(ctx, it.value, null, true) }
         return 1
     }
 
     fun regdump(
-        ctx: CommandContext<ServerCommandSource>, registry: Registry<out Any>, entryId: Identifier? = null,
+        ctx: CommandContext<CommandSourceStack>, registry: Registry<out Any>, entryId: ResourceLocation? = null,
         silent: Boolean = false
     ): Int {
         val src = ctx.source ?: return 0
-        val world = src.world ?: return 0
-        val dynReg = world.registryManager ?: return 0
-        val codec = (REG_LIST[registry.key]) as Codec<Any>?
+        val world = src.level ?: return 0
+        val dynReg = world.registryAccess() ?: return 0
+        val codec = (REG_LIST[registry.key()]) as Codec<Any>?
         val ops = dynReg.createSerializationContext(JsonOps.INSTANCE)
-        val id = registry.key.value
+        val id = registry.key().location()
         src.message("Registry $id ")
 
         if (entryId != null) {
@@ -84,7 +84,7 @@ object RegDumpCommand {
         }
         if (codec == null) {
             val obj = JsonArray()
-            registry.entries.forEach { obj.add(it.key.value.toString()) }
+            registry.entrySet().forEach { obj.add(it.key.location().toString()) }
             with(world.dumpFolder(id.namespace, false).resolve("${id.fileFormatOLD()}.json")) {
                 parentFile.mkdirs()
                 createNewFile()
@@ -93,33 +93,33 @@ object RegDumpCommand {
             }
             return 1
         }
-        val list = registry.entries.associate { it.key.value to codec.encodeStart(ops, it.value) }
+        val list = registry.entrySet().associate { it.key.location() to codec.encodeStart(ops, it.value) }
         src.dumpResources(world, id, list, true, silent)
 
         return 1
     }
 
     fun painAndSuffering(
-        ctx: CommandContext<ServerCommandSource>,
-        extra: Identifier,
-        entryId: Identifier? = null
+        ctx: CommandContext<CommandSourceStack>,
+        extra: ResourceLocation,
+        entryId: ResourceLocation? = null
     ): Int {
         val src = ctx.source ?: return 0
-        val world = src.world ?: return 0
-        val dynReg = world.registryManager ?: return 0
+        val world = src.level ?: return 0
+        val dynReg = world.registryAccess() ?: return 0
         val server = world.server
 
         val ops = dynReg.createSerializationContext(JsonOps.INSTANCE)
         val resource = when (extra) {
-            RegistryKeys.LOOT_TABLE.value -> {
-                server.method_58576().registryManager.get(RegistryKeys.LOOT_TABLE).entries
-                    .associate { it.key.value to LootTable.field_50021.encodeStart(ops, it.value) }
+            Registries.LOOT_TABLE.location() -> {
+                server.reloadableRegistries().get().registryOrThrow(Registries.LOOT_TABLE).entrySet()
+                    .associate { it.key.location() to LootTable.DIRECT_CODEC.encodeStart(ops, it.value) }
             }
 
-            RegistryKeys.ADVANCEMENT.value ->
-                server.advancementLoader.advancements.associate { it.id to Advancement.CODEC.encodeStart(ops, it.data) }
+            Registries.ADVANCEMENT.location() ->
+                server.advancements.allAdvancements.associate { it.id to Advancement.CODEC.encodeStart(ops, it.value) }
 
-            RegistryKeys.RECIPE.value -> server.recipeManager.recipes
+            Registries.RECIPE.location() -> server.recipeManager.recipes
                 .associate { it.id to Recipe.CODEC.encodeStart(ops, it.value) }
 
             else -> {
@@ -133,10 +133,10 @@ object RegDumpCommand {
         return 1
     }
 
-    fun ServerCommandSource.dumpResources(
-        world: ServerWorld,
-        name: Identifier,
-        list: Map<Identifier, DataResult<JsonElement>>,
+    fun CommandSourceStack.dumpResources(
+        world: ServerLevel,
+        name: ResourceLocation,
+        list: Map<ResourceLocation, DataResult<JsonElement>>,
         toFile: Boolean = true,
         silent: Boolean = false
     ) {
@@ -151,7 +151,7 @@ object RegDumpCommand {
             }.ifSuccess {
                 output = gson.toJson(it)
                 if (!silent) this.sendSystemMessage(
-                    Text.literal(" $output").styled { s -> s.withColor(SECONDARY_COLOR) })
+                    Component.literal(" $output").withStyle { s -> s.withColor(SECONDARY_COLOR) })
             }
             if (toFile) {
                 file.parentFile.mkdirs()
@@ -161,9 +161,9 @@ object RegDumpCommand {
         }
     }
 
-    fun ServerWorld.dumpFolder(name: String, deleteOld: Boolean = true): File {
+    fun ServerLevel.dumpFolder(name: String, deleteOld: Boolean = true): File {
         val server = this.server
-        val folder = server.getSavePath(ROOT).toFile().resolve("dump")
+        val folder = server.getWorldPath(ROOT).toFile().resolve("dump")
         if (folder.isFile || !folder.exists()) folder.mkdirs()
         val regFolder = folder.resolve(name)
         if (deleteOld && regFolder.exists() && regFolder.isDirectory) regFolder.deleteRecursively()
@@ -172,8 +172,8 @@ object RegDumpCommand {
         return regFolder
     }
 
-    fun Identifier?.fileFormat(): String = this?.toString()?.replace(":", "/") ?: "null"
-    fun Identifier?.fileFormatOLD(): String =
+    fun ResourceLocation?.fileFormat(): String = this?.toString()?.replace(":", "/") ?: "null"
+    fun ResourceLocation?.fileFormatOLD(): String =
         this?.toString()?.replace("minecraft:", "")?.replace(":", "-") ?: "null"
 
 }

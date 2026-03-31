@@ -2,13 +2,13 @@ package org.teamvoided.creative_works.network
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
-import net.minecraft.client.MinecraftClient
-import net.minecraft.network.PacketByteBuf
-import net.minecraft.network.RegistryByteBuf
-import net.minecraft.network.codec.PacketCodec
-import net.minecraft.network.packet.payload.CustomPayload
-import net.minecraft.text.Text
-import net.minecraft.text.TextCodecs
+import net.minecraft.client.Minecraft
+import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.RegistryFriendlyByteBuf
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.ComponentSerialization
 import org.teamvoided.creative_works.CreativeWorks.id
 import org.teamvoided.creative_works.CreativeWorks.log
 import org.teamvoided.creative_works.util.clearParticles
@@ -27,7 +27,7 @@ object CWNet {
     fun clientInit() {
         ClientPlayNetworking.registerGlobalReceiver(ClientEventPacket.ID) { packet, c ->
             when (packet.id) {
-                CLEAR_PARTICLES -> MinecraftClient.getInstance().particleManager.clearParticles()
+                CLEAR_PARTICLES -> Minecraft.getInstance().particleEngine.clearParticles()
                 CW_TEST -> runTests(c)
                 IMGUI_DEBUG -> imguiDebug()
                 else -> log.info("Unknown event id [{}]", packet.id)
@@ -38,29 +38,29 @@ object CWNet {
         }
     }
 
-    data class ClientEventPacket(val id: Int = 0) : CustomPayload {
-        private constructor(buffer: PacketByteBuf) : this(buffer.readInt())
+    data class ClientEventPacket(val id: Int = 0) : CustomPacketPayload {
+        private constructor(buffer: FriendlyByteBuf) : this(buffer.readInt())
 
-        override fun getId() = ID
+        override fun type() = ID
 
         companion object {
-            val CODEC: PacketCodec<PacketByteBuf, ClientEventPacket> =
-                CustomPayload.create({ packet, buf -> buf.writeInt(packet.id) }, ::ClientEventPacket)
-            val ID = CustomPayload.Id<ClientEventPacket>(id("client_event"))
+            val CODEC: StreamCodec<FriendlyByteBuf, ClientEventPacket> =
+                CustomPacketPayload.codec({ packet, buf -> buf.writeInt(packet.id) }, ::ClientEventPacket)
+            val ID = CustomPacketPayload.Type<ClientEventPacket>(id("client_event"))
         }
     }
 
-    data class OpenFileMessagePacket(val text: Text? = null) : CustomPayload {
-        private constructor(buffer: RegistryByteBuf) :
-                this(PacketByteBuf.readNullable(buffer, TextCodecs.REGISTRY_UNLIMITED_TEXT_CODEC))
+    data class OpenFileMessagePacket(val text: Component? = null) : CustomPacketPayload {
+        private constructor(buffer: RegistryFriendlyByteBuf) :
+                this(FriendlyByteBuf.readNullable(buffer, ComponentSerialization.TRUSTED_STREAM_CODEC))
 
-        override fun getId() = ID
+        override fun type() = ID
 
         companion object {
-            val CODEC: PacketCodec<RegistryByteBuf, OpenFileMessagePacket> = CustomPayload.create({ packet, buf ->
-                RegistryByteBuf.writeNullable(buf, packet.text, TextCodecs.REGISTRY_UNLIMITED_TEXT_CODEC)
+            val CODEC: StreamCodec<RegistryFriendlyByteBuf, OpenFileMessagePacket> = CustomPacketPayload.codec({ packet, buf ->
+                RegistryFriendlyByteBuf.writeNullable(buf, packet.text, ComponentSerialization.TRUSTED_STREAM_CODEC)
             }, ::OpenFileMessagePacket)
-            val ID = CustomPayload.Id<OpenFileMessagePacket>(id("open_file_message"))
+            val ID = CustomPacketPayload.Type<OpenFileMessagePacket>(id("open_file_message"))
         }
     }
 }

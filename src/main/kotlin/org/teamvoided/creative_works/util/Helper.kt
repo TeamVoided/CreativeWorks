@@ -3,17 +3,17 @@ package org.teamvoided.creative_works.util
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
-import net.minecraft.registry.DynamicRegistryManager
-import net.minecraft.registry.HolderSet.NamedSet
-import net.minecraft.registry.Registry
-import net.minecraft.registry.RegistryKey
-import net.minecraft.registry.tag.TagKey
-import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.HoverEvent
-import net.minecraft.text.Style
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.core.RegistryAccess
+import net.minecraft.core.HolderSet.Named
+import net.minecraft.core.Registry
+import net.minecraft.resources.ResourceKey
+import net.minecraft.tags.TagKey
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.registry.TagDumpCommand.ctc
@@ -32,48 +32,48 @@ fun <S, Q : ArgumentBuilder<S, Q>> ArgumentBuilder<S, Q>.buildChildOf(node: Comm
 }
 
 
-fun ServerCommandSource.message(msg: String) = this.sendSystemMessage(Text.literal(msg))
-fun ServerCommandSource.error(msg: String) = this.sendError(Text.literal(msg))
+fun CommandSourceStack.message(msg: String) = this.sendSystemMessage(Component.literal(msg))
+fun CommandSourceStack.error(msg: String) = this.sendFailure(Component.literal(msg))
 
 fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
 fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))
 
-fun <T> Registry<T>.getTag(id: Identifier): Optional<NamedSet<T>> = this.getTag(TagKey.of<T>(this.key, id))
+fun <T> Registry<T>.getTag(id: ResourceLocation): Optional<Named<T>> = this.getTag(TagKey.create<T>(this.key(), id))
 
 
-fun ltxt(s: String) = Text.literal(s)
+fun ltxt(s: String) = Component.literal(s)
 
-fun ServerCommandSource.copyMessage(msg: String, copy: String, copyText: String = copy) =
-    this.sendSystemMessage(Text.literal(msg).styled {
+fun CommandSourceStack.copyMessage(msg: String, copy: String, copyText: String = copy) =
+    this.sendSystemMessage(Component.literal(msg).withStyle {
         it.withColor(SECONDARY_COLOR).clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, copy)
-            .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(copyText).styled { it.withColor(SECONDARY_COLOR) })
+            .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(copyText).withStyle { it.withColor(SECONDARY_COLOR) })
     })
 
-fun ServerCommandSource.openMessage(msg: String, folder: String, openText: String = folder) =
-    this.sendSystemMessage(Text.literal(msg).styled {
+fun CommandSourceStack.openMessage(msg: String, folder: String, openText: String = folder) =
+    this.sendSystemMessage(Component.literal(msg).withStyle {
         it.withColor(SECONDARY_COLOR).clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, folder)
-            .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(openText).styled { it.withColor(SECONDARY_COLOR) })
+            .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(openText).withStyle { it.withColor(SECONDARY_COLOR) })
     })
 
-fun ServerCommandSource.sendNamedList(name: String, nameCopy: String, emptyMessage: String, set: List<String>) {
+fun CommandSourceStack.sendNamedList(name: String, nameCopy: String, emptyMessage: String, set: List<String>) {
     this.sendSystemMessage(
-        ltxt(name).styled {
+        ltxt(name).withStyle {
             it.withColor(MAIN_COLOR)
                 .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, nameCopy)
                 .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(nameCopy))
         }
     )
     if (set.toList().isEmpty()) {
-        this.sendSystemMessage(ltxt(" $emptyMessage").styled { it.withColor(SECONDARY_COLOR) })
+        this.sendSystemMessage(ltxt(" $emptyMessage").withStyle { it.withColor(SECONDARY_COLOR) })
         return
     }
     set.forEach { entry ->
         this.sendSystemMessage(
-            ltxt(" - $entry ").styled { style ->
+            ltxt(" - $entry ").withStyle { style ->
                 style.withColor(SECONDARY_COLOR)
                     .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entry)
                     .hoverEvent(
-                        HoverEvent.Action.SHOW_TEXT, ctc(entry).styled { it.withColor(SECONDARY_COLOR) })
+                        HoverEvent.Action.SHOW_TEXT, ctc(entry).withStyle { it.withColor(SECONDARY_COLOR) })
             }
         )
     }
@@ -116,12 +116,12 @@ fun Color.toHSL(): Triple<Int, Int, Int> {
     return Triple(h, s, l)
 }
 
-fun <T> sortTags(a: TagKey<T>, b: TagKey<T>) = sortIdentifier(a.id, b.id)
-fun sortIdentifier(a: Identifier, b: Identifier) = a.path.compareTo(b.path)
+fun <T> sortTags(a: TagKey<T>, b: TagKey<T>) = sortIdentifier(a.location, b.location)
+fun sortIdentifier(a: ResourceLocation, b: ResourceLocation) = a.path.compareTo(b.path)
 
-fun <T, R : Registry<T>> CommandContext<ServerCommandSource>.getRegistry(key: RegistryKey<R>): Registry<T> =
-    this.source.world.registryManager.get(key)
+fun <T, R : Registry<T>> CommandContext<CommandSourceStack>.getRegistry(key: ResourceKey<R>): Registry<T> =
+    this.source.level.registryAccess().registryOrThrow(key)
 
-fun DynamicRegistryManager.getRegistry(id: Identifier): Registry<out Any>? =
-    this.getOptional(RegistryKey.ofRegistry<Any>(id)).getOrNull()
+fun RegistryAccess.getRegistry(id: ResourceLocation): Registry<out Any>? =
+    this.registry(ResourceKey.createRegistryKey<Any>(id)).getOrNull()
 
