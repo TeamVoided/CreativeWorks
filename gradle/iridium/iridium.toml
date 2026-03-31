@@ -5,10 +5,10 @@ group = "org.teamvoided"
 githubRepo = "Teamvoided/CreativeWorks"
 discordServerInviteId = "KZ5Q364hEg"
 authors = [ "TheEnderCore", "DuskAutumnStorm" ]
-majorMinecraftVersion = "1.21"
-minecraftVersion = "1.21.1"
-fabricLoaderVersion = "0.16.10"
-fabricApiVersion = "0.115.0+1.21.1"
+majorMinecraftVersion = "1.21.11"
+minecraftVersion = "1.21.11"
+fabricLoaderVersion = "0.18.5"
+fabricApiVersion = "0.141.3+1.21.11"
 fabricLangKotlinVersion = "1.11.0+kotlin.2.0.0"
 license = "MIT"
 modules = [ ]
@@ -26,4 +26,4 @@ disableKotlin = false
     # MOJPARCH: Parchment layered on top of the official Mojang mappings
     # MOJYARN: Yarn layered on top of the official Mojang mappings
     type = "MOJANG"
-    version = "1.21.1"
+    version = "1.21.11"

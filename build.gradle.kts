@@ -37,15 +37,15 @@ modSettings {
 
 
 dependencies {
-    modImplementation(fileTree("libs"))
+//    modImplementation(fileTree("libs"))
     // Dependencies
     modImplementation(libs.imguimc)
     include(libs.imguimc)
     modImplementation(libs.fzzy.config)
     // QoL
     modImplementation(libs.modmenu)
-    modCompileOnly("${libs.emi.get()}:api")
-    modLocalRuntime(libs.emi)
+//    modCompileOnly("${libs.emi.get()}:api")
+//    modLocalRuntime(libs.emi)
 }
 
 val username = "Endoside"
