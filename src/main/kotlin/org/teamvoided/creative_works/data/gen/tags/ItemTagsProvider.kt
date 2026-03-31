@@ -13,7 +13,7 @@ class ItemTagsProvider(
 //    blockTags: BlockTagsProvider
 ) : FabricTagProvider.ItemTagProvider(output, registriesFuture) {
     override fun addTags(arg: HolderLookup.Provider) {
-        getOrCreateTagBuilder(CWItemTags.HAS_BLOCK_PARTICLE)
+        valueLookupBuilder(CWItemTags.HAS_BLOCK_PARTICLE)
             .add(Items.BARRIER, Items.STRUCTURE_VOID)
     }
 }

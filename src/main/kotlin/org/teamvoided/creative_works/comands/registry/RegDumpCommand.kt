@@ -10,19 +10,19 @@ import com.mojang.serialization.DataResult
 import com.mojang.serialization.JsonOps
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries.getDynamicRegistries
 import net.minecraft.advancements.Advancement
-import net.minecraft.commands.arguments.ResourceLocationArgument
-import net.minecraft.world.level.storage.loot.LootTable
-import net.minecraft.world.item.crafting.Recipe
-import net.minecraft.core.Registry
-import net.minecraft.core.registries.Registries
-import net.minecraft.resources.RegistryDataLoader.DIMENSION_REGISTRIES
+import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.Commands.literal
-import net.minecraft.commands.CommandSourceStack
-import net.minecraft.server.level.ServerLevel
+import net.minecraft.commands.arguments.IdentifierArgument
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
+import net.minecraft.resources.RegistryDataLoader.DIMENSION_REGISTRIES
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.item.crafting.Recipe
 import net.minecraft.world.level.storage.LevelResource.ROOT
+import net.minecraft.world.level.storage.loot.LootTable
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegistry
@@ -41,14 +41,14 @@ object RegDumpCommand {
 
         val extra = literal("regdump_extra").buildChildOf(dispatcher.root)
 
-        argument("extra", ResourceLocationArgument.id())
+        argument("extra", IdentifierArgument.id())
             .suggests { ctx, builder ->
                 val list = mutableListOf(Registries.LOOT_TABLE, Registries.ADVANCEMENT, Registries.RECIPE)
                     .map { it.identifier().toString() }
                 builder.listSuggestions(list)
 
             }
-            .executes { painAndSuffering(it, ResourceLocationArgument.getId(it, "extra")) }.buildChildOf(extra)
+            .executes { painAndSuffering(it, IdentifierArgument.getId(it, "extra")) }.buildChildOf(extra)
     }
 
     val gson = GsonBuilder().setPrettyPrinting().create()
@@ -63,7 +63,7 @@ object RegDumpCommand {
 
     fun regdump(
         ctx: CommandContext<CommandSourceStack>, registry: Registry<out Any>, entryId: Identifier? = null,
-        silent: Boolean = false
+        silent: Boolean = false,
     ): Int {
         val src = ctx.source ?: return 0
         val world = src.level ?: return 0
@@ -102,7 +102,7 @@ object RegDumpCommand {
     fun painAndSuffering(
         ctx: CommandContext<CommandSourceStack>,
         extra: Identifier,
-        entryId: Identifier? = null
+        entryId: Identifier? = null,
     ): Int {
         val src = ctx.source ?: return 0
         val world = src.level ?: return 0
@@ -112,15 +112,15 @@ object RegDumpCommand {
         val ops = dynReg.createSerializationContext(JsonOps.INSTANCE)
         val resource = when (extra) {
             Registries.LOOT_TABLE.identifier() -> {
-                server.reloadableRegistries().get().registryOrThrow(Registries.LOOT_TABLE).entrySet()
-                    .associate { it.key.identifier() to LootTable.DIRECT_CODEC.encodeStart(ops, it.value) }
+                server.reloadableRegistries().lookup().lookupOrThrow(Registries.LOOT_TABLE).listElements().toList()
+                    .associate { it.key().identifier() to LootTable.DIRECT_CODEC.encodeStart(ops, it.value()) }
             }
 
             Registries.ADVANCEMENT.identifier() ->
                 server.advancements.allAdvancements.associate { it.id to Advancement.CODEC.encodeStart(ops, it.value) }
 
             Registries.RECIPE.identifier() -> server.recipeManager.recipes
-                .associate { it.id to Recipe.CODEC.encodeStart(ops, it.value) }
+                .associate { it.id.identifier() to Recipe.CODEC.encodeStart(ops, it.value) }
 
             else -> {
                 src.error("Unknown extra $extra")
@@ -138,7 +138,7 @@ object RegDumpCommand {
         name: Identifier,
         list: Map<Identifier, DataResult<JsonElement>>,
         toFile: Boolean = true,
-        silent: Boolean = false
+        silent: Boolean = false,
     ) {
         val folder = world.dumpFolder(name.fileFormat(), !toFile)
         list.forEach { (name, data) ->

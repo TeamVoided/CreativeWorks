@@ -46,9 +46,9 @@ object SplineCommand {
                 val set = NoiseChunk.forChunk(
                     chunk,
                     world.chunkSource.randomState(),
-                    Beardifier.forStructuresInChunk(world.structureManager(), chunk.getPos()),
-                    world.registryAccess().registryOrThrow(Registries.NOISE_SETTINGS)
-                        .getOrThrow(NoiseGeneratorSettings.OVERWORLD),
+                    Beardifier.forStructuresInChunk(world.structureManager(), chunk.pos),
+                    world.registryAccess().lookupOrThrow(Registries.NOISE_SETTINGS)
+                        .getOrThrow(NoiseGeneratorSettings.OVERWORLD).value(),
                     { x, z, t -> Aquifer.FluidStatus(0, Blocks.AIR.defaultBlockState()) },
                     Blender.empty()
                 )

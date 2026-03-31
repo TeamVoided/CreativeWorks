@@ -35,7 +35,7 @@ object CreativeWorks {
         Clint.init()
         CWNet.clientInit()
         TooltipExtensions.renderTooltip()
-        DebugWidgetRegistry.init()
+//        DebugWidgetRegistry.init()
 //        TestRenderer.init()
     }
 

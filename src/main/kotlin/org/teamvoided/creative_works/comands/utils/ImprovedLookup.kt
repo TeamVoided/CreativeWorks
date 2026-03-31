@@ -11,10 +11,10 @@ import java.util.function.Function
 
 object ImprovedLookup {
     @JvmStatic
-    fun <S> listElementsAndTags(
+    fun <S : Any> listElementsAndTags(
         lookup: HolderLookup<S>, ignored: CommandContext<S>, suggestionsBuilder: SuggestionsBuilder,
     ): CompletableFuture<Suggestions> {
-        val list = lookup.listTagIds().map { "#${it.identifier()}" }.toList() +
+        val list = lookup.listTagIds().map { "#${it.location()}" }.toList() +
                 lookup.listElementIds().map { it.identifier().toString() }.toList()
         return suggestionsBuilder.listSuggestions(list)
     }

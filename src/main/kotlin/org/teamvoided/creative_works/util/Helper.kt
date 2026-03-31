@@ -3,17 +3,17 @@ package org.teamvoided.creative_works.util
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
-import net.minecraft.core.RegistryAccess
+import net.minecraft.commands.CommandSourceStack
 import net.minecraft.core.HolderSet.Named
 import net.minecraft.core.Registry
-import net.minecraft.resources.ResourceKey
-import net.minecraft.tags.TagKey
-import net.minecraft.commands.CommandSourceStack
+import net.minecraft.core.RegistryAccess
 import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
-import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceKey
+import net.minecraft.tags.TagKey
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.registry.TagDumpCommand.ctc
@@ -35,32 +35,34 @@ fun <S, Q : ArgumentBuilder<S, Q>> ArgumentBuilder<S, Q>.buildChildOf(node: Comm
 fun CommandSourceStack.message(msg: String) = this.sendSystemMessage(Component.literal(msg))
 fun CommandSourceStack.error(msg: String) = this.sendFailure(Component.literal(msg))
 
-fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
-fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))
+fun Style.clickEvent(event: ClickEvent): Style = this.withClickEvent(event)
+fun Style.hoverEvent(event: HoverEvent): Style = this.withHoverEvent(event)
 
-fun <T> Registry<T>.getTag(id: Identifier): Optional<Named<T>> = this.getTag(TagKey.create<T>(this.key(), id))
+fun <T : Any> Registry<T>.getTag(id: Identifier): Optional<Named<T>> = get(TagKey.create(this.key(), id))
 
 
 fun ltxt(s: String) = Component.literal(s)
 
 fun CommandSourceStack.copyMessage(msg: String, copy: String, copyText: String = copy) =
     this.sendSystemMessage(Component.literal(msg).withStyle {
-        it.withColor(SECONDARY_COLOR).clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, copy)
-            .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(copyText).withStyle { it.withColor(SECONDARY_COLOR) })
+        it.withColor(SECONDARY_COLOR)
+            .clickEvent(ClickEvent.CopyToClipboard(copyText))
+            .hoverEvent(HoverEvent.ShowText(ctc(copyText).withStyle { s -> s.withColor(SECONDARY_COLOR) }))
     })
 
 fun CommandSourceStack.openMessage(msg: String, folder: String, openText: String = folder) =
     this.sendSystemMessage(Component.literal(msg).withStyle {
-        it.withColor(SECONDARY_COLOR).clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, folder)
-            .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(openText).withStyle { it.withColor(SECONDARY_COLOR) })
+        it.withColor(SECONDARY_COLOR)
+            .clickEvent(ClickEvent.CopyToClipboard(folder))
+            .hoverEvent(HoverEvent.ShowText(ctc(openText).withStyle { s -> s.withColor(SECONDARY_COLOR) }))
     })
 
 fun CommandSourceStack.sendNamedList(name: String, nameCopy: String, emptyMessage: String, set: List<String>) {
     this.sendSystemMessage(
         ltxt(name).withStyle {
             it.withColor(MAIN_COLOR)
-                .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, nameCopy)
-                .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(nameCopy))
+                .clickEvent(ClickEvent.CopyToClipboard(nameCopy))
+                .hoverEvent(HoverEvent.ShowText(ctc(nameCopy)))
         }
     )
     if (set.toList().isEmpty()) {
@@ -71,9 +73,8 @@ fun CommandSourceStack.sendNamedList(name: String, nameCopy: String, emptyMessag
         this.sendSystemMessage(
             ltxt(" - $entry ").withStyle { style ->
                 style.withColor(SECONDARY_COLOR)
-                    .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entry)
-                    .hoverEvent(
-                        HoverEvent.Action.SHOW_TEXT, ctc(entry).withStyle { it.withColor(SECONDARY_COLOR) })
+                    .clickEvent(ClickEvent.CopyToClipboard(entry))
+                    .hoverEvent(HoverEvent.ShowText(ctc(entry).withStyle { it.withColor(SECONDARY_COLOR) }))
             }
         )
     }
@@ -116,12 +117,12 @@ fun Color.toHSL(): Triple<Int, Int, Int> {
     return Triple(h, s, l)
 }
 
-fun <T> sortTags(a: TagKey<T>, b: TagKey<T>) = sortIdentifier(a.location, b.location)
+fun <T : Any> sortTags(a: TagKey<T>, b: TagKey<T>) = sortIdentifier(a.location, b.location)
 fun sortIdentifier(a: Identifier, b: Identifier) = a.path.compareTo(b.path)
 
-fun <T, R : Registry<T>> CommandContext<CommandSourceStack>.getRegistry(key: ResourceKey<R>): Registry<T> =
-    this.source.level.registryAccess().registryOrThrow(key)
+fun <T : Any, R : Registry<T>> CommandContext<CommandSourceStack>.getRegistry(key: ResourceKey<R>): Registry<T> =
+    this.source.level.registryAccess().lookupOrThrow(key)
 
 fun RegistryAccess.getRegistry(id: Identifier): Registry<out Any>? =
-    this.registry(ResourceKey.createRegistryKey<Any>(id)).getOrNull()
+    this.lookup(ResourceKey.createRegistryKey(id)).getOrNull()
 

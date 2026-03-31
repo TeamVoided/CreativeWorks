@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.minecraft.commands.arguments.ResourceLocationArgument.id
+import net.minecraft.commands.arguments.IdentifierArgument.id
 import net.minecraft.core.Registry
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.CommandSourceStack
@@ -32,7 +32,7 @@ object RegistryArgumentType {
 
     fun regTagEntryArg(name: String = ENTRY, regName: String = REGISTRY) =
         argument(name, id()).suggests { ctx, builder ->
-            builder.listSuggestions(getRegistry(ctx, regName).tagNames.map { it.location.toString() }.toList())
+            builder.listSuggestions(getRegistry(ctx, regName).tags.map { it.key().location.toString() }.toList())
         }
 
     @Throws(CommandSyntaxException::class)
@@ -58,7 +58,7 @@ object RegistryArgumentType {
     ): CompletableFuture<Suggestions> {
         val list = ctx.source.level.registryAccess()
             .registries().map { it.value() }
-            .filter { it.tagNames.toList().isNotEmpty() }
+            .filter { it.tags.toList().isNotEmpty() }
             .map { it.key().identifier().toString() }
         return builder.listSuggestions(list.toList())
     }

@@ -39,8 +39,8 @@ modSettings {
 dependencies {
 //    modImplementation(fileTree("libs"))
     // Dependencies
-    modImplementation(libs.imguimc)
-    include(libs.imguimc)
+    modCompileOnly(libs.imguimc)
+//    include(libs.imguimc)
     modImplementation(libs.fzzy.config)
     // QoL
     modImplementation(libs.modmenu)

@@ -3,12 +3,12 @@ package org.teamvoided.creative_works.comands.world
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.world.entity.Entity
-import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands.literal
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.entity.EntityTypeTest
+import net.minecraft.world.level.gamerules.GameRules
 import net.minecraft.world.phys.AABB
-import net.minecraft.world.level.GameRules
 import org.teamvoided.creative_works.util.buildChildOf
 import org.teamvoided.creative_works.util.message
 
@@ -24,13 +24,13 @@ object ClearMobsCommand {
 
     private fun exe(ctx: CommandContext<CommandSourceStack>): Int {
         val src = ctx.source ?: return 0
-        val server = src.server ?: return 0
-        val world = src.level ?: return 0
+        val server = src.server
+        val world = src.level
 
         val gameRules = world.gameRules
-        val doModDrops = gameRules.getBoolean(GameRules.RULE_DOMOBLOOT)
-        gameRules.getRule(GameRules.RULE_DOMOBLOOT).set(false, server)
-        gameRules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server)
+        val doModDrops = gameRules.get(GameRules.MOB_DROPS)
+        gameRules.set(GameRules.MOB_DROPS, false, server)
+        gameRules.set(GameRules.SPAWN_MOBS, false, server)
 
         val list = mutableListOf<Entity>()
         val max = Int.MAX_VALUE
@@ -41,10 +41,10 @@ object ClearMobsCommand {
         }, list)
         list.forEach {
             println(it)
-            it.kill()
+            it.kill(world)
         }
 
-        gameRules.getRule(GameRules.RULE_DOMOBLOOT).set(doModDrops, server)
+        gameRules.set(GameRules.MOB_DROPS, doModDrops, server)
         src.message("Cleared Mobs!")
         return Command.SINGLE_SUCCESS
     }

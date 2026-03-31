@@ -34,7 +34,7 @@ object CWNet {
             }
         }
         ClientPlayNetworking.registerGlobalReceiver(OpenFileMessagePacket.ID) { packet, c ->
-            packet.text?.let{ c.player().sendSystemMessage(it) }
+            packet.text?.let{ c.player().displayClientMessage(it, false) }
         }
     }
 

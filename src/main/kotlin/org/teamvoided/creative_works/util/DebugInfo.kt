@@ -2,8 +2,8 @@ package org.teamvoided.creative_works.util
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
-import net.minecraft.client.Minecraft
 import net.minecraft.client.KeyMapping
+import net.minecraft.client.Minecraft
 import net.minecraft.server.level.ServerChunkCache
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.levelgen.DensityFunction.SinglePointContext
@@ -17,7 +17,7 @@ object DebugInfo {
     fun init() {
         ClientTickEvents.END_CLIENT_TICK.register { _ ->
             cords()
-           worldgenInfo()
+            worldgenInfo()
             if (debugKey.consumeClick()) DebugRenderer.toggle()
         }
     }
@@ -50,11 +50,11 @@ object DebugInfo {
 //        "-----".addToRenderer("----------")
     }
 
-    fun keybind(translationKey: String, keyCode: Int, category: String = "") =
+    fun keybind(translationKey: String, keyCode: Int, category: KeyMapping.Category = KeyMapping.Category.DEBUG) =
         KeyBindingHelper.registerKeyBinding(KeyMapping(translationKey, keyCode, category))
 
 
     private fun getServerWorld(): ServerLevel? {
-        return Minecraft.getInstance().singleplayerServer?.getLevel(Minecraft.getInstance().level?.dimension())
+        return Minecraft.getInstance().singleplayerServer?.getLevel(Minecraft.getInstance().level?.dimension()!!)
     }
 }

@@ -27,6 +27,7 @@ import net.minecraft.world.level.levelgen.blending.Blender
 import net.minecraft.world.level.chunk.ChunkGenerator
 import net.minecraft.world.level.NoiseColumn
 import java.util.concurrent.CompletableFuture
+import kotlin.arrayOfNulls
 
 class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerator(FixedBiomeSource(biome)) {
 
@@ -61,7 +62,7 @@ class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerat
         region: WorldGenRegion, structureManager: StructureManager, randomState: RandomState, chunk: ChunkAccess
     ) = Unit
 
-    override fun applyBiomeDecoration(world: WorldGenLevel, chunk: ChunkAccess, structureManager: StructureManager?) {
+     override fun applyBiomeDecoration(world: WorldGenLevel, chunk: ChunkAccess, structureManager: StructureManager) {
         val mutable = BlockPos.MutableBlockPos()
         for (k in 0..15) {
             for (l in 0..15) {
@@ -82,7 +83,7 @@ class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerat
     ) = 0
 
     override fun getBaseColumn(x: Int, z: Int, world: LevelHeightAccessor, randomState: RandomState) =
-        NoiseColumn(0, arrayOfNulls(0))
+        NoiseColumn(0, arrayOf())
 
     override fun addDebugScreenInfo(lines: List<String>, randomState: RandomState, pos: BlockPos) = Unit
 
@@ -103,8 +104,12 @@ class FilteredDebugChunkGenerator(biome: Holder.Reference<Biome>) : ChunkGenerat
     }
 
     override fun applyCarvers(
-        chunkRegion: WorldGenRegion, seed: Long, randomState: RandomState, biomeAccess: BiomeManager,
-        structureManager: StructureManager, chunk: ChunkAccess, generationStep: GenerationStep.Carving
+        worldGenRegion: WorldGenRegion,
+        l: Long,
+        randomState: RandomState,
+        biomeManager: BiomeManager,
+        structureManager: StructureManager,
+        chunkAccess: ChunkAccess,
     ) = Unit
 
     override fun spawnOriginalMobs(region: WorldGenRegion) = Unit

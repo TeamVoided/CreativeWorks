@@ -3,35 +3,31 @@ package org.teamvoided.creative_works.comands.world
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.serialization.JsonOps
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.arguments.ResourceKeyArgument.getStructure
+import net.minecraft.commands.arguments.ResourceKeyArgument.key
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.core.Holder
+import net.minecraft.core.registries.Registries.STRUCTURE
+import net.minecraft.core.registries.Registries.TEMPLATE_POOL
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.Identifier
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.entity.StructureBlockEntity
 import net.minecraft.world.level.block.state.properties.StructureMode
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument
-import net.minecraft.commands.arguments.ResourceKeyArgument.getStructure
-import net.minecraft.commands.arguments.ResourceKeyArgument.key
-import net.minecraft.core.Holder
-import net.minecraft.core.registries.Registries.STRUCTURE
-import net.minecraft.core.registries.Registries.TEMPLATE_POOL
-import net.minecraft.commands.Commands
-import net.minecraft.commands.Commands.argument
-import net.minecraft.commands.CommandSourceStack
-import net.minecraft.server.level.ServerLevel
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
-import net.minecraft.network.chat.Component
-import net.minecraft.resources.Identifier
-import net.minecraft.core.BlockPos
-import net.minecraft.core.Direction
-import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure
 import net.minecraft.world.level.levelgen.structure.Structure
-import net.minecraft.world.level.levelgen.structure.pools.EmptyPoolElement
-import net.minecraft.world.level.levelgen.structure.pools.FeaturePoolElement
-import net.minecraft.world.level.levelgen.structure.pools.ListPoolElement
-import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement
-import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement
-import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool
+import net.minecraft.world.level.levelgen.structure.pools.*
+import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings
 import org.teamvoided.creative_works.CreativeWorks.log
 import org.teamvoided.creative_works.util.childOf
+import kotlin.jvm.optionals.getOrNull
 
 object StructureCommand {
     private const val gap = 3
@@ -55,7 +51,7 @@ object StructureCommand {
     private fun struct(
         c: CommandContext<CommandSourceStack>,
         structureHolder: Holder.Reference<Structure>,
-        inPos: BlockPos? = null
+        inPos: BlockPos? = null,
     ): Int {
         val src = c.source
         val world: ServerLevel = src.level
@@ -64,7 +60,7 @@ object StructureCommand {
         try {
             when (structure) {
                 is JigsawStructure -> {
-                    val poolReg = world.registryAccess().registryOrThrow(TEMPLATE_POOL)
+                    val poolReg = world.registryAccess().lookupOrThrow(TEMPLATE_POOL)
                     val didntPlace = mutableSetOf<String>()
 
                     val idn = structure.startPool.unwrapKey().get().identifier()
@@ -82,7 +78,7 @@ object StructureCommand {
                         val id = toPalace.first()
                         log.info("TEMPLATE_POOL - [{}]", id)
 
-                        val pool = poolReg.get(id)
+                        val pool = poolReg.get(id).getOrNull()?.value()
                         if (pool == null) {
                             toPalace.remove(id)
                             continue@loop
@@ -114,7 +110,7 @@ object StructureCommand {
         toPalace: MutableSet<Identifier>,
         placedPools: MutableSet<Identifier>,
         originPos: BlockPos,
-        didntPlace: MutableSet<String>
+        didntPlace: MutableSet<String>,
     ): Int {
         var counter = 0
         var zOffset = 0
@@ -170,12 +166,12 @@ object StructureCommand {
         xOffset: Int,
         toPalace: MutableSet<Identifier>,
         placedPools: MutableSet<Identifier>,
-        originPos: BlockPos
+        originPos: BlockPos,
     ): Pair<Int, Int> {
         val struct = sPoolEle.getTemplate(world.structureManager)
         struct.palettes.forEach { i ->
             for (it in i.blocks) {
-                val pool = Identifier.parse(it.nbt()?.getString("pool") ?: continue)
+                val pool = Identifier.parse(it.nbt()?.getString("pool")?.getOrNull() ?: continue)
                 if (pool == Identifier.withDefaultNamespace("empty")) continue
                 if (!placedPools.contains(pool)) toPalace.add(pool)
             }
@@ -186,13 +182,15 @@ object StructureCommand {
         val be = world.getBlockEntity(pos, BlockEntityType.STRUCTURE_BLOCK).get()
         be.mode = StructureMode.SAVE
         be.structureSize = struct.size
-        be.structureName = template.toString()
+        // TODO fix later
+//        be.structureName = template.toString()
         be.structurePos = BlockPos(1, 1, 1)
 
         val strPos = pos.relative(Direction.EAST).relative(Direction.SOUTH).relative(Direction.UP)
         BlockPos.betweenClosedStream(
             strPos.relative(Direction.DOWN),
-            strPos.relative(Direction.DOWN).relative(Direction.EAST, struct.size.x).relative(Direction.SOUTH, struct.size.z)
+            strPos.relative(Direction.DOWN).relative(Direction.EAST, struct.size.x)
+                .relative(Direction.SOUTH, struct.size.z)
         ).forEach { bs -> world.setBlockAndUpdate(bs, Blocks.BARRIER.defaultBlockState()) }
 
         struct.placeInWorld(

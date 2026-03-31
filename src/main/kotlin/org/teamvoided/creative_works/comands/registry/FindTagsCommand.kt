@@ -55,8 +55,8 @@ object FindTagsCommand {
                 return 0
             }
             regsitry.tags
-                .filter { it.second.map { hld -> hld.value() }.contains(entry) }
-                .map { it.first }
+                .filter { it.map { hld -> hld.value() }.contains(entry) }
+                .map { it.key()}
                 .sorted { first, second ->
                     @Suppress("UNCHECKED_CAST")
                     sortTags(first as TagKey<Any>, second as TagKey<Any>)

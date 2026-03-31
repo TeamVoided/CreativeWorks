@@ -16,10 +16,10 @@ object PotionCommand {
         dispatcher.root.addChild(root)
 
         literal("nvs").pot(NIGHT_VISION, 0).buildChildOf(root)
-        literal("str").pot(DAMAGE_BOOST).buildChildOf(root)
-        literal("res").pot(DAMAGE_RESISTANCE).buildChildOf(root)
+        literal("str").pot(STRENGTH).buildChildOf(root)
+        literal("res").pot(RESISTANCE).buildChildOf(root)
         literal("sat").pot(SATURATION).buildChildOf(root)
-        literal("hst").pot(DIG_SPEED).buildChildOf(root)
+        literal("hst").pot(HASTE).buildChildOf(root)
         literal("clear").executes {
             val player = it.source?.player ?: return@executes 0
             player.removeAllEffects()

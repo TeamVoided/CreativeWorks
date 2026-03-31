@@ -3,8 +3,8 @@ package org.teamvoided.creative_works.comands.player
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.commands.arguments.ResourceLocationArgument.getId
-import net.minecraft.commands.arguments.ResourceLocationArgument.id
+import net.minecraft.commands.arguments.IdentifierArgument.getId
+import net.minecraft.commands.arguments.IdentifierArgument.id
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.commands.Commands.argument
@@ -23,7 +23,7 @@ object ResetComponentsCommand {
         argument("component", id())
             .suggests { _, builder -> builder.listSuggestions(
                 BuiltInRegistries.DATA_COMPONENT_TYPE.registryKeySet().map { it.identifier().toString() }) }
-            .executes { exe(it, BuiltInRegistries.DATA_COMPONENT_TYPE.get(getId(it, "component"))) }
+            .executes { exe(it, BuiltInRegistries.DATA_COMPONENT_TYPE.get(getId(it, "component")).get().value()) }
             .buildChildOf(root)
     }
 

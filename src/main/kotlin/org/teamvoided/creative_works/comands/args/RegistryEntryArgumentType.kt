@@ -5,14 +5,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import net.minecraft.commands.arguments.ResourceLocationArgument.id
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.arguments.IdentifierArgument.id
 import net.minecraft.core.Holder
 import net.minecraft.core.Registry
-import net.minecraft.resources.ResourceKey
-import net.minecraft.commands.Commands.argument
-import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceKey
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import java.util.concurrent.CompletableFuture
 import kotlin.jvm.optionals.getOrNull
@@ -21,24 +21,25 @@ object RegistryEntryArgumentType {
     val REGISTRY = "registry"
     val ENTRY = "entry"
 
-    fun <T> registryEntryArg(name: String, registry: ResourceKey<Registry<T>>) =
+    fun <T : Any> registryEntryArg(name: String, registry: ResourceKey<Registry<T>>) =
         argument(name, id()).suggests { ctx, builder ->
-            builder.listSuggestions(getRegistry(ctx, registry).registryKeySet().map { it.identifier().toString() }.toList())
+            builder.listSuggestions(getRegistry(ctx, registry).registryKeySet().map { it.identifier().toString() }
+                .toList())
         }
 
 
     @Throws(CommandSyntaxException::class)
-    fun <T> getRegistry(ctx: CommandContext<CommandSourceStack>, name: ResourceKey<Registry<T>>): Registry<T> {
-        return ctx.source.level.registryAccess().registry(name).getOrNull()
+    fun <T : Any> getRegistry(ctx: CommandContext<CommandSourceStack>, name: ResourceKey<Registry<T>>): Registry<T> {
+        return ctx.source.level.registryAccess().lookup(name).getOrNull()
             ?: throw UNKNOWN_REGISTRY_EXCEPTION.create(name)
     }
 
     @Throws(CommandSyntaxException::class)
-    fun <T> getEntry(
+    fun <T : Any> getEntry(
         ctx: CommandContext<CommandSourceStack>, name: String, registry: ResourceKey<Registry<T>>,
     ): Holder.Reference<T> {
         val id = ctx.getArgument(name, Identifier::class.java)
-        return getRegistry(ctx, registry).getHolder(id).getOrNull()
+        return getRegistry(ctx, registry).get(id).getOrNull()
             ?: throw UNKNOWN_REGISTRY_ENTRY_EXCEPTION.create(id)
     }
 
@@ -54,7 +55,7 @@ object RegistryEntryArgumentType {
     ): CompletableFuture<Suggestions> {
         val list = ctx.source.level.registryAccess()
             .registries().map { it.value() }
-            .filter { it.tagNames.toList().isNotEmpty() }
+            .filter { it.tags.toList().isNotEmpty() }
             .map { it.key().identifier().toString() }
         return builder.listSuggestions(list.toList())
     }

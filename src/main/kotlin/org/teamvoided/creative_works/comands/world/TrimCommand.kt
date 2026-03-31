@@ -1,26 +1,13 @@
 package org.teamvoided.creative_works.comands.world
 
-import com.google.common.collect.Maps
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import com.mojang.datafixers.util.Pair
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument
-import net.minecraft.core.component.DataComponents
-import net.minecraft.world.entity.EquipmentSlot
-import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.core.Holder
-import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.registries.Registries
+import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.Commands.literal
-import net.minecraft.commands.CommandSourceStack
-import net.minecraft.network.chat.Component
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument
 import net.minecraft.core.BlockPos
-import net.minecraft.util.Util
-import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.equipment.ArmorMaterial
-import net.minecraft.world.item.equipment.ArmorMaterials
+import net.minecraft.network.chat.Component
 import net.minecraft.world.item.equipment.trim.ArmorTrim
 import net.minecraft.world.item.equipment.trim.TrimMaterial
 import net.minecraft.world.item.equipment.trim.TrimPattern
@@ -120,53 +107,53 @@ object TrimCommand {
         s: CommandSourceStack, patPred: (TrimPattern) -> Boolean, matPred: (TrimMaterial) -> Boolean,
         blockPos: BlockPos, row: Boolean
     ): Int {
-        val world = s.level
-        val permList = mutableListOf<ArmorTrim>()
-        val armorReg = BuiltInRegistries.ARMOR_MATERIAL.filter { it != ArmorMaterials.ARMADILLO.value() }
-        val patternReg = world.registryAccess().registryOrThrow(Registries.TRIM_PATTERN)
-        val materialReg = world.registryAccess().registryOrThrow(Registries.TRIM_MATERIAL)
-
-        val patterns = patternReg.filter(patPred)
-        val materials = materialReg.filter(matPred)
-
-        patterns.forEach { pattern ->
-            materials.forEach { material ->
-                permList.add(ArmorTrim(materialReg.wrapAsHolder(material), patternReg.wrapAsHolder(pattern)))
-            }
-        }
-
-        var j = 0
-        var k = 0
-//        permList.sortByDescending { it.getColor()?.third }
-        permList.forEach { entry ->
-            armorReg.reversed().forEach { material ->
-                val x = blockPos.x + 0.5 - (if (row) k else (if (grid) j % patterns.size else j)) * 2.0
-                val y = blockPos.y + (if (row) 0.0 else (k % armorReg.size) * 3.0)
-                val z = blockPos.z + 0.5 + (if (grid) (j / patterns.size) * 5 else 0)
-                val stand = ArmorStand(world, x, y, z)
-                stand.yRot = 180.0f
-                stand.isNoBasePlate = true
-                stand.isNoGravity = true
-                stand.addTag("placed_with_trim_command")
-                if (items) {
-                    stand.setItemSlot(EquipmentSlot.MAINHAND, entry.material().value().ingredient.value().defaultInstance)
-                    stand.setItemSlot(EquipmentSlot.OFFHAND, entry.pattern().value().templateItem.value().defaultInstance)
-                }
-
-                EquipmentSlot.entries.forEach { slot ->
-                    ARMOR_TYPES[Pair.of(BuiltInRegistries.ARMOR_MATERIAL.wrapAsHolder(material), slot)]?.let {
-                        val itemStack = ItemStack(it)
-                        itemStack.set(DataComponents.TRIM, entry)
-                        stand.setItemSlot(slot, itemStack)
-                    }
-                }
-                world.addFreshEntity(stand)
-                ++k
-            }
-            ++j
-        }
-
-        s.sendSuccess({ Component.literal("Armorstands with trimmed armor spawned around you") }, true)
+//        val world = s.level
+//        val permList = mutableListOf<ArmorTrim>()
+//        val armorReg = BuiltInRegistries.ARMOR_MATERIAL.filter { it != ArmorMaterials.ARMADILLO.value() }
+//        val patternReg = world.registryAccess().registryOrThrow(Registries.TRIM_PATTERN)
+//        val materialReg = world.registryAccess().registryOrThrow(Registries.TRIM_MATERIAL)
+//
+//        val patterns = patternReg.filter(patPred)
+//        val materials = materialReg.filter(matPred)
+//
+//        patterns.forEach { pattern ->
+//            materials.forEach { material ->
+//                permList.add(ArmorTrim(materialReg.wrapAsHolder(material), patternReg.wrapAsHolder(pattern)))
+//            }
+//        }
+//
+//        var j = 0
+//        var k = 0
+////        permList.sortByDescending { it.getColor()?.third }
+//        permList.forEach { entry ->
+//            armorReg.reversed().forEach { material ->
+//                val x = blockPos.x + 0.5 - (if (row) k else (if (grid) j % patterns.size else j)) * 2.0
+//                val y = blockPos.y + (if (row) 0.0 else (k % armorReg.size) * 3.0)
+//                val z = blockPos.z + 0.5 + (if (grid) (j / patterns.size) * 5 else 0)
+//                val stand = ArmorStand(world, x, y, z)
+//                stand.yRot = 180.0f
+//                stand.isNoBasePlate = true
+//                stand.isNoGravity = true
+//                stand.addTag("placed_with_trim_command")
+//                if (items) {
+//                    stand.setItemSlot(EquipmentSlot.MAINHAND, entry.material().value().ingredient.value().defaultInstance)
+//                    stand.setItemSlot(EquipmentSlot.OFFHAND, entry.pattern().value().templateItem.value().defaultInstance)
+//                }
+//
+//                EquipmentSlot.entries.forEach { slot ->
+//                    ARMOR_TYPES[Pair.of(BuiltInRegistries.ARMOR_MATERIAL.wrapAsHolder(material), slot)]?.let {
+//                        val itemStack = ItemStack(it)
+//                        itemStack.set(DataComponents.TRIM, entry)
+//                        stand.setItemSlot(slot, itemStack)
+//                    }
+//                }
+//                world.addFreshEntity(stand)
+//                ++k
+//            }
+//            ++j
+//        }
+//
+//        s.sendSuccess({ Component.literal("Armorstands with trimmed armor spawned around you") }, true)
         return 1
     }
 
@@ -176,8 +163,8 @@ object TrimCommand {
     }
 
 
-    private val ARMOR_TYPES = Util.make(Maps.newHashMap<Pair<Holder<ArmorMaterial>, EquipmentSlot>, Item>()) { map ->
+ /*   private val ARMOR_TYPES = Util.make(Maps.newHashMap<Pair<Holder<ArmorMaterial>, EquipmentSlot>, Item>()) { map ->
         BuiltInRegistries.ITEM.filterIsInstance<ArmorItem>().filter { it.type.hasTrims() }
             .forEach { map[Pair.of(it.material, it.equipmentSlot)] = it }
-    }
+    }*/
 }
