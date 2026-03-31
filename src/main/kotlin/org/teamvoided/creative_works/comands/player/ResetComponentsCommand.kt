@@ -22,7 +22,7 @@ object ResetComponentsCommand {
 
         argument("component", id())
             .suggests { _, builder -> builder.listSuggestions(
-                BuiltInRegistries.DATA_COMPONENT_TYPE.registryKeySet().map { it.location().toString() }) }
+                BuiltInRegistries.DATA_COMPONENT_TYPE.registryKeySet().map { it.identifier().toString() }) }
             .executes { exe(it, BuiltInRegistries.DATA_COMPONENT_TYPE.get(getId(it, "component"))) }
             .buildChildOf(root)
     }

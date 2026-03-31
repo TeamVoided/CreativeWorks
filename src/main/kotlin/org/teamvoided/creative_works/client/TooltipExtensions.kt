@@ -4,17 +4,17 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonPrimitive
 import com.mojang.serialization.JsonOps
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
-import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.Minecraft
+import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.PatchedDataComponentMap
+import net.minecraft.network.chat.Component
+import net.minecraft.tags.TagKey
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.SpawnEggItem
-import net.minecraft.core.Holder
-import net.minecraft.tags.TagKey
-import net.minecraft.network.chat.Component
 import org.teamvoided.creative_works.CreativeWorks
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
@@ -29,8 +29,8 @@ import kotlin.jvm.optionals.getOrNull
 object TooltipExtensions {
     fun renderTooltip() = ItemTooltipCallback.EVENT.register { stack, ctx, cfg, text ->
         if (cfg.isAdvanced) {
-            if (Screen.hasShiftDown()) tagToolTips(stack, text)
-            if (Screen.hasAltDown()) componentToolTips(stack, text, ctx)
+            if (Minecraft.getInstance().hasShiftDown()) tagToolTips(stack, text)
+            if (Minecraft.getInstance().hasAltDown()) componentToolTips(stack, text, ctx)
             // Mixin to this to get comp copying and dumping
             // MinecraftClient.getInstance().keyboard
         }
@@ -44,8 +44,9 @@ object TooltipExtensions {
 
         if (item is BlockItem) text.listTags("Block", item.block.builtInRegistryHolder().toSortedTags())
 
-        if (item is SpawnEggItem)
-            text.listTags("Entity", item.getType(stack).builtInRegistryHolder().toSortedTags())
+        if (item is SpawnEggItem) item.getType(stack)?.let {
+            text.listTags("Entity", it.builtInRegistryHolder().toSortedTags())
+        }
 
         val enchantmentsComponent = stack.get(DataComponents.STORED_ENCHANTMENTS)
         if (enchantmentsComponent != null) {
@@ -115,6 +116,8 @@ object TooltipExtensions {
         tags.forEach { tag -> this.addLast(ltxt(" #${tag.location}").withColor(SECONDARY_COLOR)) }
     } else Unit
 
-    fun <T> Holder<T>.toSortedTags() = this.tags().sorted(::sortTags).toList()
+    fun <T : Any> Holder<T>.toSortedTags(): MutableList<TagKey<T>> =
+        this.tags().sorted(::sortTags).toList().toMutableList()
+
     fun String.removeMc() = this.removePrefix("minecraft:")
 }

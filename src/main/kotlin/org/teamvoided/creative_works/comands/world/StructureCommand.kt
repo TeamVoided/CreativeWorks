@@ -67,7 +67,7 @@ object StructureCommand {
                     val poolReg = world.registryAccess().registryOrThrow(TEMPLATE_POOL)
                     val didntPlace = mutableSetOf<String>()
 
-                    val idn = structure.startPool.unwrapKey().get().location()
+                    val idn = structure.startPool.unwrapKey().get().identifier()
                     log.info("ORIGIN_POOL - [{}]", idn)
 
                     val placedPools = mutableSetOf<Identifier>()

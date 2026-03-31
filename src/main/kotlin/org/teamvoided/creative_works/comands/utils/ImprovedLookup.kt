@@ -14,8 +14,8 @@ object ImprovedLookup {
     fun <S> listElementsAndTags(
         lookup: HolderLookup<S>, ignored: CommandContext<S>, suggestionsBuilder: SuggestionsBuilder,
     ): CompletableFuture<Suggestions> {
-        val list = lookup.listTagIds().map { "#${it.location()}" }.toList() +
-                lookup.listElementIds().map { it.location().toString() }.toList()
+        val list = lookup.listTagIds().map { "#${it.identifier()}" }.toList() +
+                lookup.listElementIds().map { it.identifier().toString() }.toList()
         return suggestionsBuilder.listSuggestions(list)
     }
 

@@ -54,7 +54,7 @@ package org.teamvoided.creative_works.comands
 //
 //        checkTranslations(
 //            server.registryAccess().lookupOrThrow(Registries.BIOME).entrySet(),
-//            { it.key.location().toLanguageKey("biome") },
+//            { it.key.identifier().toLanguageKey("biome") },
 //            set
 //        )
 //        set.forEach { log.error("Missing translations: {}", it) }
@@ -69,7 +69,7 @@ package org.teamvoided.creative_works.comands
 //        val server = src.server ?: return -1
 //        val registry = server.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE);
 //        val allFeatures = registry?.entrySet()
-//            ?.mapNotNull { if (it.key.location().namespace == namespace) it else null }
+//            ?.mapNotNull { if (it.key.identifier().namespace == namespace) it else null }
 //        if (allFeatures == null || allFeatures.isEmpty()) {
 //            src.sendFailure(Component.literal("Failed to find any features in namespace: $namespace"))
 //            return -1
@@ -136,7 +136,7 @@ package org.teamvoided.creative_works.comands
 //        world.setBlock(infoPos, sign, 3)
 //        val be = world.getBlockEntity(infoPos)
 //        if (be is SignBlockEntity) {
-//            val txt = Component.literal("${feature.first.location().path}")
+//            val txt = Component.literal("${feature.first.identifier().path}")
 //            be.setText(SignText().setMessage(0, txt), true)
 //            be.setText(SignText().setMessage(0, txt), false)
 //        }

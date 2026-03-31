@@ -17,7 +17,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKey
 object DebugWidgetRegistry {
     private val customScreen = CustomScreen()
     var widgetsEnabled = false
-    val debugKey: KeyMapping = makeKey(KeyMapping("Debug Widget Key", GLFW.GLFW_KEY_V, "Debug"))
+    val debugKey: KeyMapping = makeKey(KeyMapping("Debug Widget Key", GLFW.GLFW_KEY_V, KeyMapping.Category.DEBUG))
 
     fun init() {
         ClientTickEvents.END_CLIENT_TICK.register {

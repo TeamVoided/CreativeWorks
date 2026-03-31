@@ -34,7 +34,7 @@ object PatterArgumentType {
     ): CompletableFuture<Suggestions> {
         return if (commandContext.source is SharedSuggestionProvider) SharedSuggestionProvider.suggest(
             commandContext.source.level.registryAccess().registryOrThrow(Registries.TRIM_PATTERN).registryKeySet()
-                .map { it.location().toString() },
+                .map { it.identifier().toString() },
             suggestionsBuilder
         ) else Suggestions.empty()
     }

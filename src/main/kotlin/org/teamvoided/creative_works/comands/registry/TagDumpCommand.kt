@@ -37,7 +37,7 @@ object TagDumpCommand {
             val id = tag.get().key().location
             src.sendNamedList(
                 "Tag : $id", id.toString(), "Tag is empty!",
-                tag.get().map { it.unwrapKey().get().location().toString() }
+                tag.get().map { it.unwrapKey().get().identifier().toString() }
             )
         } else src.sendSystemMessage(ltxt("Tag $entryId not found"))
         return 1

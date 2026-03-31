@@ -7,7 +7,7 @@ import org.teamvoided.creative_works.client.screen.SpleenScreen
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding as makeKey
 
 object Clint {
-    val debugKey: KeyMapping = makeKey(KeyMapping("DebugKeybind", GLFW.GLFW_KEY_G, "Debug"))
+    val debugKey: KeyMapping = makeKey(KeyMapping("DebugKeybind", GLFW.GLFW_KEY_G, KeyMapping.Category.DEBUG))
 
     fun init() = ClientTickEvents.END_CLIENT_TICK.register {
         while (debugKey.consumeClick()) {

@@ -3,9 +3,8 @@ package org.teamvoided.creative_works.client.screen
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
-import net.minecraft.Util
+import net.minecraft.util.Util
 import java.awt.Color
 import kotlin.math.abs
 
@@ -37,7 +36,7 @@ class SpleenScreen : Screen(Component.literal("Gay!")) {
         val o = centerY - m / 2
         val outOff = k / 2 + 1
         val outline = -16772609
-        graphics.drawManaged {
+      /*  graphics.drawManaged {
             if (pixelMargin != 0) {
                 graphics.fill(centerX - outOff, centerY - outOff, centerX - outOff + 1, centerY + outOff, outline)
                 graphics.fill(centerX + outOff - 1, centerY - outOff, centerX + outOff, centerY + outOff, outline)
@@ -52,17 +51,17 @@ class SpleenScreen : Screen(Component.literal("Gay!")) {
                     graphics.fill(x, y, x + pixelSize, y + pixelSize, color)
                 }
             }
-            graphics.customFill(10, 30, 40, 45, 0, Color.WHITE.rgb)
-        }
+//            graphics.customFill(10, 30, 40, 45, 0, Color.WHITE.rgb)
+        }*/
     }
 
-    fun GuiGraphics.customFill(x1: Number, y1: Number, x2: Number, y2: Number, z: Number, color: Int) {
+  /*  fun GuiGraphics.customFill(x1: Number, y1: Number, x2: Number, y2: Number, z: Number, color: Int) {
         var x1proc = x1.toFloat()
         var y1 = y1.toFloat()
         var x2proc = x2.toFloat()
         var y2 = y2.toFloat()
         val matrix4f = this.pose().last().pose()
-        /*if (x1proc < x2proc) {
+        *//*if (x1proc < x2proc) {
             x1proc = x2.toFloat()
             x2proc = x1.toFloat()
         }
@@ -71,7 +70,7 @@ class SpleenScreen : Screen(Component.literal("Gay!")) {
             val i = y1
             y1 = y2
             y2 = i
-        }*/
+        }*//*
 
         val vertexConsumer: VertexConsumer = this.bufferSource().getBuffer(RenderType.gui())
         vertexConsumer.addVertex(matrix4f, x1proc, y1, z.toFloat()).setColor(color)
@@ -79,5 +78,5 @@ class SpleenScreen : Screen(Component.literal("Gay!")) {
         vertexConsumer.addVertex(matrix4f, x2proc, y2, z.toFloat()).setColor(color)
         vertexConsumer.addVertex(matrix4f, x2proc, y1, z.toFloat()).setColor(color)
 //        this.flushIfUnmanaged()
-    }
+    }*/
 }

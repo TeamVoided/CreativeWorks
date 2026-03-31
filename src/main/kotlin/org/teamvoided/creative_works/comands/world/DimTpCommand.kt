@@ -44,7 +44,7 @@ object DimTpCommand {
         player.teleportTo(
             world, pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), RelativeMovement.ALL, player.xRot, player.yRot
         )
-        src.message("Teleporting to ${world.dimension().location()}!")
+        src.message("Teleporting to ${world.dimension().identifier()}!")
         return Command.SINGLE_SUCCESS
     }
 }

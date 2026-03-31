@@ -44,7 +44,7 @@ object RegDumpCommand {
         argument("extra", ResourceLocationArgument.id())
             .suggests { ctx, builder ->
                 val list = mutableListOf(Registries.LOOT_TABLE, Registries.ADVANCEMENT, Registries.RECIPE)
-                    .map { it.location().toString() }
+                    .map { it.identifier().toString() }
                 builder.listSuggestions(list)
 
             }
@@ -70,7 +70,7 @@ object RegDumpCommand {
         val dynReg = world.registryAccess() ?: return 0
         val codec = (REG_LIST[registry.key()]) as Codec<Any>?
         val ops = dynReg.createSerializationContext(JsonOps.INSTANCE)
-        val id = registry.key().location()
+        val id = registry.key().identifier()
         src.message("Registry $id ")
 
         if (entryId != null) {
@@ -84,7 +84,7 @@ object RegDumpCommand {
         }
         if (codec == null) {
             val obj = JsonArray()
-            registry.entrySet().forEach { obj.add(it.key.location().toString()) }
+            registry.entrySet().forEach { obj.add(it.key.identifier().toString()) }
             with(world.dumpFolder(id.namespace, false).resolve("${id.fileFormatOLD()}.json")) {
                 parentFile.mkdirs()
                 createNewFile()
@@ -93,7 +93,7 @@ object RegDumpCommand {
             }
             return 1
         }
-        val list = registry.entrySet().associate { it.key.location() to codec.encodeStart(ops, it.value) }
+        val list = registry.entrySet().associate { it.key.identifier() to codec.encodeStart(ops, it.value) }
         src.dumpResources(world, id, list, true, silent)
 
         return 1
@@ -111,15 +111,15 @@ object RegDumpCommand {
 
         val ops = dynReg.createSerializationContext(JsonOps.INSTANCE)
         val resource = when (extra) {
-            Registries.LOOT_TABLE.location() -> {
+            Registries.LOOT_TABLE.identifier() -> {
                 server.reloadableRegistries().get().registryOrThrow(Registries.LOOT_TABLE).entrySet()
-                    .associate { it.key.location() to LootTable.DIRECT_CODEC.encodeStart(ops, it.value) }
+                    .associate { it.key.identifier() to LootTable.DIRECT_CODEC.encodeStart(ops, it.value) }
             }
 
-            Registries.ADVANCEMENT.location() ->
+            Registries.ADVANCEMENT.identifier() ->
                 server.advancements.allAdvancements.associate { it.id to Advancement.CODEC.encodeStart(ops, it.value) }
 
-            Registries.RECIPE.location() -> server.recipeManager.recipes
+            Registries.RECIPE.identifier() -> server.recipeManager.recipes
                 .associate { it.id to Recipe.CODEC.encodeStart(ops, it.value) }
 
             else -> {

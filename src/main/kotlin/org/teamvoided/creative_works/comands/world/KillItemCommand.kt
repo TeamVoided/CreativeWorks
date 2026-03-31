@@ -25,7 +25,7 @@ object KillItemCommand {
         argument("type", ResourceOrTagArgument.resourceOrTag(ctx, Registries.ITEM))
             .suggests { _, builder ->
                 val lookup = ctx.lookupOrThrow(Registries.ITEM)
-                builder.listSuggestions(lookup.listElementIds().map { it.location().toString() }.toList())
+                builder.listSuggestions(lookup.listElementIds().map { it.identifier().toString() }.toList())
             }
             .executes {
                 val result = ResourceOrTagArgument.getResourceOrTag(it, "type", Registries.ITEM)

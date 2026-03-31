@@ -6,23 +6,22 @@ import com.mojang.brigadier.arguments.BoolArgumentType.getBool
 import com.mojang.brigadier.arguments.StringArgumentType.getString
 import com.mojang.brigadier.arguments.StringArgumentType.word
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.core.component.DataComponents
-import net.minecraft.world.item.enchantment.ItemEnchantments
-import net.minecraft.world.item.component.Unbreakable
-import net.minecraft.world.item.enchantment.Enchantment
-import net.minecraft.world.item.enchantment.Enchantments
-import net.minecraft.world.entity.item.ItemEntity
-import net.minecraft.world.item.ArmorItem.Type
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items.*
-import net.minecraft.core.Holder
-import net.minecraft.resources.ResourceKey
-import net.minecraft.core.registries.Registries
+import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.Commands.literal
-import net.minecraft.commands.CommandSourceStack
+import net.minecraft.core.Holder
+import net.minecraft.core.component.DataComponents
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceKey
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.StringRepresentable
+import net.minecraft.world.entity.item.ItemEntity
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items.*
+import net.minecraft.world.item.enchantment.Enchantment
+import net.minecraft.world.item.enchantment.Enchantments
+import net.minecraft.world.item.enchantment.ItemEnchantments
+import net.minecraft.world.item.equipment.ArmorType
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
 import org.teamvoided.creative_works.util.message
@@ -44,7 +43,7 @@ object GearCommand {
 
     fun exe(
         ctx: CommandContext<CommandSourceStack>,
-        type: GearType? = null, enchanted: Boolean = false, unbreakable: Boolean = false
+        type: GearType? = null, enchanted: Boolean = false, unbreakable: Boolean = false,
     ): Int {
         val src = ctx.source ?: return 0
         val world = src.level ?: return 0
@@ -54,7 +53,7 @@ object GearCommand {
         val doEverything = (type == null || type == GearType.ALL)
         var message = ""
 
-        val map = mutableMapOf<Type, ItemStack>()
+        val map = mutableMapOf<ArmorType, ItemStack>()
         val items = mutableListOf<ItemStack>()
 
         if (type == GearType.ARMOR || doEverything) {
@@ -74,10 +73,10 @@ object GearCommand {
                     .addEnchantment(world, Enchantments.FEATHER_FALLING, 3)
                     .addEnchantment(world, Enchantments.DEPTH_STRIDER, 3)
             }
-            map[Type.HELMET] = helmet
-            map[Type.CHESTPLATE] = chestplate
-            map[Type.LEGGINGS] = leggings
-            map[Type.BOOTS] = boots
+            map[ArmorType.HELMET] = helmet
+            map[ArmorType.CHESTPLATE] = chestplate
+            map[ArmorType.LEGGINGS] = leggings
+            map[ArmorType.BOOTS] = boots
 
         }
         if (type == GearType.WEAPONS || doEverything) {
@@ -181,7 +180,7 @@ object GearCommand {
     }
 
     fun ItemStack.unbreakable(showInToolTip: Boolean = true) =
-        this.set(DataComponents.UNBREAKABLE, Unbreakable(showInToolTip))
+        this.set(DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE)
 
     fun ItemStack.addEnchantment(dyn: ServerLevel, enchantment: ResourceKey<Enchantment>, level: Int): ItemStack =
         this.addEnchantment(
@@ -189,7 +188,7 @@ object GearCommand {
         )
 
     fun ItemStack.addEnchantment(enchantment: Holder<Enchantment>, level: Int): ItemStack {
-        val builder = ItemEnchantments.Mutable(this.get(DataComponents.ENCHANTMENTS))
+        val builder = ItemEnchantments.Mutable(getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY))
         builder.set(enchantment, level)
         this.set(DataComponents.ENCHANTMENTS, builder.toImmutable())
         return this

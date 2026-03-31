@@ -23,7 +23,7 @@ object RegistryEntryArgumentType {
 
     fun <T> registryEntryArg(name: String, registry: ResourceKey<Registry<T>>) =
         argument(name, id()).suggests { ctx, builder ->
-            builder.listSuggestions(getRegistry(ctx, registry).registryKeySet().map { it.location().toString() }.toList())
+            builder.listSuggestions(getRegistry(ctx, registry).registryKeySet().map { it.identifier().toString() }.toList())
         }
 
 
@@ -45,7 +45,7 @@ object RegistryEntryArgumentType {
     private fun listSuggestions(
         ctx: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder,
     ): CompletableFuture<Suggestions> {
-        val list = ctx.source.level.registryAccess().registries().map { it.value().key().location().toString() }
+        val list = ctx.source.level.registryAccess().registries().map { it.value().key().identifier().toString() }
         return builder.listSuggestions(list.toList())
     }
 
@@ -55,7 +55,7 @@ object RegistryEntryArgumentType {
         val list = ctx.source.level.registryAccess()
             .registries().map { it.value() }
             .filter { it.tagNames.toList().isNotEmpty() }
-            .map { it.key().location().toString() }
+            .map { it.key().identifier().toString() }
         return builder.listSuggestions(list.toList())
     }
 

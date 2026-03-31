@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 class WorldPresetTagsProvider(o: FabricDataOutput, r: CompletableFuture<HolderLookup.Provider>) :
     FabricTagProvider<WorldPreset>(o, Registries.WORLD_PRESET, r) {
     override fun addTags(arg: HolderLookup.Provider) {
-        tag(WorldPresetTags.EXTENDED)
+        builder(WorldPresetTags.EXTENDED)
             .add(CWWorldTypes.DEBUG_FILTERED_BLOCK_STATES)
     }
 }

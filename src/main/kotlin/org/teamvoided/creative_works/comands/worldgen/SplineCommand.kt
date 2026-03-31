@@ -67,7 +67,7 @@ object SplineCommand {
                 }
             }
         }
-        src.message("${entry.unwrapKey().getOrNull()?.location()?.path}")
+        src.message("${entry.unwrapKey().getOrNull()?.identifier()?.path}")
         return Command.SINGLE_SUCCESS
     }
 
