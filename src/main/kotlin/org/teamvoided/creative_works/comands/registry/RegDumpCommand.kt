@@ -31,6 +31,7 @@ import org.teamvoided.creative_works.comands.args.RegistryArgumentType.registryA
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.*
 import java.io.File
+import kotlin.jvm.optionals.getOrNull
 
 object RegDumpCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {
@@ -56,7 +57,7 @@ object RegDumpCommand {
 
     fun dumpAll(ctx: CommandContext<CommandSourceStack>): Int {
         val src = ctx.source ?: return 0
-        val dynReg = src.level?.registryAccess() ?: return 0
+        val dynReg = src.level.registryAccess()
         dynReg.registries().forEach { regdump(ctx, it.value, null, true) }
         return 1
     }
@@ -66,15 +67,15 @@ object RegDumpCommand {
         silent: Boolean = false,
     ): Int {
         val src = ctx.source ?: return 0
-        val world = src.level ?: return 0
-        val dynReg = world.registryAccess() ?: return 0
+        val world = src.level
+        val dynReg = world.registryAccess()
         val codec = (REG_LIST[registry.key()]) as Codec<Any>?
         val ops = dynReg.createSerializationContext(JsonOps.INSTANCE)
         val id = registry.key().identifier()
         src.message("Registry $id ")
 
         if (entryId != null) {
-            val entry = registry.get(entryId)
+            val entry = registry.getOptional(entryId).getOrNull()
             codec?.encodeStart(ops, entry)
                 ?.ifError { src.error(" Error while encoding $it") }
                 ?.map { gson.toJson(it) }
@@ -105,8 +106,8 @@ object RegDumpCommand {
         entryId: Identifier? = null,
     ): Int {
         val src = ctx.source ?: return 0
-        val world = src.level ?: return 0
-        val dynReg = world.registryAccess() ?: return 0
+        val world = src.level
+        val dynReg = world.registryAccess()
         val server = world.server
 
         val ops = dynReg.createSerializationContext(JsonOps.INSTANCE)
