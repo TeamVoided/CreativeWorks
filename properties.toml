@@ -1,0 +1,10 @@
+mod_name = "CreativeWorks"
+mod_id = "creative_works"
+mod_group = "org.teamvoided"
+mod_version = "0.5.0"
+mod_description = "Template Mod Description"
+github_repo = "TeamVoided/CreativeWorks"
+discord_invite = "https://discord.gg/KZ5Q364hEg"
+authors = [ "TheEnderCore" ]
+license = "MIT"
+version_range = ">=1.21.1 <1.21.2"

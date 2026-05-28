@@ -1,26 +1,40 @@
+# see https://fabricmc.net/develop/ for new versions
 [versions]
-kotlin = "2.1.20"
-fabric-loom = "1.10-SNAPSHOT"
-iridium = "3.4.0"
-# Dependencies
-fzzy-config = "0.6.9+1.21"
-imguimc = "1.21.1-1.0.8"
-# QoL
-modmenu = "11.0.3"
-emi = "1.1.22+1.21.1"
+    java = "21"
+    kotlin = "2.3.21"
+    fabric_loom = "1.16-SNAPSHOT"
+    iridium = "4.0.0"
+    # Dependencies
+    minecraft = "1.21.1"
+    fabric_loader = "0.19.2"
+    fabric_api = "0.116.12+1.21.1"
+    fabric_kotlin = "1.13.11+kotlin.2.3.21"
+    fzzy_config = "0.7.6+1.21"
+    # Compatibility
+    # Runtime
+    modmenu = "11.0.3"
+    emi = "1.1.24+1.21.1"
+    # Testing
+    imguimc = "1.21.1-1.0.8"
 
 [libraries]
-# Dependencies
-imguimc = { module = "maven.modrinth:imgui-mc", version.ref = "imguimc" }
-fzzy-config = { module = "me.fzzyhmstrs:fzzy_config", version.ref = "fzzy-config" }
-# QoL
-modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-emi = { module = "dev.emi:emi-fabric", version.ref = "emi" }
+    # Dependencies
+    minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+    fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
+    fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
+    fabric_kotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "fabric_kotlin" }
+    fzzy-config = { module = "me.fzzyhmstrs:fzzy_config", version.ref = "fzzy_config" }
+    imguimc = { module = "maven.modrinth:imgui-mc", version.ref = "imguimc" }
+    # Runtime
+    modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
+    emi = { module = "dev.emi:emi-fabric", version.ref = "emi" }
+
+[bundles]
 
 [plugins]
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-fabric-loom = { id = "fabric-loom", version.ref = "fabric-loom" }
-iridium = { id = "org.teamvoided.iridium", version.ref = "iridium"}
-iridium-publish = { id = "iridium.project.publish-script", version.ref = "iridium"}
-iridium-upload = { id = "iridium.mod.upload-script", version.ref = "iridium" }
+    kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+    kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+    fabric-loom = { id = "net.fabricmc.fabric-loom-remap", version.ref = "fabric_loom" }
+    iridium = { id = "org.teamvoided.iridium", version.ref = "iridium" }
+    iridium-publish = { id = "iridium.project.publish-script", version.ref = "iridium" }
+    iridium-upload = { id = "iridium.mod.upload-script", version.ref = "iridium" }

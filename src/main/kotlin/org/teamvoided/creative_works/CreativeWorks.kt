@@ -1,6 +1,7 @@
 package org.teamvoided.creative_works
 
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi
+import net.fabricmc.api.ModInitializer
 import net.minecraft.resources.ResourceLocation
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,7 +13,7 @@ import org.teamvoided.creative_works.init.CWWorldTypes
 import org.teamvoided.creative_works.network.CWNet
 
 @Suppress("unused")
-object CreativeWorks {
+object CreativeWorks : ModInitializer {
     const val MODID = "creative_works"
 
     const val MAIN_COLOR = 0xDDDDDD
@@ -25,7 +26,7 @@ object CreativeWorks {
     @JvmField
     var config = ConfigApi.registerAndLoadConfig(::CWConfig)
 
-    fun commonInit() {
+    override fun onInitialize() {
         CWWorldTypes.init()
         CWNet.init()
         CWCommands.init()
@@ -41,4 +42,5 @@ object CreativeWorks {
 
 
     fun id(path: String) = ResourceLocation.fromNamespaceAndPath(MODID, path)
+
 }
