@@ -189,7 +189,7 @@ object GearCommand {
         )
 
     fun ItemStack.addEnchantment(enchantment: Holder<Enchantment>, level: Int): ItemStack {
-        val builder = ItemEnchantments.Mutable(this.get(DataComponents.ENCHANTMENTS))
+        val builder = ItemEnchantments.Mutable(getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY))
         builder.set(enchantment, level)
         this.set(DataComponents.ENCHANTMENTS, builder.toImmutable())
         return this
