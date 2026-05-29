@@ -1,4 +1,4 @@
-classTweaker v1 named
+accessWidener v2 named
 
 # Fields
 accessible field net/minecraft/world/level/levelgen/structure/structures/JigsawStructure startPool Lnet/minecraft/core/Holder;
