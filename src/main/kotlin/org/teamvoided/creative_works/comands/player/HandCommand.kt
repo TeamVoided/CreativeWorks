@@ -4,38 +4,45 @@ import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.StringArgumentType.getString
 import com.mojang.brigadier.arguments.StringArgumentType.word
 import com.mojang.brigadier.context.CommandContext
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands.argument
+import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.arguments.EntityArgument
+import net.minecraft.nbt.NbtOps
+import net.minecraft.nbt.NbtUtils
+import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
-import net.minecraft.nbt.NbtOps
-import net.minecraft.commands.Commands.argument
-import net.minecraft.commands.Commands.literal
-import net.minecraft.commands.CommandSourceStack
-import net.minecraft.world.InteractionHand
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.error
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.error
+import org.teamvoided.creative_works.util.mc.message
 
 object HandCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {
-        val root = literal("hand").executes { exe(it, null, null) }.buildChildOf(dispatcher.root)
+        val root = literal("hand").executes(::exe).buildChildOf(dispatcher.root)
         val hand = argument("hand", word())
-            .suggests { _, builder -> builder.listSuggestions(InteractionHand.entries.map { it.toString().lowercase() }) }
-            .executes { exe(it, InteractionHand.valueOf(getString(it, "hand")), null) }
+            .suggests { _, builder ->
+                builder.listSuggestions(InteractionHand.entries.map {
+                    it.toString().lowercase()
+                })
+            }
+            .executes { exe(it, InteractionHand.valueOf(getString(it, "hand"))) }
             .buildChildOf(root)
         argument("entity", EntityArgument.entity())
             .executes {
                 exe(
-                    it, InteractionHand.valueOf(getString(it, "hand").uppercase()), EntityArgument.getEntity(it, "entity")
+                    it,
+                    InteractionHand.valueOf(getString(it, "hand").uppercase()),
+                    EntityArgument.getEntity(it, "entity")
                 )
             }
             .buildChildOf(hand)
     }
 
     fun exe(
-        ctx: CommandContext<CommandSourceStack>, handIn: InteractionHand?, entity: Entity?
+        ctx: CommandContext<CommandSourceStack>, handIn: InteractionHand? = null, entity: Entity? = null,
     ): Int {
         val src = ctx.source ?: return 0
         val target: LivingEntity? = entity as? LivingEntity ?: src.player
@@ -56,7 +63,7 @@ object HandCommand {
             src.error("Error while trying to get hand data: ${data.error().get().message()}")
             return 0
         }
-        src.message("Stack data: ${data.getOrThrow()}")
+        src.message("Stack data: ", NbtUtils.toPrettyComponent(data.getOrThrow()))
         return 1
     }
 }
