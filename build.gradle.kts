@@ -143,7 +143,7 @@ tasks {
 }
 
 publishScript {
-    releaseRepository("TeamVoided", "https://maven.teamvoided.org/releases")
+    releaseRepository("TeamVoided", "https://maven.teamvoided.org/snapshots")
     publication(iridium.modId, isSnapshot = false)
     publishSources = true
 }
