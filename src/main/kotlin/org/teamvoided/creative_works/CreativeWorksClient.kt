@@ -1,20 +1,32 @@
 package org.teamvoided.creative_works
 
+import me.fzzyhmstrs.fzzy_config.api.ConfigApi
+import me.fzzyhmstrs.fzzy_config.api.RegisterType
 import net.fabricmc.api.ClientModInitializer
-import org.teamvoided.creative_works.client.Clint
-import org.teamvoided.creative_works.client.DebugWidgetRegistry
-import org.teamvoided.creative_works.client.TooltipExtensions
+import net.fabricmc.loader.api.FabricLoader
+import org.teamvoided.creative_works.cfg.CWClientConfig
+import org.teamvoided.creative_works.client.api.gui.DebugWidgetTypes
+import org.teamvoided.creative_works.client.init.CWClientEvents
+import org.teamvoided.creative_works.client.init.CWImGui
+import org.teamvoided.creative_works.client.init.CWKeyMappings
 import org.teamvoided.creative_works.network.CWNet
 
 @Suppress("unused")
 object CreativeWorksClient : ClientModInitializer {
-//    @JvmField
-//    var config = ConfigApi.registerAndLoadConfig(::CWConfig)
+
+    @JvmField
+    var clientConfig = ConfigApi.registerAndLoadConfig(::CWClientConfig, RegisterType.CLIENT)
+
+    var hasImGui = FabricLoader.getInstance().isModLoaded("imguimc")
+
     override fun onInitializeClient() {
-        Clint.init()
+        CWKeyMappings.init()
         CWNet.clientInit()
-        TooltipExtensions.renderTooltip()
-        DebugWidgetRegistry.init()
+        if (hasImGui) {
+            CWImGui.init()
+            DebugWidgetTypes.init()
+        }
+        CWClientEvents.init()
 //        TestRenderer.init()
     }
 

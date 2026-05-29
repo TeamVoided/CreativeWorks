@@ -24,6 +24,14 @@ repositories {
             includeGroup("dev.emi")
         }
     }
+    exclusiveContent { // ImGuiMC
+        forRepository {
+            maven("https://maven.ryanhcode.dev/releases") { name = "RyanHCode Maven" }
+        }
+        filter {
+            includeGroup("foundry.imguimc")
+        }
+    }
     maven("https://api.modrinth.com/maven") { content { includeGroup("maven.modrinth") } }
     mavenLocal()
     mavenCentral()
@@ -41,7 +49,6 @@ dependencies {
     modImplementation(libs.fabric.kotlin)
     modImplementation(libs.fzzy.config)
     modImplementation(libs.imguimc)
-    include(libs.imguimc)
     // Runtime
     modImplementation(libs.modmenu)
     modImplementation(libs.emi)

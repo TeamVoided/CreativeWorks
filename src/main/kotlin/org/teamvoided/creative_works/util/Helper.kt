@@ -3,24 +3,50 @@ package org.teamvoided.creative_works.util
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.core.RegistryAccess
 import net.minecraft.core.HolderSet.Named
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceKey
 import net.minecraft.tags.TagKey
 import net.minecraft.commands.CommandSourceStack
+import net.minecraft.core.Holder
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
+import org.teamvoided.creative_works.CreativeWorks.MODID
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.registry.TagDumpCommand.ctc
 import java.awt.Color
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.abs
+
+
+
+fun isDev() = FabricLoader.getInstance().isDevelopmentEnvironment
+
+fun <T : Any> isModHolder(holder: Holder<T>) = holder.`is` { it.location().namespace == MODID }
+
+fun <T : Any> getModHolders(registry: Registry<T>): List<Holder.Reference<T>> = registry.holders()
+    .filter(::isModHolder)
+    .toList()
+
+fun <T : Any> getModEntries(registry: Registry<T>): List<T> = registry.holders()
+    .filter(::isModHolder)
+    .map(Holder<T>::value)
+    .toList()
+
+fun <V : Any, T : V> Registry<V>.register(id: ResourceLocation, entry: T): T = Registry.register(this, id, entry)
+fun <V : Any, T : V> Registry<T>.registerHolder(id: ResourceLocation, entry: T): Holder.Reference<T> =
+    Registry.registerForHolder(this, id, entry)
+
+fun <T : Any, R : Registry<T>> ResourceKey<R>.tag(id: ResourceLocation): TagKey<T> = TagKey.create(this, id)
+fun <T : Any, R : Registry<T>> ResourceKey<R>.key(id: ResourceLocation): ResourceKey<T> = ResourceKey.create(this, id)
+
 
 fun <S> CommandNode<S>.childOf(node: CommandNode<S>): CommandNode<S> {
     node.addChild(this)

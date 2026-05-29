@@ -5,9 +5,7 @@ import net.fabricmc.api.ModInitializer
 import net.minecraft.resources.ResourceLocation
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.teamvoided.creative_works.client.Clint
-import org.teamvoided.creative_works.client.DebugWidgetRegistry
-import org.teamvoided.creative_works.client.TooltipExtensions
+import org.teamvoided.creative_works.cfg.CWConfig
 import org.teamvoided.creative_works.init.CWCommands
 import org.teamvoided.creative_works.init.CWWorldTypes
 import org.teamvoided.creative_works.network.CWNet
@@ -32,15 +30,7 @@ object CreativeWorks : ModInitializer {
         CWCommands.init()
     }
 
-    fun clientInit() {
-        Clint.init()
-        CWNet.clientInit()
-        TooltipExtensions.renderTooltip()
-        DebugWidgetRegistry.init()
-//        TestRenderer.init()
-    }
-
-
-    fun id(path: String) = ResourceLocation.fromNamespaceAndPath(MODID, path)
-
+    fun id(namespace: String, path: String): ResourceLocation = ResourceLocation.fromNamespaceAndPath(namespace, path)
+    fun mc(path: String): ResourceLocation = ResourceLocation.withDefaultNamespace(path)
+    fun id(path: String) = id(MODID, path)
 }

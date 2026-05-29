@@ -29,7 +29,6 @@ object CWNet {
             when (packet.id) {
                 CLEAR_PARTICLES -> Minecraft.getInstance().particleEngine.clearParticles()
                 CW_TEST -> runTests(c)
-                IMGUI_DEBUG -> imguiDebug()
                 else -> log.info("Unknown event id [{}]", packet.id)
             }
         }
