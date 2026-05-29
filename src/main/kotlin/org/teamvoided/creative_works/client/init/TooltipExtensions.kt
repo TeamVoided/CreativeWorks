@@ -3,78 +3,69 @@ package org.teamvoided.creative_works.client.init
 import com.google.gson.JsonArray
 import com.google.gson.JsonPrimitive
 import com.mojang.serialization.JsonOps
+import com.mojang.serialization.MapCodec
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponentType
-import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.PatchedDataComponentMap
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.tags.TagKey
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ai.village.poi.PoiType
 import net.minecraft.world.entity.ai.village.poi.PoiTypes
 import net.minecraft.world.item.*
-import org.teamvoided.creative_works.CreativeWorks
 import org.teamvoided.creative_works.CreativeWorksClient.clientConfig
+import org.teamvoided.creative_works.client.tooltip.TooltipTags
+import org.teamvoided.creative_works.client.tooltip.TooltipTags.MAP
 import org.teamvoided.creative_works.mixin.BucketItemAccessor
 import org.teamvoided.creative_works.util.basicJsonToText
-import org.teamvoided.creative_works.util.ltxt
-import org.teamvoided.creative_works.util.sortTags
+import org.teamvoided.creative_works.util.mc.*
 import org.teamvoided.creative_works.util.toText
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 object TooltipExtensions {
 
-    fun appendTooltip(stack: ItemStack, ctx: Item.TooltipContext, flag: TooltipFlag, text: MutableList<Component>) {
+    fun appendTooltip(stack: ItemStack, ctx: Item.TooltipContext, flag: TooltipFlag, tooltip: MutableList<Component>) {
         if (flag.isAdvanced) {
-            if (Screen.hasShiftDown()) tagToolTips(stack, text)
-            if (Screen.hasAltDown()) componentToolTips(stack, text, ctx)
+            if (Screen.hasShiftDown()) tagToolTips(stack, ctx, tooltip)
+            if (Screen.hasAltDown()) componentToolTips(stack, tooltip, ctx)
             // Mixin to this to get comp copying and dumping
             // MinecraftClient.getInstance().keyboard
         }
     }
 
     @Suppress("DEPRECATION")
-    private fun tagToolTips(stack: ItemStack, text: MutableList<Component>) {
+    fun tagToolTips(stack: ItemStack, ctx: Item.TooltipContext, tooltip: MutableList<Component>) {
         val item = stack.item
 
-        text.listTags("Item", item.builtInRegistryHolder().toSortedTags())
+        val holder = item.builtInRegistryHolder()
+        tooltip.addAllTags("Item", holder, holder.getSortedTags())
 
         if (item is BlockItem) {
-            text.listTags("Block", item.block.builtInRegistryHolder().toSortedTags())
-            val poi = PoiTypes.forState(item.block.defaultBlockState()).getOrNull()
-            if (poi != null)
-                text.listTags("POI", poi.toSortedTags(), " (${(poi as Holder.Reference<PoiType>).key().location()})")
+            val blockHolder = item.block.builtInRegistryHolder()
+            tooltip.addAllTags("Block", blockHolder, blockHolder.getSortedTags())
+            val poi = PoiTypes.forState(item.block.defaultBlockState()).getOrNull() as? Holder.Reference<PoiType>
+            if (poi != null) {
+                tooltip.addAllTags("POI", poi, poi.getSortedTags())
+            }
         }
 
-        if (item is SpawnEggItem)
-            text.listTags("Entity", item.getType(stack).builtInRegistryHolder().toSortedTags())
-
-        if (item is BucketItemAccessor)
-            text.listTags("Fluid", item.cw_content().builtInRegistryHolder().toSortedTags())
-
-        val storedEnchants = stack.get(DataComponents.STORED_ENCHANTMENTS)
-        val enchants = stack.get(DataComponents.ENCHANTMENTS)
-        if (storedEnchants != null) {
-            val enchantments = storedEnchants.keySet()
-            if (enchantments.size > 1)
-                text.addLast(ltxt("Item has more then 1 stored enchantment").withColor(CreativeWorks.WARNING_COLOR))
-            else if (enchantments.isEmpty())
-                text.addLast(ltxt("No stored enchantments").withColor(CreativeWorks.WARNING_COLOR))
-            else
-                text.listTags("Enchantment", enchantments.first().toSortedTags())
-        } else if (enchants != null) {
-            val enchantments = enchants.keySet()
-            if (enchantments.size > 1)
-                text.addLast(ltxt("Item has more then 1 enchantment").withColor(CreativeWorks.WARNING_COLOR))
-            else if (!enchantments.isEmpty())
-                text.listTags("Enchantment", enchantments.first().toSortedTags())
+        if (item is SpawnEggItem) {
+            val entityHolder = item.getType(stack).builtInRegistryHolder()
+            tooltip.addAllTags("Entity", entityHolder, entityHolder.getSortedTags())
         }
 
-        val instrument = stack.get(DataComponents.INSTRUMENT)
-        if (instrument != null)
-            text.listTags("Instrument", instrument.toSortedTags())
+        if (item is BucketItemAccessor) {
+            val fluidHolder = item.cw_content().builtInRegistryHolder()
+            tooltip.addAllTags("Fluid", fluidHolder, fluidHolder.getSortedTags())
+        }
 
+        val context = TooltipTags.Context(ctx.registries(), item is SpawnEggItem)
+        for (component in MAP.keys) {
+            TooltipTags.gatherTags(component, stack, tooltip, context)
+        }
     }
 
     private fun componentToolTips(stack: ItemStack, text: MutableList<Component>, ctx: Item.TooltipContext) {
@@ -83,25 +74,27 @@ object TooltipExtensions {
         val rawComponents = stack.components
         if (rawComponents !is PatchedDataComponentMap) return
 
-        if (clientConfig.enableBaseComponents)
+        if (clientConfig.enableBaseComponents) {
             rawComponents.prototype.toList().sortedBy { it.type.toString() }.let { components ->
                 if (components.isNotEmpty()) {
-                    text.addLast(ltxt("Base Components:").withColor(CreativeWorks.MAIN_COLOR))
+                    text.addLast(textMain("Base Components:"))
                     components.forEach {
                         val result = it.encodeValue(ops)
                         val data =
                             if (result.isSuccess) result.getOrThrow()
                             else JsonPrimitive(result.error().getOrNull()?.message() ?: "Failed to get encoding error!")
                         text.addLast(
-                            ltxt(" ${it.type.toString().removeMc()}: ").withColor(CreativeWorks.SECONDARY_COLOR)
+                            textSecond(" ${it.type.toString().removeMc()}: ")
                                 .append(basicJsonToText(data).toText())
                         )
                     }
                 }
             }
+        }
+
         rawComponents.patch.toList().sortedBy { it.first.toString() }.let { components ->
             if (components.isNotEmpty()) {
-                text.addLast(ltxt("Components:").withColor(CreativeWorks.MAIN_COLOR))
+                text.addLast(textMain("Components:"))
                 val removed = JsonArray()
                 components.forEach comp@{ (type, data) ->
                     val ts = type.toString().removeMc()
@@ -116,25 +109,31 @@ object TooltipExtensions {
                                 result?.error()?.getOrNull()?.message() ?: "Failed to get encoding error!"
                             )
                         text.addLast(
-                            ltxt(" $ts: ").withColor(CreativeWorks.SECONDARY_COLOR)
-                                .append(basicJsonToText(resultData).toText())
+                            textSecond(" $ts: ").append(basicJsonToText(resultData).toText())
                         )
                     }
                 }
+
                 if (!removed.isEmpty) {
-                    text.addLast(ltxt("Removed Components: ").withColor(CreativeWorks.WARNING_COLOR))
-                    text.addLast(ltxt(" ").append(basicJsonToText(removed).toText()))
+                    text.addLast(textWarning("Removed Components: "))
+                    text.addLast(text(" ").append(basicJsonToText(removed).toText()))
                 }
             }
         }
     }
 
-    fun <T : Any> MutableList<Component>.listTags(name: String, tags: MutableList<TagKey<T>>, suffix: String = "") =
-        if (tags.isNotEmpty()) {
-            this.addLast(ltxt("$name Tags${suffix}:").withColor(CreativeWorks.MAIN_COLOR))
-            tags.forEach { tag -> this.addLast(ltxt(" #${tag.location}").withColor(CreativeWorks.SECONDARY_COLOR)) }
-        } else Unit
+    fun <T : Any> MutableList<Component>.addAllTags(
+        name: String, holder: Holder<*>?, tags: List<TagKey<T>>,
+    ) {
+        if (tags.isEmpty()) return
 
-    fun <T> Holder<T>.toSortedTags() = this.tags().sorted(::sortTags).toList()
-    fun String.removeMc() = this.removePrefix("minecraft:")
+        addLast(textMain("$name Tags: ").append(text("(${holder?.unwrapKey()?.getOrNull()?.location()})", 5592405)))
+        for (tag in tags) {
+            addLast(textSecond(" #${tag.location}"))
+        }
+    }
+
+    val ENTITY_TYPE_FIELD_CODEC: MapCodec<EntityType<*>> = BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("id")
+
+    fun String.removeMc() = removePrefix("minecraft:")
 }

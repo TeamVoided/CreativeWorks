@@ -14,6 +14,7 @@ import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegist
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.regEntryArg
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.registryTagArg
 import org.teamvoided.creative_works.util.*
+import org.teamvoided.creative_works.util.mc.sortTags
 
 object FindTagsCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {

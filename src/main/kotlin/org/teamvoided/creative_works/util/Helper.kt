@@ -142,9 +142,6 @@ fun Color.toHSL(): Triple<Int, Int, Int> {
     return Triple(h, s, l)
 }
 
-fun <T> sortTags(a: TagKey<T>, b: TagKey<T>) = sortIdentifier(a.location, b.location)
-fun sortIdentifier(a: ResourceLocation, b: ResourceLocation) = a.path.compareTo(b.path)
-
 fun <T, R : Registry<T>> CommandContext<CommandSourceStack>.getRegistry(key: ResourceKey<R>): Registry<T> =
     this.source.level.registryAccess().registryOrThrow(key)
 

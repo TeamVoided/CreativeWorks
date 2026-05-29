@@ -9,6 +9,7 @@ import org.teamvoided.creative_works.client.api.gui.DebugWidgetTypes
 import org.teamvoided.creative_works.client.init.CWClientEvents
 import org.teamvoided.creative_works.client.init.CWImGui
 import org.teamvoided.creative_works.client.init.CWKeyMappings
+import org.teamvoided.creative_works.client.tooltip.TooltipTags
 import org.teamvoided.creative_works.network.CWNet
 
 @Suppress("unused")
@@ -26,6 +27,7 @@ object CreativeWorksClient : ClientModInitializer {
             CWImGui.init()
             DebugWidgetTypes.init()
         }
+        TooltipTags.initDefaults()
         CWClientEvents.init()
 //        TestRenderer.init()
     }
