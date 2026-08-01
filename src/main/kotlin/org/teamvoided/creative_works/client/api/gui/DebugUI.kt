@@ -34,6 +34,12 @@ object DebugUI {
 
     fun addText(label: String, text: String) = addGuiValue(label, TextValue(text))
 
+    fun addSlider(label: String, min: Float, max: Float, default: Float = 0f) =
+        addGuiValue(label, FloatSliderValue(min, max, default))
+
+    fun addSlider(label: String, min: Int, max: Int, default: Int = 0) =
+        addGuiValue(label, IntSliderValue(min, max, default))
+
     internal fun renderDebuggingUI() {
         if (!uiEnabled.get()) return
         ImGui.begin("Debug Widget Window", uiEnabled.bool)

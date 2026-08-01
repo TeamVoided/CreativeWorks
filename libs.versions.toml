@@ -10,7 +10,7 @@
     fabric_api = "0.116.12+1.21.1"
     fabric_kotlin = "1.13.11+kotlin.2.3.21"
     fzzy_config = "0.7.6+1.21"
-    imguimc = "1.2.5"
+    imguimc = "2.0.3"
     # Runtime
     modmenu = "11.0.3"
     emi = "1.1.24+1.21.1"

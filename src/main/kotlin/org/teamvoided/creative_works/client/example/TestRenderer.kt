@@ -10,11 +10,12 @@ object TestRenderer {
     val textX = DebugUI.addInt(": Text X", 10)
     val textY = DebugUI.addInt(": Text Y", 10)
     val color = DebugUI.addColor(": Color")
+    val funnyValue = DebugUI.addSlider(": Slider", 0, 30)
 
     fun init() = HudRenderCallback.EVENT.register { gui, delta ->
         gui.drawString(
             Minecraft.getInstance().font,
-            "Debug Text",
+            "Debug Text ${funnyValue.get()}",
             textX.get(), textY.get(),
             color.rgb(), true
         )

@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKey
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
 import org.lwjgl.glfw.GLFW
-import org.teamvoided.creative_works.CreativeWorks.log
 import org.teamvoided.creative_works.CreativeWorksClient
 import org.teamvoided.creative_works.client.api.gui.DebugUI.uiEnabled
 import org.teamvoided.creative_works.client.screen.SpleenScreen
@@ -22,7 +21,7 @@ object CWKeyMappings {
         }
 
         if (CreativeWorksClient.hasImGui && debugUIKey.consumeClick()) {
-            log.info("Value: {}", uiEnabled.toggle())
+            uiEnabled.toggle()
         }
     }
 

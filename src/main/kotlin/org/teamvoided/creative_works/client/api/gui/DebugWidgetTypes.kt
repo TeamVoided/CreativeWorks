@@ -25,6 +25,12 @@ object DebugWidgetTypes {
     var TEXT = register<TextValue>(id("text")) { label, value -> ImGui.text(label + value.get()) }
     var COLOR = register<ColorValue>(id("color")) { label, value -> ImGui.colorEdit3(label, value.color) }
     var ARBITRARY = register<ArbitraryValue>(id("arbitrary")) { label, value -> value.renderUI(label) }
+    var FLOAT_SLIDER = register<FloatSliderValue>(id("float_slider")) { label, value ->
+        ImGui.sliderFloat(label, value.float, value.min, value.max)
+    }
+    var INT_SLIDER = register<IntSliderValue>(id("int_slider")) { label, value ->
+        ImGui.sliderInt(label, value.int, value.min, value.max)
+    }
 
 
     fun <T : GuiValue<*>> register(name: String, renderer: WidgetRenderer<T>): DebugWidgetType<T> {
