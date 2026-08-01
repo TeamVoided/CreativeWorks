@@ -52,13 +52,17 @@ object TooltipTags {
             val enchantments = data.keySet()
             if (enchantments.size > 1) {
                 tooltip.addLast(textWarning("Item has more then 1 enchantment"))
-            } else if (!enchantments.isEmpty()) {
+            } else if (enchantments.isNotEmpty()) {
                 tooltip.addAllTags("Enchantment", enchantments.first()!!, enchantments.first().getSortedTags())
             }
         }
 
         registerAppender(DataComponents.INSTRUMENT) { data, _, tooltip ->
             tooltip.addAllTags("Instrument", data, data.getSortedTags())
+        }
+
+        registerAppender(DataComponents.POTION_CONTENTS) { data, _, tooltip ->
+            data.potion.ifPresent { tooltip.addAllTags("Potion", it, it.getSortedTags()) }
         }
 
         registerAppender(DataComponents.ENTITY_DATA) { data, ctx, tooltip ->

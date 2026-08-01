@@ -96,13 +96,13 @@ object TooltipExtensions {
             if (components.isNotEmpty()) {
                 text.addLast(textMain("Components:"))
                 val removed = JsonArray()
-                components.forEach comp@{ (type, data) ->
-                    val ts = type.toString().removeMc()
-                    if (data.isEmpty) removed.add(ts)
+                components.forEach comp@{ (rawType, rawData) ->
+                    val ts = rawType.toString().removeMc()
+                    if (rawData.isEmpty) removed.add(ts)
                     else {
-                        val x = type as DataComponentType<Any>
-                        val y = data as Optional<Any>
-                        val result = x.codec()?.encodeStart(ops, y.get())
+                        val type = rawType as DataComponentType<Any>
+                        val data = rawData as Optional<Any>
+                        val result = type.codec()?.encodeStart(ops, data.get())
                         val resultData =
                             if (result != null && result.isSuccess) result.getOrThrow()
                             else JsonPrimitive(
