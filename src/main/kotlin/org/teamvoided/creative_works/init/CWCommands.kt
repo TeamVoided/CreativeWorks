@@ -1,6 +1,7 @@
 package org.teamvoided.creative_works.init
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.minecraft.server.commands.RaidCommand
 import org.teamvoided.creative_works.comands.player.*
 import org.teamvoided.creative_works.comands.registry.FindTagsCommand
 import org.teamvoided.creative_works.comands.registry.RegDumpCommand
@@ -42,6 +43,9 @@ object CWCommands {
         ApplyCommand.init(dispatcher)
         ResetComponentsCommand.init(dispatcher)
         SeeDataCommand.init(dispatcher)
+
+        // Vanilla
+        RaidCommand.register(dispatcher, ctx)
 
 
         dispatcher.createIdPacket("clear_particles", CLEAR_PARTICLES)
