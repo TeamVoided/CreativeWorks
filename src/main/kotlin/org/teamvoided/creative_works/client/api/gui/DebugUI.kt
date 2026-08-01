@@ -43,16 +43,6 @@ object DebugUI {
     internal fun renderDebuggingUI() {
         if (!uiEnabled.get()) return
         ImGui.begin("Debug Widget Window", uiEnabled.bool)
-        if (ImGui.beginMenuBar()) {
-
-            if (ImGui.beginMenu("Menu")) {
-                if (ImGui.menuItem("test")) {
-                    println("hello!")
-                }
-                ImGui.endMenu()
-            }
-            ImGui.endMenuBar()
-        }
 
         ImGui.text("Debug Widgets")
 
