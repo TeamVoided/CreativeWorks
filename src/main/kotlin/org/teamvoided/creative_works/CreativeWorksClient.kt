@@ -6,7 +6,6 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.loader.api.FabricLoader
 import org.teamvoided.creative_works.cfg.CWClientConfig
 import org.teamvoided.creative_works.client.api.gui.DebugWidgetTypes
-import org.teamvoided.creative_works.client.example.TestRenderer
 import org.teamvoided.creative_works.client.init.CWClientEvents
 import org.teamvoided.creative_works.client.init.CWImGui
 import org.teamvoided.creative_works.client.init.CWKeyMappings
@@ -30,7 +29,7 @@ object CreativeWorksClient : ClientModInitializer {
         }
         TooltipTags.initDefaults()
         CWClientEvents.init()
-        TestRenderer.init()
+//        TestRenderer.init()
     }
 
 }
