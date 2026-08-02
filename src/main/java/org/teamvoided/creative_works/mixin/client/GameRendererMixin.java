@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.mixin;
+package org.teamvoided.creative_works.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;

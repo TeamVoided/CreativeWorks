@@ -8,8 +8,9 @@
     "SharedSuggestionProviderMixin"
   ],
   "client": [
-    "MarkerParticleItemsAdderMixin",
-    "ParticleEngineAccessor"
+    "client.MarkerParticleItemsAdderMixin",
+    "client.ParticleAccessor",
+    "client.ParticleEngineAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
