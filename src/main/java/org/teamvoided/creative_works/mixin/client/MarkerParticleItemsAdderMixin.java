@@ -1,4 +1,4 @@
-package org.teamvoided.creative_works.mixin;
+package org.teamvoided.creative_works.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -12,7 +12,7 @@ import static org.teamvoided.creative_works.data.tags.CWItemTags.HAS_BLOCK_PARTI
 @Mixin(ClientLevel.class)
 public class MarkerParticleItemsAdderMixin {
     @ModifyExpressionValue(method = "getMarkerParticleTarget", at = @At(value = "INVOKE", target = "Ljava/util/Set;contains(Ljava/lang/Object;)Z"))
-    boolean x(boolean original, @Local ItemStack stack) {
+    boolean modifyBlockParticles(boolean original, @Local ItemStack stack) {
         return stack.is(HAS_BLOCK_PARTICLE);
     }
 }
