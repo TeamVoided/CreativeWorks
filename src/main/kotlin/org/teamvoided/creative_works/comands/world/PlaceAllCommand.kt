@@ -27,8 +27,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.error
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.error
+import org.teamvoided.creative_works.util.mc.message
 import org.teamvoided.creative_works.util.text
 import kotlin.math.roundToInt
 import kotlin.math.sqrt

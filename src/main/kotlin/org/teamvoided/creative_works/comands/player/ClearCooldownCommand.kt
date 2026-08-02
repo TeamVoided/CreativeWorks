@@ -10,8 +10,8 @@ import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.server.level.ServerPlayer
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.error
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.error
+import org.teamvoided.creative_works.util.mc.message
 
 object ClearCooldownCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {

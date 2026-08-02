@@ -2,19 +2,22 @@ package org.teamvoided.creative_works.comands.registry
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.context.CommandContext
-import net.minecraft.core.DefaultedRegistry
-import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.core.Registry
-import net.minecraft.tags.TagKey
-import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands.literal
+import net.minecraft.core.DefaultedRegistry
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.tags.TagKey
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.getRegistry
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.regEntryArg
 import org.teamvoided.creative_works.comands.args.RegistryArgumentType.registryTagArg
-import org.teamvoided.creative_works.util.*
+import org.teamvoided.creative_works.util.buildChildOf
+import org.teamvoided.creative_works.util.mc.error
+import org.teamvoided.creative_works.util.mc.message
 import org.teamvoided.creative_works.util.mc.sortTags
+import org.teamvoided.creative_works.util.sendNamedList
 
 object FindTagsCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {

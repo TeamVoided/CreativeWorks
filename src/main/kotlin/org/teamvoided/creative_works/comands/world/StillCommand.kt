@@ -6,7 +6,7 @@ import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.world.level.GameRules
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.message
 
 object StillCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {

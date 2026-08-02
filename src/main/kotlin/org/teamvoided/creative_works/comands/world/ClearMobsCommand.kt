@@ -10,7 +10,7 @@ import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.level.GameRules
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.message
 
 object ClearMobsCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {

@@ -4,28 +4,27 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.CommandNode
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.core.RegistryAccess
-import net.minecraft.core.HolderSet.Named
-import net.minecraft.core.Registry
-import net.minecraft.resources.ResourceKey
-import net.minecraft.tags.TagKey
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.core.Holder
+import net.minecraft.core.HolderSet.Named
+import net.minecraft.core.Registry
+import net.minecraft.core.RegistryAccess
 import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
-import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
-import org.teamvoided.creative_works.CreativeWorks.MAIN_COLOR
+import net.minecraft.tags.TagKey
 import org.teamvoided.creative_works.CreativeWorks.MODID
 import org.teamvoided.creative_works.CreativeWorks.SECONDARY_COLOR
 import org.teamvoided.creative_works.comands.registry.TagDumpCommand.ctc
+import org.teamvoided.creative_works.util.mc.textMain
+import org.teamvoided.creative_works.util.mc.textSecond
 import java.awt.Color
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.abs
-
-
 
 fun isDev() = FabricLoader.getInstance().isDevelopmentEnvironment
 
@@ -57,17 +56,10 @@ fun <S, Q : ArgumentBuilder<S, Q>> ArgumentBuilder<S, Q>.buildChildOf(node: Comm
     return this.build().childOf(node)
 }
 
-
-fun CommandSourceStack.message(msg: String) = this.sendSystemMessage(Component.literal(msg))
-fun CommandSourceStack.error(msg: String) = this.sendFailure(Component.literal(msg))
-
 fun Style.clickEvent(action: ClickEvent.Action, value: String): Style = this.withClickEvent(ClickEvent(action, value))
 fun <T> Style.hoverEvent(action: HoverEvent.Action<T>, value: T): Style = this.withHoverEvent(HoverEvent(action, value))
 
 fun <T> Registry<T>.getTag(id: ResourceLocation): Optional<Named<T>> = this.getTag(TagKey.create<T>(this.key(), id))
-
-
-fun ltxt(s: String) = Component.literal(s)
 
 fun CommandSourceStack.copyMessage(msg: String, copy: String, copyText: String = copy) =
     this.sendSystemMessage(Component.literal(msg).withStyle {
@@ -83,20 +75,20 @@ fun CommandSourceStack.openMessage(msg: String, folder: String, openText: String
 
 fun CommandSourceStack.sendNamedList(name: String, nameCopy: String, emptyMessage: String, set: List<String>) {
     this.sendSystemMessage(
-        ltxt(name).withStyle {
-            it.withColor(MAIN_COLOR)
+        textMain(name).withStyle {
+            it
                 .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, nameCopy)
                 .hoverEvent(HoverEvent.Action.SHOW_TEXT, ctc(nameCopy))
         }
     )
     if (set.toList().isEmpty()) {
-        this.sendSystemMessage(ltxt(" $emptyMessage").withStyle { it.withColor(SECONDARY_COLOR) })
+        this.sendSystemMessage(textSecond(" $emptyMessage"))
         return
     }
     set.forEach { entry ->
         this.sendSystemMessage(
-            ltxt(" - $entry ").withStyle { style ->
-                style.withColor(SECONDARY_COLOR)
+            textSecond(" - $entry ").withStyle { style ->
+                style
                     .clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entry)
                     .hoverEvent(
                         HoverEvent.Action.SHOW_TEXT, ctc(entry).withStyle { it.withColor(SECONDARY_COLOR) })

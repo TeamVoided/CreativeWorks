@@ -25,7 +25,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.StringRepresentable
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.message
 
 object GearCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {

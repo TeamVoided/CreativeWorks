@@ -14,8 +14,8 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.core.BlockPos
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.error
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.error
+import org.teamvoided.creative_works.util.mc.message
 
 object DimTpCommand {
     const val DIM = "dimension"

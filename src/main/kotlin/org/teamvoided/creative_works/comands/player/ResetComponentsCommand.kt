@@ -13,8 +13,8 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.world.InteractionHand
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.error
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.error
+import org.teamvoided.creative_works.util.mc.message
 
 object ResetComponentsCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {

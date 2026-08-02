@@ -18,7 +18,7 @@ import net.minecraft.world.level.levelgen.NoiseChunk
 import org.teamvoided.creative_works.comands.args.RegistryEntryArgumentType.getEntry
 import org.teamvoided.creative_works.comands.args.RegistryEntryArgumentType.registryEntryArg
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.message
 import kotlin.jvm.optionals.getOrNull
 
 object SplineCommand {

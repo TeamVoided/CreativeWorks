@@ -15,8 +15,8 @@ import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
 import org.teamvoided.creative_works.comands.utils.ImprovedLookup.listSuggestions
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.error
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.error
+import org.teamvoided.creative_works.util.mc.message
 
 object ApplyCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {

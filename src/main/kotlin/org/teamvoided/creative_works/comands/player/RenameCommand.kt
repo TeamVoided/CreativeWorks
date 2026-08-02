@@ -9,8 +9,8 @@ import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
 import org.teamvoided.creative_works.util.buildChildOf
-import org.teamvoided.creative_works.util.error
-import org.teamvoided.creative_works.util.message
+import org.teamvoided.creative_works.util.mc.error
+import org.teamvoided.creative_works.util.mc.message
 
 object RenameCommand {
     fun init(dispatcher: CommandDispatcher<CommandSourceStack>) {
