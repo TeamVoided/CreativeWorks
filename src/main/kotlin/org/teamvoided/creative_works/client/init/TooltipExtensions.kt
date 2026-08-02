@@ -1,6 +1,7 @@
 package org.teamvoided.creative_works.client.init
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.serialization.JsonOps
 import com.mojang.serialization.MapCodec
@@ -10,6 +11,7 @@ import net.minecraft.core.component.DataComponentType
 import net.minecraft.core.component.PatchedDataComponentMap
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
 import net.minecraft.tags.TagKey
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ai.village.poi.PoiType
@@ -19,10 +21,11 @@ import org.teamvoided.creative_works.CreativeWorksClient.clientConfig
 import org.teamvoided.creative_works.client.tooltip.TooltipTags
 import org.teamvoided.creative_works.client.tooltip.TooltipTags.MAP
 import org.teamvoided.creative_works.mixin.BucketItemAccessor
-import org.teamvoided.creative_works.util.basicJsonToText
 import org.teamvoided.creative_works.util.mc.*
-import org.teamvoided.creative_works.util.toText
+import org.teamvoided.creative_works.util.parsing.createError
+import org.teamvoided.creative_works.util.parsing.createWrappedComp
 import java.util.*
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 object TooltipExtensions {
@@ -68,7 +71,18 @@ object TooltipExtensions {
         }
     }
 
+    var lastStack: ItemStack = ItemStack.EMPTY
+    var lastTooltip = mutableListOf<Component>()
+    @Suppress("UNCHECKED_CAST")
     private fun componentToolTips(stack: ItemStack, text: MutableList<Component>, ctx: Item.TooltipContext) {
+        if (ItemStack.isSameItemSameComponents(lastStack, stack)) {
+            text.clear()
+            text.addAll(lastTooltip)
+            return
+        }
+        lastStack = stack
+        lastTooltip.clear()
+
         val ops = ctx.registries()?.createSerializationContext(JsonOps.INSTANCE) ?: return
 
         val rawComponents = stack.components
@@ -80,13 +94,8 @@ object TooltipExtensions {
                     text.addLast(textMain("Base Components:"))
                     components.forEach {
                         val result = it.encodeValue(ops)
-                        val data =
-                            if (result.isSuccess) result.getOrThrow()
-                            else JsonPrimitive(result.error().getOrNull()?.message() ?: "Failed to get encoding error!")
-                        text.addLast(
-                            textSecond(" ${it.type.toString().removeMc()}: ")
-                                .append(basicJsonToText(data).toText())
-                        )
+                        val data = if (result.isSuccess) result.getOrThrow() else createError(result)
+                        addComponentData(data, text::addLast, textSecond(" ${it.type.toString().removeMc()}: "))
                     }
                 }
             }
@@ -108,19 +117,20 @@ object TooltipExtensions {
                             else JsonPrimitive(
                                 result?.error()?.getOrNull()?.message() ?: "Failed to get encoding error!"
                             )
-                        text.addLast(
-                            textSecond(" $typeString: ").append(basicJsonToText(resultData).toText())
-                        )
+
+                        addComponentData(resultData, text::addLast, textSecond(" $typeString: "))
                     }
                 }
 
                 if (!removed.isEmpty) {
-                    text.addLast(textWarning("Removed Components: "))
-                    text.addLast(text(" ").append(basicJsonToText(removed).toText()))
+                    addComponentData(removed, text::addLast, textWarning(" Removed Components: "))
                 }
             }
         }
+
+        lastTooltip.addAll(text)
     }
+
 
     fun <T : Any> MutableList<Component>.addAllTags(
         name: String, holder: Holder<*>?, tags: List<TagKey<T>>,
@@ -136,4 +146,15 @@ object TooltipExtensions {
     val ENTITY_TYPE_FIELD_CODEC: MapCodec<EntityType<*>> = BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("id")
 
     fun String.removeMc() = removePrefix("minecraft:")
+}
+
+fun addComponentData(data: JsonElement, text: Consumer<Component>, label: MutableComponent) {
+    val descList = mutableListOf<Component>()
+    createWrappedComp(data).append(descList::addLast, 0, clientConfig.allowCollapse)
+
+    text.accept(label.append(descList.first()))
+
+    for (component in descList.drop(1)) {
+        text.accept(text(" ").append(component))
+    }
 }
