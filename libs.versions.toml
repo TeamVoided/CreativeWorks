@@ -1,18 +1,18 @@
 # see https://fabricmc.net/develop/ for new versions
 [versions]
     java = "21"
-    kotlin = "2.3.21"
-    fabric_loom = "1.16-SNAPSHOT"
+    kotlin = "2.4.10"
+    fabric_loom = "1.17-SNAPSHOT"
     iridium = "4.0.0"
     # Dependencies
     minecraft = "1.21.1"
-    fabric_loader = "0.19.2"
-    fabric_api = "0.116.12+1.21.1"
-    fabric_kotlin = "1.13.11+kotlin.2.3.21"
+    fabric_loader = "0.19.3"
+    fabric_api = "0.116.15+1.21.1"
+    fabric_kotlin = "1.13.13+kotlin.2.4.10"
     fzzy_config = "0.7.6+1.21"
     imguimc = "2.0.3"
     # Runtime
-    modmenu = "11.0.3"
+    modmenu = "11.0.4"
     emi = "1.1.24+1.21.1"
 
 [libraries]
