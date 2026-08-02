@@ -97,8 +97,8 @@ object TooltipExtensions {
                 text.addLast(textMain("Components:"))
                 val removed = JsonArray()
                 components.forEach comp@{ (rawType, rawData) ->
-                    val ts = rawType.toString().removeMc()
-                    if (rawData.isEmpty) removed.add(ts)
+                    val typeString = rawType.toString().removeMc()
+                    if (rawData.isEmpty) removed.add(typeString)
                     else {
                         val type = rawType as DataComponentType<Any>
                         val data = rawData as Optional<Any>
@@ -109,7 +109,7 @@ object TooltipExtensions {
                                 result?.error()?.getOrNull()?.message() ?: "Failed to get encoding error!"
                             )
                         text.addLast(
-                            textSecond(" $ts: ").append(basicJsonToText(resultData).toText())
+                            textSecond(" $typeString: ").append(basicJsonToText(resultData).toText())
                         )
                     }
                 }
